@@ -130,6 +130,36 @@ See `.env.example` for all required variables. Each app has its own `.env`:
 - `apps/api/.env` — DATABASE_URL, PORT, BETTER_AUTH_SECRET
 - `apps/web/.env` — NEXT_PUBLIC_API_URL
 
+## Agent System
+
+This project uses 6 specialized agent roles for task delegation. Each subdirectory has its own `CLAUDE.md` with domain-specific rules that inherit from this root file.
+
+### Subdirectory CLAUDE.md Files (git-tracked)
+| File | Domain |
+|------|--------|
+| `apps/api/CLAUDE.md` | Backend — tRPC routers, services, auth, RLS middleware |
+| `apps/web/CLAUDE.md` | Frontend — components, pages, forms, state, styling |
+| `packages/db/CLAUDE.md` | Data Model — schemas, RLS policies, migrations, seed |
+| `packages/shared/CLAUDE.md` | Shared — isomorphic validators, types, constants |
+
+### Agent Definitions (git-ignored)
+| File | Purpose |
+|------|---------|
+| `.claude/agents.md` | All 6 agent role definitions with Task tool prompt templates |
+| `.claude/templates/session-summary.md` | PM template for end-of-session summaries |
+| `.claude/templates/delegation-brief.md` | PM template for Claude/Gemini task specs |
+| `.claude/sessions/` | Session summary archive |
+
+### Agent Roles
+1. **Architect** — system design, cross-package architecture, security review
+2. **Backend** — tRPC routers, services, middleware, auth integration
+3. **Frontend** — UI components, pages, forms, client state
+4. **Data Model** — Drizzle schemas, RLS policies, migrations, validators
+5. **QA** — unit/integration/E2E tests, RLS isolation verification
+6. **Project Manager** — session continuity, progress tracking, LLM delegation
+
+See `.claude/agents.md` for full prompt templates.
+
 ## Known Issues / TODOs
 - [ ] Phase 1: Implement Better Auth integration
 - [ ] Phase 1: Implement RLS middleware
