@@ -1,2 +1,7 @@
-// Zod validators will be added per entity
-// These are the source of truth shared between tRPC input validation and form validation
+// Auth validators (Better Auth + Organization plugin)
+export * from './auth.js'
+
+// Future entity validators:
+// Phase 2: contacts, companies
+// Phase 3: activities, notes, tags
+// Phase 4: pipelines, deals
