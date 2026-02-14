@@ -18,7 +18,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
 	)
 
 	return (
-		<trpc.Provider client={trpcClient} queryClient={queryClient}>
+		<trpc.Provider trpcClient={trpcClient} queryClient={queryClient}>
 			<QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 		</trpc.Provider>
 	)

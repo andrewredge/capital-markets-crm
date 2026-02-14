@@ -3,6 +3,7 @@ import { trpcServer } from '@hono/trpc-server'
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
+import { env } from './env.js'
 import { appRouter } from './trpc/router.js'
 import { createContext } from './trpc/trpc.js'
 
@@ -13,7 +14,7 @@ app.use(logger())
 app.use(
 	'/api/*',
 	cors({
-		origin: process.env.WEB_URL || 'http://localhost:3000',
+		origin: env.WEB_URL,
 		credentials: true,
 	}),
 )
@@ -31,7 +32,7 @@ app.use(
 	}),
 )
 
-const port = Number(process.env.PORT) || 3001
+const port = env.PORT
 console.log(`API server starting on port ${port}`)
 
 serve({
