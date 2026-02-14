@@ -11,6 +11,7 @@ services:
       POSTGRES_DB: crm_dev
     volumes:
       - pgdata:/var/lib/postgresql/data
+      - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U crm -d crm_dev"]
       interval: 5s

@@ -1,16 +1,15 @@
 import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
 import * as schema from '@crm/db/schema'
-
-const connectionString = process.env.DATABASE_URL!
+import { env } from '../env.js'
 
 // Connection for queries (pooled)
-const client = postgres(connectionString)
+const client = postgres(env.DATABASE_URL)
 
 export const db = drizzle(client, { schema })
 
 // Connection for migrations (non-pooled, single connection)
 export function createMigrationClient() {
-	const migrationClient = postgres(connectionString, { max: 1 })
+	const migrationClient = postgres(env.DATABASE_URL, { max: 1 })
 	return drizzle(migrationClient, { schema })
 }

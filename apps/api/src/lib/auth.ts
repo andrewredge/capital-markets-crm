@@ -2,13 +2,14 @@ import { betterAuth } from 'better-auth'
 import { organization } from 'better-auth/plugins'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { db } from './db.js'
+import { env } from '../env.js'
 import * as schema from '@crm/db/schema'
 
 export const auth = betterAuth({
-	baseURL: process.env.BETTER_AUTH_URL || 'http://localhost:3001',
+	baseURL: env.BETTER_AUTH_URL,
 	basePath: '/api/auth',
-	secret: process.env.BETTER_AUTH_SECRET!,
-	trustedOrigins: [process.env.WEB_URL || 'http://localhost:3000'],
+	secret: env.BETTER_AUTH_SECRET,
+	trustedOrigins: [env.WEB_URL],
 
 	database: drizzleAdapter(db, {
 		provider: 'pg',
