@@ -16,6 +16,8 @@ export async function createContext(opts: FetchCreateContextFnOptions) {
 
 	return {
 		db,
+		/** Raw request headers for forwarding to Better Auth server API calls. */
+		headers: opts.req.headers,
 		session: session?.session ?? null,
 		user: session?.user ?? null,
 	}

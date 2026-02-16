@@ -1,10 +1,12 @@
 import { router } from './trpc.js'
+import { organizationsRouter } from './routers/organizations.js'
 
 /**
  * Root application router.
  * Domain routers will be merged here as they're implemented.
  */
 export const appRouter = router({
+	organizations: organizationsRouter,
 	// Phase 2: contacts: contactsRouter,
 	// Phase 2: companies: companiesRouter,
 	// Phase 3: activities: activitiesRouter,

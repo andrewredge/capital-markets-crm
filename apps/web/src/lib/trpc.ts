@@ -12,10 +12,11 @@ const links = [
 	httpBatchLink({
 		url: `${getBaseUrl()}/api/trpc`,
 		transformer: superjson,
-		headers() {
-			return {
-				// Phase 1: auth headers will be added here
-			}
+		fetch(url, options) {
+			return fetch(url, {
+				...options,
+				credentials: 'include',
+			})
 		},
 	}),
 ]
