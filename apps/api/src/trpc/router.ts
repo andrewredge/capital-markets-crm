@@ -1,5 +1,8 @@
 import { router } from './trpc.js'
 import { organizationsRouter } from './routers/organizations.js'
+import { contactsRouter } from './routers/contacts.js'
+import { companiesRouter } from './routers/companies.js'
+import { contactCompanyRolesRouter, companyRelationshipsRouter } from './routers/associations.js'
 
 /**
  * Root application router.
@@ -7,8 +10,10 @@ import { organizationsRouter } from './routers/organizations.js'
  */
 export const appRouter = router({
 	organizations: organizationsRouter,
-	// Phase 2: contacts: contactsRouter,
-	// Phase 2: companies: companiesRouter,
+	contacts: contactsRouter,
+	companies: companiesRouter,
+	contactCompanyRoles: contactCompanyRolesRouter,
+	companyRelationships: companyRelationshipsRouter,
 	// Phase 3: activities: activitiesRouter,
 	// Phase 3: notes: notesRouter,
 	// Phase 3: tags: tagsRouter,
