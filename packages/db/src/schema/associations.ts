@@ -7,6 +7,8 @@ import { companies } from './companies'
 import { activities } from './activities'
 import { notes } from './notes'
 import { tags, taggings } from './tags'
+import { pipelines, pipelineStages } from './pipelines'
+import { deals, dealParticipants, dealStageHistory } from './deals'
 
 // =============================================================================
 // Contact–Company Roles (junction)
@@ -79,6 +81,7 @@ export const contactsRelations = relations(contacts, ({ one, many }) => ({
 		references: [organizations.id],
 	}),
 	contactCompanyRoles: many(contactCompanyRoles),
+	dealParticipants: many(dealParticipants),
 	activities: many(activities),
 	notes: many(notes),
 	taggings: many(taggings),
@@ -90,6 +93,7 @@ export const companiesRelations = relations(companies, ({ one, many }) => ({
 		references: [organizations.id],
 	}),
 	contactCompanyRoles: many(contactCompanyRoles),
+	dealParticipants: many(dealParticipants),
 	companyRelationshipsFrom: many(companyRelationships, { relationName: 'fromCompany' }),
 	companyRelationshipsTo: many(companyRelationships, { relationName: 'toCompany' }),
 	activities: many(activities),
@@ -146,6 +150,10 @@ export const activitiesRelations = relations(activities, ({ one }) => ({
 		fields: [activities.companyId],
 		references: [companies.id],
 	}),
+	deal: one(deals, {
+		fields: [activities.dealId],
+		references: [deals.id],
+	}),
 }))
 
 export const notesRelations = relations(notes, ({ one }) => ({
@@ -160,6 +168,10 @@ export const notesRelations = relations(notes, ({ one }) => ({
 	company: one(companies, {
 		fields: [notes.companyId],
 		references: [companies.id],
+	}),
+	deal: one(deals, {
+		fields: [notes.dealId],
+		references: [deals.id],
 	}),
 }))
 
@@ -187,5 +199,96 @@ export const taggingsRelations = relations(taggings, ({ one }) => ({
 	company: one(companies, {
 		fields: [taggings.companyId],
 		references: [companies.id],
+	}),
+	deal: one(deals, {
+		fields: [taggings.dealId],
+		references: [deals.id],
+	}),
+}))
+
+// =============================================================================
+// Phase 4 Relations
+// =============================================================================
+
+export const pipelinesRelations = relations(pipelines, ({ one, many }) => ({
+	organization: one(organizations, {
+		fields: [pipelines.organizationId],
+		references: [organizations.id],
+	}),
+	stages: many(pipelineStages),
+	deals: many(deals),
+}))
+
+export const pipelineStagesRelations = relations(pipelineStages, ({ one, many }) => ({
+	organization: one(organizations, {
+		fields: [pipelineStages.organizationId],
+		references: [organizations.id],
+	}),
+	pipeline: one(pipelines, {
+		fields: [pipelineStages.pipelineId],
+		references: [pipelines.id],
+	}),
+	deals: many(deals),
+	historyTo: many(dealStageHistory, { relationName: 'toStage' }),
+	historyFrom: many(dealStageHistory, { relationName: 'fromStage' }),
+}))
+
+export const dealsRelations = relations(deals, ({ one, many }) => ({
+	organization: one(organizations, {
+		fields: [deals.organizationId],
+		references: [organizations.id],
+	}),
+	pipeline: one(pipelines, {
+		fields: [deals.pipelineId],
+		references: [pipelines.id],
+	}),
+	currentStage: one(pipelineStages, {
+		fields: [deals.currentStageId],
+		references: [pipelineStages.id],
+	}),
+	participants: many(dealParticipants),
+	stageHistory: many(dealStageHistory),
+	activities: many(activities),
+	notes: many(notes),
+	taggings: many(taggings),
+}))
+
+export const dealParticipantsRelations = relations(dealParticipants, ({ one }) => ({
+	organization: one(organizations, {
+		fields: [dealParticipants.organizationId],
+		references: [organizations.id],
+	}),
+	deal: one(deals, {
+		fields: [dealParticipants.dealId],
+		references: [deals.id],
+	}),
+	contact: one(contacts, {
+		fields: [dealParticipants.contactId],
+		references: [contacts.id],
+	}),
+	company: one(companies, {
+		fields: [dealParticipants.companyId],
+		references: [companies.id],
+	}),
+}))
+
+export const dealStageHistoryRelations = relations(dealStageHistory, ({ one }) => ({
+	organization: one(organizations, {
+		fields: [dealStageHistory.organizationId],
+		references: [organizations.id],
+	}),
+	deal: one(deals, {
+		fields: [dealStageHistory.dealId],
+		references: [deals.id],
+	}),
+	fromStage: one(pipelineStages, {
+		fields: [dealStageHistory.fromStageId],
+		references: [pipelineStages.id],
+		relationName: 'fromStage',
+	}),
+	toStage: one(pipelineStages, {
+		fields: [dealStageHistory.toStageId],
+		references: [pipelineStages.id],
+		relationName: 'toStage',
 	}),
 }))

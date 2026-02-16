@@ -3,7 +3,7 @@
 ## Overview
 A purpose-built CRM for capital markets professionals (VC, PE, M&A, investment banking). Models startups, listed companies, investors, deal flow with multi-participant roles, and configurable pipelines.
 
-**Current Phase: 3 (Activity, Notes & Tags) — Phases 0–2 complete**
+**Current Phase: 4 (Deals & Pipelines) — Phases 0–3 complete, Waves 4.1–4.2 done**
 
 ## Tech Stack
 | Layer | Choice | Version |
@@ -161,7 +161,8 @@ This project uses 6 specialized agent roles for task delegation. Each subdirecto
 See `.claude/agents.md` for full prompt templates.
 
 ## Known Issues / TODOs
-- [ ] Phase 3: Activity timeline, notes, and tags
-- [ ] Phase 3: Seed data for dev/demo
+- [ ] Phase 4: Pipeline admin settings UI (Wave 4.3)
+- [ ] Phase 4: Deals list/Kanban/detail frontend (Wave 4.4)
+- [ ] Phase 4: E2E tests for deals and pipelines (Wave 4.5)
+- [ ] Seed data for dev/demo
 - [ ] Member invitations (backend + UI)
-- [ ] E2E tests for deals (after Phase 3 deals pipeline)

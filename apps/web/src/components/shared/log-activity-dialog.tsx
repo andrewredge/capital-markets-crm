@@ -46,6 +46,7 @@ interface LogActivityDialogProps {
 	onOpenChange: (open: boolean) => void
 	contactId?: string
 	companyId?: string
+	dealId?: string
 }
 
 export function LogActivityDialog({
@@ -53,6 +54,7 @@ export function LogActivityDialog({
 	onOpenChange,
 	contactId,
 	companyId,
+	dealId,
 }: LogActivityDialogProps) {
 	const trpc = useTRPC()
 	const queryClient = useQueryClient()
@@ -67,6 +69,7 @@ export function LogActivityDialog({
 			duration: null,
 			contactId,
 			companyId,
+			dealId,
 		},
 	})
 
@@ -81,9 +84,10 @@ export function LogActivityDialog({
 				duration: null,
 				contactId,
 				companyId,
+				dealId,
 			})
 		}
-	}, [open, form, contactId, companyId])
+	}, [open, form, contactId, companyId, dealId])
 
 	const createMutation = useMutation(
 		trpc.activities.create.mutationOptions({
@@ -104,6 +108,7 @@ export function LogActivityDialog({
 			occurredAt: data.occurredAt ? new Date(data.occurredAt).toISOString() : undefined,
 			contactId,
 			companyId,
+			dealId,
 		})
 	}
 

@@ -10,20 +10,21 @@ import { toast } from 'sonner'
 interface EntityTagsProps {
 	contactId?: string
 	companyId?: string
+	dealId?: string
 }
 
-export function EntityTags({ contactId, companyId }: EntityTagsProps) {
+export function EntityTags({ contactId, companyId, dealId }: EntityTagsProps) {
 	const trpc = useTRPC()
 	const queryClient = useQueryClient()
 
 	const { data: tags, isLoading } = useQuery(
-		trpc.tags.getForEntity.queryOptions({ contactId, companyId })
+		trpc.tags.getForEntity.queryOptions({ contactId, companyId, dealId })
 	)
 
 	const addTagMutation = useMutation(
 		trpc.tags.addTagging.mutationOptions({
 			onSuccess: () => {
-				queryClient.invalidateQueries({ queryKey: trpc.tags.getForEntity.queryKey({ contactId, companyId }) })
+				queryClient.invalidateQueries({ queryKey: trpc.tags.getForEntity.queryKey({ contactId, companyId, dealId }) })
 				toast.success('Tag added')
 			},
 			onError: (error) => {
@@ -35,7 +36,7 @@ export function EntityTags({ contactId, companyId }: EntityTagsProps) {
 	const removeTagMutation = useMutation(
 		trpc.tags.removeTagging.mutationOptions({
 			onSuccess: () => {
-				queryClient.invalidateQueries({ queryKey: trpc.tags.getForEntity.queryKey({ contactId, companyId }) })
+				queryClient.invalidateQueries({ queryKey: trpc.tags.getForEntity.queryKey({ contactId, companyId, dealId }) })
 				toast.success('Tag removed')
 			},
 			onError: (error) => {
@@ -45,7 +46,7 @@ export function EntityTags({ contactId, companyId }: EntityTagsProps) {
 	)
 
 	const handleSelectTag = (tagId: string) => {
-		addTagMutation.mutate({ tagId, contactId, companyId })
+		addTagMutation.mutate({ tagId, contactId, companyId, dealId })
 	}
 
 	if (isLoading) {

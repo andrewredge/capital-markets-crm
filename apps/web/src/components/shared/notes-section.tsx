@@ -37,6 +37,7 @@ import { cn } from '@/lib/utils'
 interface NotesSectionProps {
 	contactId?: string
 	companyId?: string
+	dealId?: string
 }
 
 function formatDate(date: Date | string) {
@@ -47,7 +48,7 @@ function formatDate(date: Date | string) {
 	}).format(new Date(date))
 }
 
-export function NotesSection({ contactId, companyId }: NotesSectionProps) {
+export function NotesSection({ contactId, companyId, dealId }: NotesSectionProps) {
 	const trpc = useTRPC()
 	const queryClient = useQueryClient()
 	const [isAddOpen, setIsAddOpen] = useState(false)
@@ -63,6 +64,7 @@ export function NotesSection({ contactId, companyId }: NotesSectionProps) {
 		trpc.notes.list.queryOptions({
 			contactId,
 			companyId,
+			dealId,
 			limit: 50,
 		}),
 	)
@@ -184,6 +186,7 @@ export function NotesSection({ contactId, companyId }: NotesSectionProps) {
 				onOpenChange={setIsAddOpen}
 				contactId={contactId}
 				companyId={companyId}
+				dealId={dealId}
 			/>
 
 			{editingNote && (

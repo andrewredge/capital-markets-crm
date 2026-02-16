@@ -11,6 +11,9 @@ export * from './activities'
 export * from './notes'
 export * from './tags'
 
+// Phase 4: Pipelines, Deals
+export * from './pipelines'
+export * from './deals'
+
 // Future entity schemas:
-// Phase 4: pipelines, pipeline_stages, deals, deal_participants, deal_stage_history
 // Phase 5: custom_field_definitions, custom_field_values

@@ -11,5 +11,6 @@ export * from './activities'
 export * from './notes'
 export * from './tags'
 
-// Future entity validators:
-// Phase 4: pipelines, deals
+// Phase 4: Pipelines, Deals
+export * from './pipelines'
+export * from './deals'

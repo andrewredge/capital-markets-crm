@@ -37,5 +37,4 @@ export type InvestorType = 'vc' | 'pe' | 'angel' | 'family_office' | 'hedge_fund
 
 // ContactStatus — now derived from Zod schema in validators/contacts.ts
 
-/** Pipeline stage terminal types */
-export type TerminalType = 'won' | 'lost' | 'passed'
+// TerminalType — now derived from Zod schema in validators/pipelines.ts

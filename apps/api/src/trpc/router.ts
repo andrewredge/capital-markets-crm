@@ -6,6 +6,8 @@ import { contactCompanyRolesRouter, companyRelationshipsRouter } from './routers
 import { activitiesRouter } from './routers/activities.js'
 import { notesRouter } from './routers/notes.js'
 import { tagsRouter } from './routers/tags.js'
+import { pipelinesRouter } from './routers/pipelines.js'
+import { dealsRouter } from './routers/deals.js'
 
 /**
  * Root application router.
@@ -20,8 +22,8 @@ export const appRouter = router({
 	activities: activitiesRouter,
 	notes: notesRouter,
 	tags: tagsRouter,
-	// Phase 4: pipelines: pipelinesRouter,
-	// Phase 4: deals: dealsRouter,
+	pipelines: pipelinesRouter,
+	deals: dealsRouter,
 })
 
 export type AppRouter = typeof appRouter
