@@ -1,4 +1,5 @@
-import type { ActivityType, DealParticipantRole, DealType, InvestorType } from '../types/index'
+import type { DealParticipantRole, DealType, InvestorType } from '../types/index'
+import type { ActivityType } from '../validators/activities'
 import type { EntityType } from '../validators/companies'
 import type { ContactStatus } from '../validators/contacts'
 import type { ContactCompanyRole, CompanyRelationshipType } from '../validators/associations'
@@ -58,7 +59,7 @@ export const DEAL_PARTICIPANT_ROLES: { value: DealParticipantRole; label: string
 	{ value: 'intermediary', label: 'Intermediary' },
 ]
 
-export const ACTIVITY_TYPES: { value: ActivityType; label: string }[] = [
+export const ACTIVITY_TYPE_OPTIONS: { value: ActivityType; label: string }[] = [
 	{ value: 'meeting', label: 'Meeting' },
 	{ value: 'call', label: 'Call' },
 	{ value: 'email', label: 'Email' },
@@ -85,6 +86,16 @@ export const COMPANY_RELATIONSHIP_TYPE_OPTIONS: { value: CompanyRelationshipType
 	{ value: 'acquirer_of', label: 'Acquirer Of' },
 	{ value: 'acquired_by', label: 'Acquired By' },
 	{ value: 'competitor_of', label: 'Competitor Of' },
+]
+
+export const TAG_COLOR_OPTIONS: { value: string; label: string }[] = [
+	{ value: '#3B82F6', label: 'Blue' },
+	{ value: '#EF4444', label: 'Red' },
+	{ value: '#10B981', label: 'Green' },
+	{ value: '#F59E0B', label: 'Amber' },
+	{ value: '#8B5CF6', label: 'Purple' },
+	{ value: '#EC4899', label: 'Pink' },
+	{ value: '#6B7280', label: 'Gray' },
 ]
 
 /** Default pipeline stages for a new VC Deal Flow pipeline */

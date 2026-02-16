@@ -33,6 +33,9 @@ import { toast } from 'sonner'
 import { Skeleton } from '@/components/ui/skeleton'
 import { EditContactDialog } from './edit-contact-dialog'
 import { ContactCompanyRolesSection } from './contact-company-roles-section'
+import { ActivityTimeline } from '@/components/shared/activity-timeline'
+import { NotesSection } from '@/components/shared/notes-section'
+import { EntityTags } from '@/components/shared/entity-tags'
 
 interface ContactDetailProps {
 	id: string
@@ -140,6 +143,9 @@ export function ContactDetail({ id }: ContactDetailProps) {
 								{contact.status}
 							</Badge>
 						</div>
+						<div className="mt-2">
+							<EntityTags contactId={contact.id} />
+						</div>
 					</div>
 				</div>
 				<div className="flex items-center gap-2">
@@ -224,6 +230,9 @@ export function ContactDetail({ id }: ContactDetailProps) {
 							</div>
 						</CardContent>
 					</Card>
+
+					<ActivityTimeline contactId={contact.id} />
+					<NotesSection contactId={contact.id} />
 				</div>
 
 				{/* Sidebar */}

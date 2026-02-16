@@ -33,8 +33,7 @@ export type DealParticipantRole =
 /** Investor types */
 export type InvestorType = 'vc' | 'pe' | 'angel' | 'family_office' | 'hedge_fund' | 'sovereign_wealth'
 
-/** Activity types for interaction logging */
-export type ActivityType = 'meeting' | 'call' | 'email' | 'note' | 'task' | 'deal_update'
+// ActivityType — now derived from Zod schema in validators/activities.ts
 
 // ContactStatus — now derived from Zod schema in validators/contacts.ts
 

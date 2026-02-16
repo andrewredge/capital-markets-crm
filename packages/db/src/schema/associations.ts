@@ -4,6 +4,9 @@ import { boolean, pgPolicy, pgTable, text, timestamp } from 'drizzle-orm/pg-core
 import { organizations } from './auth'
 import { contacts } from './contacts'
 import { companies } from './companies'
+import { activities } from './activities'
+import { notes } from './notes'
+import { tags, taggings } from './tags'
 
 // =============================================================================
 // Contact–Company Roles (junction)
@@ -76,6 +79,9 @@ export const contactsRelations = relations(contacts, ({ one, many }) => ({
 		references: [organizations.id],
 	}),
 	contactCompanyRoles: many(contactCompanyRoles),
+	activities: many(activities),
+	notes: many(notes),
+	taggings: many(taggings),
 }))
 
 export const companiesRelations = relations(companies, ({ one, many }) => ({
@@ -86,6 +92,9 @@ export const companiesRelations = relations(companies, ({ one, many }) => ({
 	contactCompanyRoles: many(contactCompanyRoles),
 	companyRelationshipsFrom: many(companyRelationships, { relationName: 'fromCompany' }),
 	companyRelationshipsTo: many(companyRelationships, { relationName: 'toCompany' }),
+	activities: many(activities),
+	notes: many(notes),
+	taggings: many(taggings),
 }))
 
 export const contactCompanyRolesRelations = relations(contactCompanyRoles, ({ one }) => ({
@@ -117,5 +126,66 @@ export const companyRelationshipsRelations = relations(companyRelationships, ({ 
 		fields: [companyRelationships.toCompanyId],
 		references: [companies.id],
 		relationName: 'toCompany',
+	}),
+}))
+
+// =============================================================================
+// Phase 3 Relations
+// =============================================================================
+
+export const activitiesRelations = relations(activities, ({ one }) => ({
+	organization: one(organizations, {
+		fields: [activities.organizationId],
+		references: [organizations.id],
+	}),
+	contact: one(contacts, {
+		fields: [activities.contactId],
+		references: [contacts.id],
+	}),
+	company: one(companies, {
+		fields: [activities.companyId],
+		references: [companies.id],
+	}),
+}))
+
+export const notesRelations = relations(notes, ({ one }) => ({
+	organization: one(organizations, {
+		fields: [notes.organizationId],
+		references: [organizations.id],
+	}),
+	contact: one(contacts, {
+		fields: [notes.contactId],
+		references: [contacts.id],
+	}),
+	company: one(companies, {
+		fields: [notes.companyId],
+		references: [companies.id],
+	}),
+}))
+
+export const tagsRelations = relations(tags, ({ one, many }) => ({
+	organization: one(organizations, {
+		fields: [tags.organizationId],
+		references: [organizations.id],
+	}),
+	taggings: many(taggings),
+}))
+
+export const taggingsRelations = relations(taggings, ({ one }) => ({
+	organization: one(organizations, {
+		fields: [taggings.organizationId],
+		references: [organizations.id],
+	}),
+	tag: one(tags, {
+		fields: [taggings.tagId],
+		references: [tags.id],
+	}),
+	contact: one(contacts, {
+		fields: [taggings.contactId],
+		references: [contacts.id],
+	}),
+	company: one(companies, {
+		fields: [taggings.companyId],
+		references: [companies.id],
 	}),
 }))

@@ -6,6 +6,10 @@ export * from './contacts'
 export * from './companies'
 export * from './associations'
 
+// Phase 3: Activities, Notes, Tags
+export * from './activities'
+export * from './notes'
+export * from './tags'
+
 // Future entity validators:
-// Phase 3: activities, notes, tags
 // Phase 4: pipelines, deals

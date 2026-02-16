@@ -3,6 +3,9 @@ import { organizationsRouter } from './routers/organizations.js'
 import { contactsRouter } from './routers/contacts.js'
 import { companiesRouter } from './routers/companies.js'
 import { contactCompanyRolesRouter, companyRelationshipsRouter } from './routers/associations.js'
+import { activitiesRouter } from './routers/activities.js'
+import { notesRouter } from './routers/notes.js'
+import { tagsRouter } from './routers/tags.js'
 
 /**
  * Root application router.
@@ -14,9 +17,9 @@ export const appRouter = router({
 	companies: companiesRouter,
 	contactCompanyRoles: contactCompanyRolesRouter,
 	companyRelationships: companyRelationshipsRouter,
-	// Phase 3: activities: activitiesRouter,
-	// Phase 3: notes: notesRouter,
-	// Phase 3: tags: tagsRouter,
+	activities: activitiesRouter,
+	notes: notesRouter,
+	tags: tagsRouter,
 	// Phase 4: pipelines: pipelinesRouter,
 	// Phase 4: deals: dealsRouter,
 })

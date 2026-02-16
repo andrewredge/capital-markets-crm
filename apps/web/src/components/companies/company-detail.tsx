@@ -35,6 +35,9 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { EditCompanyDialog } from './edit-company-dialog'
 import { CompanyContactsSection } from './company-contacts-section'
 import { CompanyRelationshipsSection } from './company-relationships-section'
+import { ActivityTimeline } from '@/components/shared/activity-timeline'
+import { NotesSection } from '@/components/shared/notes-section'
+import { EntityTags } from '@/components/shared/entity-tags'
 
 interface CompanyDetailProps {
 	id: string
@@ -105,6 +108,9 @@ export function CompanyDetail({ id }: CompanyDetailProps) {
 							{company.industry && (
 								<span className="text-sm text-muted-foreground">{company.industry}</span>
 							)}
+						</div>
+						<div className="mt-2">
+							<EntityTags companyId={company.id} />
 						</div>
 					</div>
 				</div>
@@ -258,6 +264,9 @@ export function CompanyDetail({ id }: CompanyDetailProps) {
 							</CardContent>
 						</Card>
 					)}
+
+					<ActivityTimeline companyId={company.id} />
+					<NotesSection companyId={company.id} />
 				</div>
 
 				{/* Sidebar */}

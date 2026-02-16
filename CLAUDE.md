@@ -3,7 +3,7 @@
 ## Overview
 A purpose-built CRM for capital markets professionals (VC, PE, M&A, investment banking). Models startups, listed companies, investors, deal flow with multi-participant roles, and configurable pipelines.
 
-**Current Phase: 0 (Scaffolding) → Phase 1 (Auth & Multi-Tenancy)**
+**Current Phase: 3 (Activity, Notes & Tags) — Phases 0–2 complete**
 
 ## Tech Stack
 | Layer | Choice | Version |
@@ -161,8 +161,7 @@ This project uses 6 specialized agent roles for task delegation. Each subdirecto
 See `.claude/agents.md` for full prompt templates.
 
 ## Known Issues / TODOs
-- [ ] Phase 1: Implement Better Auth integration
-- [ ] Phase 1: Implement RLS middleware
-- [ ] Phase 1: Auth UI pages (login, register, org creation)
-- [ ] Phase 1: Dashboard shell layout
-- [ ] tRPC client setup in web app needs refinement after tRPC v11 API stabilizes
+- [ ] Phase 3: Activity timeline, notes, and tags
+- [ ] Phase 3: Seed data for dev/demo
+- [ ] Member invitations (backend + UI)
+- [ ] E2E tests for deals (after Phase 3 deals pipeline)

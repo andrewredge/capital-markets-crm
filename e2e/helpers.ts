@@ -1,10 +1,15 @@
-import type { Page } from '@playwright/test'
+import { expect, type Page } from '@playwright/test'
 
 const API_URL = 'http://localhost:3001'
 
 /** Generate a unique email for test isolation. */
 export function uniqueEmail(prefix = 'e2e') {
 	return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}@test.local`
+}
+
+/** Generate a unique org name for test isolation. */
+export function uniqueOrgName(prefix = 'Org') {
+	return `${prefix} ${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 5)}`
 }
 
 /** Register a user via the API directly (faster than going through the UI). */
@@ -87,4 +92,30 @@ export async function apiSetActiveOrg(page: Page, organizationId: string) {
 		throw new Error(`API set active org failed: ${res.status} ${await res.text()}`)
 	}
 	return res.json()
+}
+
+/** Create an organization via the dialog and wait for it to appear. */
+export async function uiCreateOrg(page: Page, name: string) {
+	await page.locator('header').getByRole('button', { name: /Organization|Select/i }).click()
+	await page.getByRole('menuitem', { name: 'Create Organization' }).click()
+	await page.getByLabel('Organization Name').fill(name)
+	await page.getByRole('button', { name: 'Create Organization' }).click()
+	
+	// Wait for dialog to disappear
+	await expect(page.getByRole('dialog')).not.toBeVisible({ timeout: 10_000 })
+	
+	// Ensure it appears in header (might need a moment for session refresh)
+	await expect(page.locator('header').getByText(name)).toBeVisible({ timeout: 10_000 })
+}
+
+/** Navigate to contacts list via sidebar. */
+export async function navigateToContacts(page: Page) {
+	await page.getByRole('link', { name: 'Contacts' }).click()
+	await expect(page).toHaveURL(/\/contacts/, { timeout: 10_000 })
+}
+
+/** Navigate to companies list via sidebar. */
+export async function navigateToCompanies(page: Page) {
+	await page.getByRole('link', { name: 'Companies' }).click()
+	await expect(page).toHaveURL(/\/companies/, { timeout: 10_000 })
 }
