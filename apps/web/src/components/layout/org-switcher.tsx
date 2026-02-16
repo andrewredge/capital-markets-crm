@@ -1,6 +1,7 @@
 "use client"
 
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 import { Check, ChevronsUpDown, Plus } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -13,9 +14,11 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { organization, useSession, useListOrganizations } from '@/lib/auth-client'
+import { CreateOrgDialog } from '@/components/organizations/create-org-dialog'
 
 export function OrgSwitcher() {
     const router = useRouter()
+    const [createDialogOpen, setCreateDialogOpen] = useState(false)
     const { data: session } = useSession()
     const { data: organizations, isPending } = useListOrganizations()
     
@@ -72,11 +75,21 @@ export function OrgSwitcher() {
                     </div>
                 )}
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="cursor-pointer">
+                <DropdownMenuItem
+                    className="cursor-pointer"
+                    onSelect={(e) => {
+                        e.preventDefault()
+                        setCreateDialogOpen(true)
+                    }}
+                >
                     <Plus className="mr-2 h-4 w-4" />
                     <span>Create Organization</span>
                 </DropdownMenuItem>
             </DropdownMenuContent>
+            <CreateOrgDialog
+                open={createDialogOpen}
+                onOpenChange={setCreateDialogOpen}
+            />
         </DropdownMenu>
     )
 }
