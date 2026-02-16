@@ -100,12 +100,28 @@ export async function uiCreateOrg(page: Page, name: string) {
 	await page.getByRole('menuitem', { name: 'Create Organization' }).click()
 	await page.getByLabel('Organization Name').fill(name)
 	await page.getByRole('button', { name: 'Create Organization' }).click()
-	
+
 	// Wait for dialog to disappear
 	await expect(page.getByRole('dialog')).not.toBeVisible({ timeout: 10_000 })
-	
+
 	// Ensure it appears in header (might need a moment for session refresh)
 	await expect(page.locator('header').getByText(name)).toBeVisible({ timeout: 10_000 })
+
+	// Close any open dropdown overlays that might block navigation
+	await page.keyboard.press('Escape')
+	await page.waitForTimeout(200)
+}
+
+/** Select the first available organization via the org switcher dropdown. */
+export async function uiSelectOrg(page: Page, orgName: string) {
+	// Wait for the dashboard to load
+	await expect(page.locator('header')).toBeVisible({ timeout: 10_000 })
+	// Click the org switcher button
+	await page.locator('header').getByRole('button', { name: /Organization|Select/i }).click()
+	// Click the org by name
+	await page.getByRole('menuitem', { name: orgName }).click()
+	// Wait for org name to appear in header (indicates active org was set)
+	await expect(page.locator('header').getByText(orgName)).toBeVisible({ timeout: 10_000 })
 }
 
 /** Navigate to contacts list via sidebar. */
@@ -118,4 +134,18 @@ export async function navigateToContacts(page: Page) {
 export async function navigateToCompanies(page: Page) {
 	await page.getByRole('link', { name: 'Companies' }).click()
 	await expect(page).toHaveURL(/\/companies/, { timeout: 10_000 })
+}
+
+/** Navigate to deals list via sidebar. */
+export async function navigateToDeals(page: Page) {
+	await page.getByRole('link', { name: 'Deals' }).click()
+	await expect(page).toHaveURL(/\/deals/, { timeout: 10_000 })
+}
+
+/** Navigate to pipeline settings. */
+export async function navigateToPipelineSettings(page: Page) {
+	await page.getByRole('link', { name: 'Settings' }).click()
+	await expect(page).toHaveURL(/\/settings/, { timeout: 10_000 })
+	await page.getByRole('link').filter({ hasText: 'Pipelines' }).first().click()
+	await expect(page).toHaveURL(/\/settings\/pipelines/, { timeout: 10_000 })
 }

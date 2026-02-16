@@ -4,7 +4,6 @@ import superjson from 'superjson'
 import type { AppRouter } from '@crm/api/src/trpc/router'
 
 function getBaseUrl() {
-	if (typeof window !== 'undefined') return ''
 	return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
 }
 

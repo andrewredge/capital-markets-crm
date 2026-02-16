@@ -148,7 +148,7 @@ export function AddParticipantDialog({ dealId, open, onOpenChange }: AddParticip
           </Tabs>
 
           <div className="space-y-2">
-            <FormLabel>{entityType === 'contact' ? 'Search Contacts' : 'Search Companies'}</FormLabel>
+            <label className="text-sm font-medium leading-none">{entityType === 'contact' ? 'Search Contacts' : 'Search Companies'}</label>
             <div className="relative">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
