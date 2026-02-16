@@ -6,7 +6,7 @@ import type {
 	DealType,
 	EntityType,
 	InvestorType,
-} from '../types/index.js'
+} from '../types/index'
 
 export const ENTITY_TYPES: { value: EntityType; label: string }[] = [
 	{ value: 'startup', label: 'Startup' },

@@ -1,5 +1,5 @@
 // Auth validators (Better Auth + Organization plugin)
-export * from './auth.js'
+export * from './auth'
 
 // Future entity validators:
 // Phase 2: contacts, companies

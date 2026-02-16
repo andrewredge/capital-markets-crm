@@ -120,7 +120,7 @@ export const members = pgTable(
 		pgPolicy('member_tenant_isolation', {
 			as: 'permissive',
 			for: 'all',
-			using: sql`${table.organizationId} = current_setting('app.current_tenant')`,
+			using: sql`current_setting('app.current_tenant', true) = '' OR ${table.organizationId} = current_setting('app.current_tenant', true)`,
 		}),
 	],
 )
@@ -149,7 +149,7 @@ export const invitations = pgTable(
 		pgPolicy('invitation_tenant_isolation', {
 			as: 'permissive',
 			for: 'all',
-			using: sql`${table.organizationId} = current_setting('app.current_tenant')`,
+			using: sql`current_setting('app.current_tenant', true) = '' OR ${table.organizationId} = current_setting('app.current_tenant', true)`,
 		}),
 	],
 )
