@@ -1,14 +1,9 @@
-import type {
-	ActivityType,
-	ContactRole,
-	ContactStatus,
-	DealParticipantRole,
-	DealType,
-	EntityType,
-	InvestorType,
-} from '../types/index'
+import type { ActivityType, DealParticipantRole, DealType, InvestorType } from '../types/index'
+import type { EntityType } from '../validators/companies'
+import type { ContactStatus } from '../validators/contacts'
+import type { ContactCompanyRole, CompanyRelationshipType } from '../validators/associations'
 
-export const ENTITY_TYPES: { value: EntityType; label: string }[] = [
+export const ENTITY_TYPE_OPTIONS: { value: EntityType; label: string }[] = [
 	{ value: 'startup', label: 'Startup' },
 	{ value: 'listed_company', label: 'Listed Company' },
 	{ value: 'investor', label: 'Investor' },
@@ -35,19 +30,20 @@ export const INVESTOR_TYPES: { value: InvestorType; label: string }[] = [
 	{ value: 'sovereign_wealth', label: 'Sovereign Wealth' },
 ]
 
-export const CONTACT_ROLES: { value: ContactRole; label: string }[] = [
+export const CONTACT_ROLE_OPTIONS: { value: ContactCompanyRole; label: string }[] = [
+	{ value: 'founder', label: 'Founder' },
 	{ value: 'ceo', label: 'CEO' },
 	{ value: 'cfo', label: 'CFO' },
 	{ value: 'cto', label: 'CTO' },
 	{ value: 'partner', label: 'Partner' },
 	{ value: 'managing_director', label: 'Managing Director' },
+	{ value: 'vice_president', label: 'Vice President' },
 	{ value: 'director', label: 'Director' },
-	{ value: 'vp', label: 'VP' },
 	{ value: 'analyst', label: 'Analyst' },
 	{ value: 'associate', label: 'Associate' },
 	{ value: 'board_member', label: 'Board Member' },
 	{ value: 'advisor', label: 'Advisor' },
-	{ value: 'founder', label: 'Founder' },
+	{ value: 'investor', label: 'Investor' },
 	{ value: 'other', label: 'Other' },
 ]
 
@@ -71,11 +67,24 @@ export const ACTIVITY_TYPES: { value: ActivityType; label: string }[] = [
 	{ value: 'deal_update', label: 'Deal Update' },
 ]
 
-export const CONTACT_STATUSES: { value: ContactStatus; label: string }[] = [
+export const CONTACT_STATUS_OPTIONS: { value: ContactStatus; label: string }[] = [
 	{ value: 'active', label: 'Active' },
 	{ value: 'inactive', label: 'Inactive' },
-	{ value: 'prospect', label: 'Prospect' },
-	{ value: 'archived', label: 'Archived' },
+	{ value: 'lead', label: 'Lead' },
+	{ value: 'churned', label: 'Churned' },
+]
+
+export const COMPANY_RELATIONSHIP_TYPE_OPTIONS: { value: CompanyRelationshipType; label: string }[] = [
+	{ value: 'investor_in', label: 'Investor In' },
+	{ value: 'portfolio_company_of', label: 'Portfolio Company Of' },
+	{ value: 'subsidiary_of', label: 'Subsidiary Of' },
+	{ value: 'parent_of', label: 'Parent Of' },
+	{ value: 'partner_with', label: 'Partner With' },
+	{ value: 'client_of', label: 'Client Of' },
+	{ value: 'vendor_to', label: 'Vendor To' },
+	{ value: 'acquirer_of', label: 'Acquirer Of' },
+	{ value: 'acquired_by', label: 'Acquired By' },
+	{ value: 'competitor_of', label: 'Competitor Of' },
 ]
 
 /** Default pipeline stages for a new VC Deal Flow pipeline */
