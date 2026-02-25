@@ -1,0 +1,9 @@
+First Name,Last Name,Email,Phone,Title,LinkedIn
+Alice,CompletePerson,alice@enrichtest.com,+61400000001,CEO,https://linkedin.com/in/alice-complete
+Bob,NoPhonePerson,bob@enrichtest.com,,CTO,https://linkedin.com/in/bob-nophone
+Carol,MinimalPerson,,,,
+Dave,NoEmailPerson,,+61400000003,Analyst,
+Eve,NoTitlePerson,eve@enrichtest.com,+61400000004,,https://linkedin.com/in/eve-notitle
+Frank,NoLinkedinPerson,frank@enrichtest.com,+61400000005,Director,
+Grace,EmptyPerson,,,,
+Henry,PartialPerson,henry@enrichtest.com,,,

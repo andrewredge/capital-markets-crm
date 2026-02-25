@@ -142,6 +142,42 @@ export async function navigateToDeals(page: Page) {
 	await expect(page).toHaveURL(/\/deals/, { timeout: 10_000 })
 }
 
+/** Navigate to enrichment page via Settings. */
+export async function navigateToEnrichment(page: Page) {
+	await page.getByRole('link', { name: 'Settings' }).click()
+	await expect(page).toHaveURL(/\/settings/, { timeout: 10_000 })
+	await page.getByText('Data Quality').click()
+	await expect(page).toHaveURL(/\/settings\/enrichment/, { timeout: 10_000 })
+}
+
+/** Navigate to import page via Settings. */
+export async function navigateToImport(page: Page) {
+	await page.getByRole('link', { name: 'Settings' }).click()
+	await expect(page).toHaveURL(/\/settings/, { timeout: 10_000 })
+	await page.getByRole('link', { name: /Import Contacts/ }).click()
+	await expect(page).toHaveURL(/\/settings\/import/, { timeout: 10_000 })
+}
+
+/** Call a tRPC mutation directly via the API using the page's session cookie. */
+export async function apiTrpcMutation(page: Page, procedure: string, input: any) {
+	const cookies = await page.context().cookies()
+	const sessionCookie = cookies.find(
+		(c) => c.name === 'better-auth.session_token' || c.name === '__Secure-better-auth.session_token',
+	)
+	if (!sessionCookie) throw new Error('No session cookie found')
+
+	const res = await fetch(`http://localhost:3001/api/trpc/${procedure}`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			Cookie: `${sessionCookie.name}=${sessionCookie.value}`,
+		},
+		body: JSON.stringify({ json: input }),
+	})
+	if (!res.ok) throw new Error(`tRPC ${procedure} failed: ${res.status} ${await res.text()}`)
+	return res.json()
+}
+
 /** Navigate to pipeline settings. */
 export async function navigateToPipelineSettings(page: Page) {
 	await page.getByRole('link', { name: 'Settings' }).click()
