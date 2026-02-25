@@ -3,7 +3,7 @@
 ## Overview
 A purpose-built CRM for capital markets professionals (VC, PE, M&A, investment banking). Models startups, listed companies, investors, deal flow with multi-participant roles, and configurable pipelines.
 
-**Current Phase: 5 (Import & Data Tools) — Phases 0–4 complete, Phase 5A done, Phase 5B.1–5B.3 done**
+**Current Phase: 5 (Import & Data Tools) — Phases 0–4 complete, Phase 5A done, Phase 5B done**
 
 ## Tech Stack
 | Layer | Choice | Version |
@@ -168,6 +168,6 @@ See `.claude/agents.md` for full prompt templates.
 - [x] Phase 5B.1: Staleness/enrichment schema, contact classification, company listing status
 - [x] Phase 5B.2: Staleness scoring service + enrichment tRPC router (backend)
 - [x] Phase 5B.3: Enrichment review UI — staleness queue + proposal review
-- [ ] Phase 5B.4: E2E tests for enrichment workflow
+- [x] Phase 5B.4: E2E tests for enrichment workflow
 - [ ] Seed data for dev/demo
 - [ ] Member invitations (backend + UI)
