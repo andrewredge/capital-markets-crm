@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
@@ -13,6 +13,10 @@ const FIELD_LABELS: Record<CrmContactField, string> = {
 	phone: 'Phone',
 	title: 'Job Title',
 	linkedinUrl: 'LinkedIn URL',
+	contactType: 'Contact Type',
+	contactSubtype: 'Contact Subtype',
+	companyName: 'Company Name',
+	companyRole: 'Company Role',
 	source: 'Source',
 	status: 'Status',
 }
@@ -46,12 +50,16 @@ export function autoMapColumns(headers: string[]): Record<string, CrmContactFiel
 }
 
 export function ColumnMappingStep({ headers, sampleRows, mapping, onMappingChange }: ColumnMappingStepProps) {
+	// Stabilize callback ref to avoid re-render loops from inline function props
+	const onMappingChangeRef = useRef(onMappingChange)
+	onMappingChangeRef.current = onMappingChange
+
 	// Auto-map on first render if mapping is empty
 	useEffect(() => {
 		if (Object.keys(mapping).length === 0) {
-			onMappingChange(autoMapColumns(headers))
+			onMappingChangeRef.current(autoMapColumns(headers))
 		}
-	}, [headers, mapping, onMappingChange])
+	}, [headers, mapping])
 
 	const usedFields = useMemo(() => {
 		const used = new Set<CrmContactField>()

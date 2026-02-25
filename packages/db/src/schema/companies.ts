@@ -15,6 +15,8 @@ export const companies = pgTable(
 			.references(() => organizations.id, { onDelete: 'cascade' }),
 		name: text('name').notNull(),
 		entityType: text('entity_type').notNull(),
+		entitySubtype: text('entity_subtype'),
+		listingStatus: text('listing_status').notNull().default('unknown'),
 		// Common fields
 		website: text('website'),
 		industry: text('industry'),

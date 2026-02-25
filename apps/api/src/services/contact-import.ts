@@ -1,14 +1,25 @@
-import { eq, inArray } from 'drizzle-orm'
+import { and, eq, gte, inArray, sql } from 'drizzle-orm'
 import { nanoid } from 'nanoid'
-import { contacts } from '@crm/db/schema'
+import { contacts, contactStaleness } from '@crm/db/schema'
 import type { BulkCreateContactsInput, CreateContactInput, ImportResult } from '@crm/shared'
 import type { DrizzleDB } from '../lib/types.js'
+import { classifyContact } from './classification.js'
+import { bulkUpsertStaleness } from './staleness.js'
 
 const BATCH_SIZE = 100
 
 type ContactInsert = typeof contacts.$inferInsert
 
-function toInsertRow(tenantId: string, input: CreateContactInput): ContactInsert {
+function toInsertRow(tenantId: string, input: CreateContactInput, autoClassify: boolean): ContactInsert {
+	let contactType = input.contactType || 'person'
+	let contactSubtype = input.contactSubtype || null
+
+	if (autoClassify && (!input.contactType || input.contactType === 'person') && !input.contactSubtype) {
+		const classification = classifyContact(input.title)
+		contactType = classification.contactType
+		contactSubtype = classification.contactSubtype
+	}
+
 	return {
 		id: nanoid(),
 		organizationId: tenantId,
@@ -18,6 +29,8 @@ function toInsertRow(tenantId: string, input: CreateContactInput): ContactInsert
 		phone: input.phone || null,
 		title: input.title || null,
 		linkedinUrl: input.linkedinUrl || null,
+		contactType,
+		contactSubtype,
 		source: input.source || null,
 		status: input.status || 'active',
 	}
@@ -28,9 +41,9 @@ export async function bulkCreate(
 	tenantId: string,
 	input: BulkCreateContactsInput,
 ): Promise<ImportResult> {
-	const { contacts: rows, duplicateStrategy } = input
+	const { contacts: rows, duplicateStrategy, autoClassify } = input
 
-	const result: ImportResult = { imported: 0, skipped: 0, updated: 0, errors: [] }
+	const result: ImportResult = { imported: 0, skipped: 0, updated: 0, flaggedForReview: 0, errors: [] }
 
 	// Collect all non-empty emails for duplicate detection
 	const emailsInImport = rows
@@ -57,7 +70,7 @@ export async function bulkCreate(
 	}
 
 	// Separate rows into inserts, updates, and skips
-	const toInsert: ContactInsert[] = []
+	const toInsert: { data: ContactInsert; rowIndex: number }[] = []
 	const toUpdate: { id: string; data: CreateContactInput; rowIndex: number }[] = []
 
 	for (let i = 0; i < rows.length; i++) {
@@ -76,24 +89,24 @@ export async function bulkCreate(
 			}
 		}
 
-		toInsert.push(toInsertRow(tenantId, row))
+		toInsert.push({ data: toInsertRow(tenantId, row, autoClassify), rowIndex: i + 1 })
 	}
 
 	// Batch inserts
 	for (let i = 0; i < toInsert.length; i += BATCH_SIZE) {
 		const batch = toInsert.slice(i, i + BATCH_SIZE)
 		try {
-			await db.insert(contacts).values(batch)
+			await db.insert(contacts).values(batch.map((b) => b.data))
 			result.imported += batch.length
 		} catch {
 			// On batch failure, try individual inserts to identify bad rows
-			for (let j = 0; j < batch.length; j++) {
+			for (const entry of batch) {
 				try {
-					await db.insert(contacts).values(batch[j]!)
+					await db.insert(contacts).values(entry.data)
 					result.imported++
 				} catch (err) {
 					result.errors.push({
-						row: i + j + 1,
+						row: entry.rowIndex,
 						message: err instanceof Error ? err.message : 'Insert failed',
 					})
 				}
@@ -104,6 +117,15 @@ export async function bulkCreate(
 	// Process updates
 	for (const { id, data, rowIndex } of toUpdate) {
 		try {
+			let contactType = data.contactType || undefined
+			let contactSubtype = data.contactSubtype || undefined
+
+			if (autoClassify && (!data.contactType || data.contactType === 'person') && !data.contactSubtype) {
+				const classification = classifyContact(data.title)
+				contactType = classification.contactType
+				contactSubtype = classification.contactSubtype
+			}
+
 			await db
 				.update(contacts)
 				.set({
@@ -113,6 +135,8 @@ export async function bulkCreate(
 					phone: data.phone || null,
 					title: data.title || null,
 					linkedinUrl: data.linkedinUrl || null,
+					contactType,
+					contactSubtype,
 					source: data.source || null,
 					status: data.status || 'active',
 					updatedAt: new Date(),
@@ -125,6 +149,24 @@ export async function bulkCreate(
 				message: e instanceof Error ? e.message : 'Update failed',
 			})
 		}
+	}
+
+	// Recompute staleness for all affected contacts
+	const affectedIds = [...toInsert.map((c) => c.data.id as string), ...toUpdate.map((u) => u.id)]
+	if (affectedIds.length > 0) {
+		await bulkUpsertStaleness(db, tenantId, affectedIds)
+
+		// Count how many are flagged for review (score >= 0.4)
+		const flagged = await db
+			.select({ count: sql<number>`count(*)` })
+			.from(contactStaleness)
+			.where(
+				and(
+					inArray(contactStaleness.contactId, affectedIds),
+					gte(contactStaleness.stalenessScore, 0.4),
+				),
+			)
+		result.flaggedForReview = Number(flagged[0]?.count ?? 0)
 	}
 
 	return result

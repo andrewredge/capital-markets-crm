@@ -53,6 +53,25 @@ export function ImportResultStep({ result, onImportMore }: ImportResultStepProps
 				)}
 			</div>
 
+			{result.flaggedForReview > 0 && (
+				<div className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-900 rounded-lg p-4 flex gap-3 items-start">
+					<AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+					<div className="flex-1 space-y-1">
+						<p className="text-sm font-medium text-amber-800 dark:text-amber-400">
+							{result.flaggedForReview} contacts flagged for review
+						</p>
+						<p className="text-xs text-amber-700 dark:text-amber-500">
+							Some imported contacts have incomplete data or missing signals. You can review them in the Data Quality queue.
+						</p>
+						<div className="pt-2">
+							<Link href="/settings/enrichment" className="text-xs font-semibold text-amber-800 dark:text-amber-400 hover:underline inline-flex items-center gap-1">
+								Go to Enrichment Queue
+							</Link>
+						</div>
+					</div>
+				</div>
+			)}
+
 			{hasErrors && (
 				<div className="space-y-2">
 					<h4 className="text-sm font-medium">Error Details</h4>

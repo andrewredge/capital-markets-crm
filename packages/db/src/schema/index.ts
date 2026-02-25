@@ -15,5 +15,8 @@ export * from './tags'
 export * from './pipelines'
 export * from './deals'
 
+// Phase 5B: Enrichment & Staleness
+export * from './enrichment'
+
 // Future entity schemas:
-// Phase 5: custom_field_definitions, custom_field_values
+// Phase 6: custom_field_definitions, custom_field_values

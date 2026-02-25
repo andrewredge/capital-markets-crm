@@ -26,6 +26,10 @@ const FIELD_LABELS: Record<CrmContactField, string> = {
 	phone: 'Phone',
 	title: 'Job Title',
 	linkedinUrl: 'LinkedIn URL',
+	contactType: 'Contact Type',
+	contactSubtype: 'Contact Subtype',
+	companyName: 'Company Name',
+	companyRole: 'Company Role',
 	source: 'Source',
 	status: 'Status',
 }

@@ -9,6 +9,7 @@ import { notes } from './notes'
 import { tags, taggings } from './tags'
 import { pipelines, pipelineStages } from './pipelines'
 import { deals, dealParticipants, dealStageHistory } from './deals'
+import { contactStaleness, enrichmentProposals } from './enrichment'
 
 // =============================================================================
 // Contact–Company Roles (junction)
@@ -85,6 +86,11 @@ export const contactsRelations = relations(contacts, ({ one, many }) => ({
 	activities: many(activities),
 	notes: many(notes),
 	taggings: many(taggings),
+	staleness: one(contactStaleness, {
+		fields: [contacts.id],
+		references: [contactStaleness.contactId],
+	}),
+	enrichmentProposals: many(enrichmentProposals),
 }))
 
 export const companiesRelations = relations(companies, ({ one, many }) => ({
@@ -290,5 +296,31 @@ export const dealStageHistoryRelations = relations(dealStageHistory, ({ one }) =
 		fields: [dealStageHistory.toStageId],
 		references: [pipelineStages.id],
 		relationName: 'toStage',
+	}),
+}))
+
+// =============================================================================
+// Phase 5B Relations — Enrichment & Staleness
+// =============================================================================
+
+export const contactStalenessRelations = relations(contactStaleness, ({ one }) => ({
+	organization: one(organizations, {
+		fields: [contactStaleness.organizationId],
+		references: [organizations.id],
+	}),
+	contact: one(contacts, {
+		fields: [contactStaleness.contactId],
+		references: [contacts.id],
+	}),
+}))
+
+export const enrichmentProposalsRelations = relations(enrichmentProposals, ({ one }) => ({
+	organization: one(organizations, {
+		fields: [enrichmentProposals.organizationId],
+		references: [organizations.id],
+	}),
+	contact: one(contacts, {
+		fields: [enrichmentProposals.contactId],
+		references: [contacts.id],
 	}),
 }))

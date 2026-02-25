@@ -19,6 +19,8 @@ export const contacts = pgTable(
 		phone: text('phone'),
 		title: text('title'),
 		linkedinUrl: text('linkedin_url'),
+		contactType: text('contact_type').notNull().default('person'),
+		contactSubtype: text('contact_subtype'),
 		source: text('source'),
 		status: text('status').notNull().default('active'),
 		metadata: jsonb('metadata'),

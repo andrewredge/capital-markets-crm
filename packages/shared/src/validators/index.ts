@@ -17,3 +17,6 @@ export * from './deals'
 
 // Phase 5: Import
 export * from './import'
+
+// Phase 5B: Enrichment & Staleness
+export * from './enrichment'

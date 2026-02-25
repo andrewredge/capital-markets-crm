@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { GitBranch, Upload } from 'lucide-react'
+import { GitBranch, Upload, ShieldCheck } from 'lucide-react'
 
 export const metadata: Metadata = { title: 'Settings' }
 
@@ -33,6 +33,19 @@ export default function SettingsPage() {
               </div>
               <CardDescription>
                 Bulk import contacts from CSV or Excel files with column mapping.
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        </Link>
+        <Link href="/settings/enrichment">
+          <Card className="hover:bg-muted/50 transition-colors cursor-pointer h-full">
+            <CardHeader>
+              <div className="flex items-center gap-2 mb-2">
+                <ShieldCheck className="h-5 w-5 text-primary" />
+                <CardTitle>Data Quality</CardTitle>
+              </div>
+              <CardDescription>
+                Review contacts with stale data and manage enrichment proposals.
               </CardDescription>
             </CardHeader>
           </Card>

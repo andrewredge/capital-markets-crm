@@ -9,6 +9,9 @@ import { tagsRouter } from './routers/tags.js'
 import { pipelinesRouter } from './routers/pipelines.js'
 import { dealsRouter } from './routers/deals.js'
 import { contactImportRouter } from './routers/contact-import.js'
+import { companyImportRouter } from './routers/company-import.js'
+import { linkedImportRouter } from './routers/linked-import.js'
+import { enrichmentRouter } from './routers/enrichment.js'
 
 /**
  * Root application router.
@@ -26,6 +29,9 @@ export const appRouter = router({
 	pipelines: pipelinesRouter,
 	deals: dealsRouter,
 	contactImport: contactImportRouter,
+	companyImport: companyImportRouter,
+	linkedImport: linkedImportRouter,
+	enrichment: enrichmentRouter,
 })
 
 export type AppRouter = typeof appRouter
