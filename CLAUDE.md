@@ -145,7 +145,7 @@ This project uses 6 specialized agent roles for task delegation. Each subdirecto
 ### Agent Definitions (git-ignored)
 | File | Purpose |
 |------|---------|
-| `.claude/agents.md` | All 6 agent role definitions with Task tool prompt templates |
+| `.claude/agents.md` | All 10 agent role definitions with Task tool prompt templates |
 | `.claude/templates/session-summary.md` | PM template for end-of-session summaries |
 | `.claude/templates/delegation-brief.md` | PM template for Claude/Gemini task specs |
 | `.claude/sessions/` | Session summary archive |
@@ -157,6 +157,10 @@ This project uses 6 specialized agent roles for task delegation. Each subdirecto
 4. **Data Model** — Drizzle schemas, RLS policies, migrations, validators
 5. **QA** — unit/integration/E2E tests, RLS isolation verification
 6. **Project Manager** — session continuity, progress tracking, LLM delegation
+7. **ECM Deal Maker** — domain expertise, product validation, capital markets workflows
+8. **Tech Founder** — founder/issuer perspective, fundraising workflows, CRM usability
+9. **Cybersecurity Expert** — security audits, RLS integrity, auth review, OWASP, compliance
+10. **UX Designer** — interaction design, information architecture, accessibility, responsive design
 
 See `.claude/agents.md` for full prompt templates.
 
