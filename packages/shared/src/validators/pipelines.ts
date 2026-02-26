@@ -4,7 +4,7 @@ import { z } from 'zod'
 // Pipeline Validators
 // =============================================================================
 
-export const TERMINAL_TYPES = ['won', 'lost', 'passed'] as const
+export const TERMINAL_TYPES = ['won', 'lost', 'passed', 'suspended', 'withdrawn', 'expired'] as const
 export type TerminalType = (typeof TERMINAL_TYPES)[number]
 
 const hexColorRegex = /^#[0-9A-Fa-f]{6}$/

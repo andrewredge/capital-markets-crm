@@ -1,9 +1,10 @@
 import { initTRPC, TRPCError } from '@trpc/server'
 import type { FetchCreateContextFnOptions } from '@trpc/server/adapters/fetch'
-import { sql } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 import superjson from 'superjson'
 import { auth } from '../lib/auth.js'
 import { db } from '../lib/db.js'
+import * as schema from '@crm/db/schema'
 
 /**
  * Context creation — called for every request.
@@ -52,6 +53,32 @@ const authMiddleware = t.middleware(({ ctx, next }) => {
 			user: ctx.user,
 		},
 	})
+})
+
+/**
+ * Account status middleware — blocks suspended/pending accounts from API access.
+ * Must be used after authMiddleware.
+ */
+const accountStatusMiddleware = t.middleware(async ({ ctx, next }) => {
+	if (!ctx.user) {
+		throw new TRPCError({ code: 'UNAUTHORIZED' })
+	}
+
+	// Look up the user's current account status from DB
+	const [dbUser] = await ctx.db
+		.select({ accountStatus: schema.users.accountStatus })
+		.from(schema.users)
+		.where(eq(schema.users.id, ctx.user.id))
+		.limit(1)
+
+	if (!dbUser || dbUser.accountStatus !== 'active') {
+		throw new TRPCError({
+			code: 'FORBIDDEN',
+			message: 'Your account is not active. Please contact an administrator.',
+		})
+	}
+
+	return next({ ctx })
 })
 
 /**
@@ -142,18 +169,59 @@ const adminMiddleware = t.middleware(async ({ ctx, next }) => {
 })
 
 /**
+ * Super-admin middleware — requires platformRole === 'super_admin'.
+ * Does NOT set RLS context (super-admin operates across all tenants).
+ */
+const superAdminMiddleware = t.middleware(async ({ ctx, next }) => {
+	if (!ctx.session || !ctx.user) {
+		throw new TRPCError({
+			code: 'UNAUTHORIZED',
+			message: 'You must be logged in to access this resource',
+		})
+	}
+
+	const [dbUser] = await ctx.db
+		.select({ platformRole: schema.users.platformRole })
+		.from(schema.users)
+		.where(eq(schema.users.id, ctx.user.id))
+		.limit(1)
+
+	if (!dbUser || dbUser.platformRole !== 'super_admin') {
+		throw new TRPCError({
+			code: 'FORBIDDEN',
+			message: 'Super-admin access required',
+		})
+	}
+
+	return next({
+		ctx: {
+			session: ctx.session,
+			user: ctx.user,
+			db: ctx.db,
+		},
+	})
+})
+
+/**
  * Protected procedure — requires authenticated session.
  */
 export const protectedProcedure = t.procedure.use(authMiddleware)
 
 /**
  * Tenant procedure — requires authenticated session + active org + sets RLS.
+ * Also checks account status is active.
  * Use this for all tenant-scoped CRUD operations.
  */
-export const tenantProcedure = t.procedure.use(tenantMiddleware)
+export const tenantProcedure = t.procedure.use(authMiddleware).use(accountStatusMiddleware).use(tenantMiddleware)
 
 /**
  * Admin procedure — tenant procedure + admin/owner role check.
  * Use this for org management operations.
  */
-export const adminProcedure = t.procedure.use(adminMiddleware)
+export const adminProcedure = t.procedure.use(authMiddleware).use(accountStatusMiddleware).use(adminMiddleware)
+
+/**
+ * Super-admin procedure — requires super_admin platform role.
+ * Use this for platform-wide management (user admin, invitations).
+ */
+export const superAdminProcedure = t.procedure.use(superAdminMiddleware)

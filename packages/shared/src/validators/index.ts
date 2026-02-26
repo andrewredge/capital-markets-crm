@@ -20,3 +20,6 @@ export * from './import'
 
 // Phase 5B: Enrichment & Staleness
 export * from './enrichment'
+
+// Platform Admin
+export * from './platform-admin'

@@ -45,6 +45,7 @@ export const updateContactCompanyRoleSchema = z.object({
 // =============================================================================
 
 export const COMPANY_RELATIONSHIP_TYPES = [
+	// Capital markets
 	'investor_in',
 	'portfolio_company_of',
 	'subsidiary_of',
@@ -55,6 +56,11 @@ export const COMPANY_RELATIONSHIP_TYPES = [
 	'acquirer_of',
 	'acquired_by',
 	'competitor_of',
+	// Mining & resources
+	'jv_partner_with',
+	'offtake_buyer_of',
+	'offtake_seller_to',
+	'operator_of',
 ] as const
 export type CompanyRelationshipType = (typeof COMPANY_RELATIONSHIP_TYPES)[number]
 

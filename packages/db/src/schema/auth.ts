@@ -16,6 +16,8 @@ export const users = pgTable('user', {
 	email: text('email').notNull().unique(),
 	emailVerified: boolean('email_verified').notNull().default(false),
 	image: text('image'),
+	platformRole: text('platform_role').notNull().default('user'),
+	accountStatus: text('account_status').notNull().default('active'),
 	createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 	updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 })
@@ -155,6 +157,28 @@ export const invitations = pgTable(
 )
 
 // =============================================================================
+// Platform Invitations (super-admin sends these)
+// =============================================================================
+
+/**
+ * Platform invitations — sent by super-admins to allow new users onto the platform.
+ * Separate from org-level invitations (Better Auth).
+ */
+export const platformInvitations = pgTable('platform_invitation', {
+	id: text('id').primaryKey(),
+	email: text('email').notNull(),
+	token: text('token').notNull().unique(),
+	organizationId: text('organization_id').references(() => organizations.id, { onDelete: 'set null' }),
+	platformRole: text('platform_role').notNull().default('user'),
+	status: text('status').notNull().default('pending'),
+	invitedBy: text('invited_by')
+		.notNull()
+		.references(() => users.id, { onDelete: 'cascade' }),
+	expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+	createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+// =============================================================================
 // Relations
 // =============================================================================
 
@@ -201,6 +225,17 @@ export const invitationsRelations = relations(invitations, ({ one }) => ({
 	}),
 	inviter: one(users, {
 		fields: [invitations.inviterId],
+		references: [users.id],
+	}),
+}))
+
+export const platformInvitationsRelations = relations(platformInvitations, ({ one }) => ({
+	organization: one(organizations, {
+		fields: [platformInvitations.organizationId],
+		references: [organizations.id],
+	}),
+	inviter: one(users, {
+		fields: [platformInvitations.invitedBy],
 		references: [users.id],
 	}),
 }))

@@ -12,6 +12,8 @@ import { contactImportRouter } from './routers/contact-import.js'
 import { companyImportRouter } from './routers/company-import.js'
 import { linkedImportRouter } from './routers/linked-import.js'
 import { enrichmentRouter } from './routers/enrichment.js'
+import { platformAdminRouter } from './routers/platform-admin.js'
+import { dashboardRouter } from './routers/dashboard.js'
 
 /**
  * Root application router.
@@ -32,6 +34,8 @@ export const appRouter = router({
 	companyImport: companyImportRouter,
 	linkedImport: linkedImportRouter,
 	enrichment: enrichmentRouter,
+	platformAdmin: platformAdminRouter,
+	dashboard: dashboardRouter,
 })
 
 export type AppRouter = typeof appRouter

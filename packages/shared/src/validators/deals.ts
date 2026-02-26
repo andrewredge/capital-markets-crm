@@ -5,6 +5,7 @@ import { z } from 'zod'
 // =============================================================================
 
 export const DEAL_TYPE_VALUES = [
+	// Capital markets
 	'venture_investment',
 	'ma_buyside',
 	'ma_sellside',
@@ -13,9 +14,20 @@ export const DEAL_TYPE_VALUES = [
 	'secondary',
 	'debt',
 	'advisory',
+	// Mining & resources
+	'asset_acquisition',
+	'joint_venture',
+	'offtake_agreement',
+	'royalty_streaming_deal',
+	'farm_in_farm_out',
+	'project_sale',
+	'equity_placement',
+	'technical_study',
+	'option_to_acquire',
 ] as const
 
 export const DEAL_PARTICIPANT_ROLE_VALUES = [
+	// Capital markets
 	'target',
 	'acquirer',
 	'investor',
@@ -24,6 +36,14 @@ export const DEAL_PARTICIPANT_ROLE_VALUES = [
 	'advisor',
 	'legal_counsel',
 	'intermediary',
+	// Mining & resources
+	'project_owner',
+	'jv_partner',
+	'offtake_buyer',
+	'offtake_seller',
+	'operator',
+	'technical_consultant',
+	'geologist',
 ] as const
 
 export const createDealSchema = z.object({

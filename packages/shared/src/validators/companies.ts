@@ -12,6 +12,11 @@ export const ENTITY_TYPES = [
 	'mining_company',
 	'private_company',
 	'service_provider',
+	// Mining & resources
+	'mineral_processor',
+	'commodity_trader',
+	'mining_services',
+	'exploration_company',
 	'other',
 ] as const
 export type EntityType = (typeof ENTITY_TYPES)[number]
@@ -41,6 +46,10 @@ export const ENTITY_SUBTYPES = {
 		'endowment',
 	],
 	mining_company: ['explorer', 'developer', 'producer', 'royalty_streaming', 'diversified_miner'],
+	mineral_processor: ['smelter', 'refiner', 'concentrator', 'toll_processor'],
+	commodity_trader: ['physical_trader', 'trading_house', 'offtake_specialist', 'commodity_broker'],
+	mining_services: ['contract_miner', 'drilling_company', 'assay_laboratory', 'geological_consultant', 'mining_engineer', 'environmental_consultant'],
+	exploration_company: ['greenfield_explorer', 'brownfield_explorer', 'prospect_generator'],
 	private_company: ['sme', 'family_business', 'state_owned', 'cooperative', 'joint_venture'],
 	service_provider: [
 		'law_firm',
@@ -121,6 +130,27 @@ export const ENTITY_SUBTYPE_LABELS: Record<string, string> = {
 	pr_communications: 'PR & Communications',
 	technology_provider: 'Technology Provider',
 	fund_administrator: 'Fund Administrator',
+	// mineral_processor
+	smelter: 'Smelter',
+	refiner: 'Refiner',
+	concentrator: 'Concentrator',
+	toll_processor: 'Toll Processor',
+	// commodity_trader
+	physical_trader: 'Physical Trader',
+	trading_house: 'Trading House',
+	offtake_specialist: 'Offtake Specialist',
+	commodity_broker: 'Commodity Broker',
+	// mining_services
+	contract_miner: 'Contract Miner',
+	drilling_company: 'Drilling Company',
+	assay_laboratory: 'Assay Laboratory',
+	geological_consultant: 'Geological Consultant',
+	mining_engineer: 'Mining Engineer',
+	environmental_consultant: 'Environmental Consultant',
+	// exploration_company
+	greenfield_explorer: 'Greenfield Explorer',
+	brownfield_explorer: 'Brownfield Explorer',
+	prospect_generator: 'Prospect Generator',
 	// other
 	industry_body: 'Industry Body',
 	ngo: 'NGO / Non-Profit',
