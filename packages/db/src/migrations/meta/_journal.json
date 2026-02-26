@@ -57,6 +57,13 @@
       "when": 1772102442422,
       "tag": "0007_perpetual_frightful_four",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1772124582888,
+      "tag": "0008_regular_whistler",
+      "breakpoints": true
     }
   ]
 }

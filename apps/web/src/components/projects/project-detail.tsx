@@ -36,6 +36,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { EditProjectDialog } from './edit-project-dialog'
 import { ActivityTimeline } from '@/components/shared/activity-timeline'
 import { NotesSection } from '@/components/shared/notes-section'
+import { DocumentsSection } from '@/components/shared/documents-section'
 import { EntityTags } from '@/components/shared/entity-tags'
 import { PROJECT_STATUS_OPTIONS, COMMODITY_OPTIONS, REPORTING_STANDARD_OPTIONS, STAGE_OF_STUDY_OPTIONS, TENURE_TYPE_OPTIONS, PROJECT_DEAL_ROLE_OPTIONS } from '@crm/shared'
 import { format } from 'date-fns'
@@ -302,6 +303,7 @@ export function ProjectDetail({ id }: ProjectDetailProps) {
 
 					<ActivityTimeline projectId={project.id} />
 					<NotesSection projectId={project.id} />
+					<DocumentsSection projectId={project.id} />
 				</div>
 
 				{/* Sidebar */}

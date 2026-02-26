@@ -15,6 +15,7 @@ import { enrichmentRouter } from './routers/enrichment.js'
 import { platformAdminRouter } from './routers/platform-admin.js'
 import { dashboardRouter } from './routers/dashboard.js'
 import { projectsRouter } from './routers/projects.js'
+import { documentsRouter } from './routers/documents.js'
 
 /**
  * Root application router.
@@ -38,6 +39,7 @@ export const appRouter = router({
 	platformAdmin: platformAdminRouter,
 	dashboard: dashboardRouter,
 	projects: projectsRouter,
+	documents: documentsRouter,
 })
 
 export type AppRouter = typeof appRouter

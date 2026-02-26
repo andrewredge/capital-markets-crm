@@ -35,6 +35,7 @@ import { EditContactDialog } from './edit-contact-dialog'
 import { ContactCompanyRolesSection } from './contact-company-roles-section'
 import { ActivityTimeline } from '@/components/shared/activity-timeline'
 import { NotesSection } from '@/components/shared/notes-section'
+import { DocumentsSection } from '@/components/shared/documents-section'
 import { EntityTags } from '@/components/shared/entity-tags'
 
 interface ContactDetailProps {
@@ -233,6 +234,7 @@ export function ContactDetail({ id }: ContactDetailProps) {
 
 					<ActivityTimeline contactId={contact.id} />
 					<NotesSection contactId={contact.id} />
+					<DocumentsSection contactId={contact.id} />
 				</div>
 
 				{/* Sidebar */}

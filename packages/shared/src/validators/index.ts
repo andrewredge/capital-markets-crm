@@ -26,3 +26,6 @@ export * from './platform-admin'
 
 // Projects
 export * from './projects'
+
+// Documents
+export * from './documents'

@@ -21,5 +21,8 @@ export * from './projects'
 // Phase 5B: Enrichment & Staleness
 export * from './enrichment'
 
+// Sprint 3: Documents
+export * from './documents'
+
 // Future entity schemas:
 // Phase 6: custom_field_definitions, custom_field_values

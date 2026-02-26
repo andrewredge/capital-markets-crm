@@ -37,6 +37,7 @@ import { CompanyContactsSection } from './company-contacts-section'
 import { CompanyRelationshipsSection } from './company-relationships-section'
 import { ActivityTimeline } from '@/components/shared/activity-timeline'
 import { NotesSection } from '@/components/shared/notes-section'
+import { DocumentsSection } from '@/components/shared/documents-section'
 import { EntityTags } from '@/components/shared/entity-tags'
 
 interface CompanyDetailProps {
@@ -267,6 +268,7 @@ export function CompanyDetail({ id }: CompanyDetailProps) {
 
 					<ActivityTimeline companyId={company.id} />
 					<NotesSection companyId={company.id} />
+					<DocumentsSection companyId={company.id} />
 				</div>
 
 				{/* Sidebar */}

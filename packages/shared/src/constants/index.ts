@@ -216,6 +216,36 @@ export const PROJECT_DEAL_ROLE_OPTIONS: { value: string; label: string }[] = [
 ]
 
 // =============================================================================
+// Document Constants
+// =============================================================================
+
+export const DOCUMENT_TYPE_OPTIONS: { value: string; label: string }[] = [
+	// Mining-specific
+	{ value: 'technical_report', label: 'Technical Report' },
+	{ value: 'feasibility_study', label: 'Feasibility Study' },
+	{ value: 'resource_estimate', label: 'Resource/Reserve Estimate' },
+	{ value: 'environmental_impact', label: 'Environmental Impact Assessment' },
+	{ value: 'mining_license', label: 'Mining License / Tenure' },
+	{ value: 'offtake_term_sheet', label: 'Offtake Term Sheet' },
+	{ value: 'jv_agreement', label: 'JV Agreement' },
+	// General
+	{ value: 'investor_presentation', label: 'Investor Presentation' },
+	{ value: 'financial_model', label: 'Financial Model' },
+	{ value: 'legal', label: 'Legal Document' },
+	{ value: 'financial', label: 'Financial Document' },
+	{ value: 'presentation', label: 'Presentation' },
+	{ value: 'contract', label: 'Contract' },
+	{ value: 'correspondence', label: 'Correspondence' },
+	{ value: 'other', label: 'Other' },
+]
+
+export const DOCUMENT_VISIBILITY_OPTIONS: { value: string; label: string }[] = [
+	{ value: 'private', label: 'Private' },
+	{ value: 'team', label: 'Team' },
+	{ value: 'showcase', label: 'Showcase (Semi-Public)' },
+]
+
+// =============================================================================
 // Pipeline Templates
 // =============================================================================
 

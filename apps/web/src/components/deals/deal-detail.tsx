@@ -24,6 +24,7 @@ import { toast } from 'sonner'
 import { useState } from 'react'
 import { ActivityTimeline } from '@/components/shared/activity-timeline'
 import { NotesSection } from '@/components/shared/notes-section'
+import { DocumentsSection } from '@/components/shared/documents-section'
 import { EntityTags } from '@/components/shared/entity-tags'
 import { DealParticipantsSection } from './deal-participants-section'
 import { DealStageHistorySection } from './deal-stage-history-section'
@@ -225,6 +226,7 @@ export function DealDetail({ id }: DealDetailProps) {
           <ActivityTimeline dealId={deal.id} />
           
           <NotesSection dealId={deal.id} />
+          <DocumentsSection dealId={deal.id} />
         </div>
 
         {/* Sidebar */}
