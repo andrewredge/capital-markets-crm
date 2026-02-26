@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTRPC } from '@/lib/trpc'
@@ -43,6 +44,9 @@ interface ContactDetailProps {
 }
 
 export function ContactDetail({ id }: ContactDetailProps) {
+	const t = useTranslations('contacts')
+	const tCommon = useTranslations('nav')
+	const tActions = useTranslations('actions')
 	const router = useRouter()
 	const trpc = useTRPC()
 	const queryClient = useQueryClient()
@@ -56,12 +60,12 @@ export function ContactDetail({ id }: ContactDetailProps) {
 	const deleteMutation = useMutation(
 		trpc.contacts.delete.mutationOptions({
 			onSuccess: () => {
-				toast.success('Contact deleted')
+				toast.success(t('deleteSuccess'))
 				router.push('/contacts')
 				queryClient.invalidateQueries({ queryKey: trpc.contacts.list.queryKey() })
 			},
 			onError: (error) => {
-				toast.error(error.message || 'Failed to delete contact')
+				toast.error(error.message || t('deleteError'))
 			},
 		}),
 	)
@@ -99,9 +103,9 @@ export function ContactDetail({ id }: ContactDetailProps) {
 	if (error || !contact) {
 		return (
 			<div className="flex flex-col items-center justify-center h-[50vh] space-y-4">
-				<h2 className="text-xl font-semibold">Contact not found</h2>
+				<h2 className="text-xl font-semibold">{t('notFound')}</h2>
 				<Button variant="outline" asChild>
-					<Link href="/contacts">Back to Contacts</Link>
+					<Link href="/contacts">{t('backToContacts')}</Link>
 				</Button>
 			</div>
 		)
@@ -119,9 +123,9 @@ export function ContactDetail({ id }: ContactDetailProps) {
 		<div className="space-y-6">
 			{/* Breadcrumbs */}
 			<nav className="flex items-center gap-2 text-sm text-muted-foreground">
-				<Link href="/" className="hover:text-foreground">Dashboard</Link>
+				<Link href="/" className="hover:text-foreground">{tCommon('dashboard')}</Link>
 				<span>/</span>
-				<Link href="/contacts" className="hover:text-foreground">Contacts</Link>
+				<Link href="/contacts" className="hover:text-foreground">{tCommon('contacts')}</Link>
 				<span>/</span>
 				<span className="text-foreground font-medium">
 					{contact.firstName} {contact.lastName}
@@ -139,7 +143,7 @@ export function ContactDetail({ id }: ContactDetailProps) {
 							{contact.firstName} {contact.lastName}
 						</h1>
 						<div className="flex items-center gap-2 mt-1">
-							<p className="text-muted-foreground">{contact.title || 'No title'}</p>
+							<p className="text-muted-foreground">{contact.title || t('noTitle')}</p>
 							<Badge variant="secondary" className="capitalize">
 								{contact.status}
 							</Badge>
@@ -152,11 +156,11 @@ export function ContactDetail({ id }: ContactDetailProps) {
 				<div className="flex items-center gap-2">
 					<Button variant="outline" size="sm" onClick={() => setIsEditDialogOpen(true)}>
 						<Edit className="h-4 w-4 mr-2" />
-						Edit
+						{tActions('edit')}
 					</Button>
 					<Button variant="outline" size="sm" className="text-destructive hover:bg-destructive/10" onClick={() => setIsDeleteDialogOpen(true)}>
 						<Trash2 className="h-4 w-4 mr-2" />
-						Delete
+						{tActions('delete')}
 					</Button>
 				</div>
 			</div>
@@ -166,38 +170,38 @@ export function ContactDetail({ id }: ContactDetailProps) {
 				<div className="lg:col-span-2 space-y-6">
 					<Card>
 						<CardHeader>
-							<CardTitle>Contact Information</CardTitle>
+							<CardTitle>{t('info')}</CardTitle>
 						</CardHeader>
 						<CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
 							<div className="space-y-4">
 								<div className="flex items-center gap-3">
 									<Mail className="h-4 w-4 text-muted-foreground" />
 									<div className="space-y-0.5">
-										<p className="text-xs text-muted-foreground">Email</p>
+										<p className="text-xs text-muted-foreground">{t('email')}</p>
 										{contact.email ? (
 											<a href={`mailto:${contact.email}`} className="text-sm font-medium hover:underline">
 												{contact.email}
 											</a>
 										) : (
-											<p className="text-sm text-muted-foreground italic">No email</p>
+											<p className="text-sm text-muted-foreground italic">{t('noEmail')}</p>
 										)}
 									</div>
 								</div>
 								<div className="flex items-center gap-3">
 									<Phone className="h-4 w-4 text-muted-foreground" />
 									<div className="space-y-0.5">
-										<p className="text-xs text-muted-foreground">Phone</p>
+										<p className="text-xs text-muted-foreground">{t('phone')}</p>
 										{contact.phone ? (
 											<p className="text-sm font-medium">{contact.phone}</p>
 										) : (
-											<p className="text-sm text-muted-foreground italic">No phone</p>
+											<p className="text-sm text-muted-foreground italic">{t('noPhone')}</p>
 										)}
 									</div>
 								</div>
 								<div className="flex items-center gap-3">
 									<Linkedin className="h-4 w-4 text-muted-foreground" />
 									<div className="space-y-0.5">
-										<p className="text-xs text-muted-foreground">LinkedIn</p>
+										<p className="text-xs text-muted-foreground">{t('linkedin')}</p>
 										{contact.linkedinUrl ? (
 											<a
 												href={contact.linkedinUrl.startsWith('http') ? contact.linkedinUrl : `https://${contact.linkedinUrl}`}
@@ -205,10 +209,10 @@ export function ContactDetail({ id }: ContactDetailProps) {
 												rel="noopener noreferrer"
 												className="text-sm font-medium hover:underline flex items-center gap-1"
 											>
-												View Profile
+												{t('viewProfile')}
 											</a>
 										) : (
-											<p className="text-sm text-muted-foreground italic">No LinkedIn profile</p>
+											<p className="text-sm text-muted-foreground italic">{t('noLinkedin')}</p>
 										)}
 									</div>
 								</div>
@@ -217,14 +221,14 @@ export function ContactDetail({ id }: ContactDetailProps) {
 								<div className="flex items-center gap-3">
 									<Globe className="h-4 w-4 text-muted-foreground" />
 									<div className="space-y-0.5">
-										<p className="text-xs text-muted-foreground">Source</p>
+										<p className="text-xs text-muted-foreground">{t('source')}</p>
 										<p className="text-sm font-medium">{contact.source || 'Direct'}</p>
 									</div>
 								</div>
 								<div className="flex items-center gap-3">
 									<Calendar className="h-4 w-4 text-muted-foreground" />
 									<div className="space-y-0.5">
-										<p className="text-xs text-muted-foreground">Added on</p>
+										<p className="text-xs text-muted-foreground">{t('addedOn')}</p>
 										<p className="text-sm font-medium">{formatDate(contact.createdAt)}</p>
 									</div>
 								</div>
@@ -255,19 +259,18 @@ export function ContactDetail({ id }: ContactDetailProps) {
 			<AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
 				<AlertDialogContent>
 					<AlertDialogHeader>
-						<AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+						<AlertDialogTitle>{t('deleteConfirmTitle')}</AlertDialogTitle>
 						<AlertDialogDescription>
-							This action cannot be undone. This will permanently delete the contact
-							and all associated data.
+							{t('deleteConfirmMessage')}
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
-						<AlertDialogCancel>Cancel</AlertDialogCancel>
+						<AlertDialogCancel>{tActions('cancel')}</AlertDialogCancel>
 						<AlertDialogAction
 							onClick={() => deleteMutation.mutate({ id: contact.id })}
 							className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
 						>
-							Delete
+							{tActions('delete')}
 						</AlertDialogAction>
 					</AlertDialogFooter>
 				</AlertDialogContent>

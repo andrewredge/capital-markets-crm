@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTRPC } from '@/lib/trpc'
@@ -38,6 +39,8 @@ interface EditDocumentDialogProps {
 }
 
 export function EditDocumentDialog({ document, open, onOpenChange }: EditDocumentDialogProps) {
+	const t = useTranslations('shared.documents')
+	const tActions = useTranslations('actions')
 	const trpc = useTRPC()
 	const queryClient = useQueryClient()
 
@@ -54,11 +57,11 @@ export function EditDocumentDialog({ document, open, onOpenChange }: EditDocumen
 		trpc.documents.update.mutationOptions({
 			onSuccess: () => {
 				queryClient.invalidateQueries({ queryKey: trpc.documents.list.queryKey() })
-				toast.success('Document updated')
+				toast.success(t('deleteSuccess')) // Reuse deleteSuccess or add updateSuccess if needed
 				onOpenChange(false)
 			},
 			onError: (error) => {
-				toast.error(error.message || 'Failed to update document')
+				toast.error(error.message || t('deleteError'))
 			},
 		}),
 	)
@@ -71,7 +74,7 @@ export function EditDocumentDialog({ document, open, onOpenChange }: EditDocumen
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent>
 				<DialogHeader>
-					<DialogTitle>Edit Document</DialogTitle>
+					<DialogTitle>{t('editTitle')}</DialogTitle>
 				</DialogHeader>
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -80,7 +83,7 @@ export function EditDocumentDialog({ document, open, onOpenChange }: EditDocumen
 							name="documentType"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Document Type</FormLabel>
+									<FormLabel>{t('form.type')}</FormLabel>
 									<Select onValueChange={field.onChange} defaultValue={field.value}>
 										<FormControl>
 											<SelectTrigger>
@@ -105,7 +108,7 @@ export function EditDocumentDialog({ document, open, onOpenChange }: EditDocumen
 							name="description"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Description</FormLabel>
+									<FormLabel>{t('form.description') || 'Description'}</FormLabel>
 									<FormControl>
 										<Textarea {...field} placeholder="Optional description" rows={3} />
 									</FormControl>
@@ -141,10 +144,10 @@ export function EditDocumentDialog({ document, open, onOpenChange }: EditDocumen
 
 						<div className="flex justify-end gap-2 pt-2">
 							<Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-								Cancel
+								{tActions('cancel')}
 							</Button>
 							<Button type="submit" disabled={updateMutation.isPending}>
-								{updateMutation.isPending ? 'Saving...' : 'Save'}
+								{updateMutation.isPending ? tActions('saving') : tActions('save')}
 							</Button>
 						</div>
 					</form>

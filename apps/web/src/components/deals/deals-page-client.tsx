@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useState, useEffect } from 'react'
 import { useTRPC } from '@/lib/trpc'
 import { useQuery } from '@tanstack/react-query'
@@ -22,6 +23,7 @@ import { DealsKanbanView } from './deals-kanban-view'
 import { Skeleton } from '@/components/ui/skeleton'
 
 export function DealsPageClient() {
+  const t = useTranslations('deals')
   const trpc = useTRPC()
   const { view, setView } = useDealsViewStore()
   const [pipelineId, setPipelineId] = useState<string | null>(null)
@@ -46,7 +48,7 @@ export function DealsPageClient() {
     <div className="space-y-4">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-4">
-          <h1 className="text-2xl font-bold tracking-tight">Deals</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{t('pageTitle')}</h1>
           {isLoadingPipelines ? (
             <Skeleton className="h-10 w-[200px]" />
           ) : (
@@ -55,7 +57,7 @@ export function DealsPageClient() {
               onValueChange={setPipelineId}
             >
               <SelectTrigger className="w-[200px] h-9">
-                <SelectValue placeholder="Select pipeline" />
+                <SelectValue placeholder={t('selectPipeline')} />
               </SelectTrigger>
               <SelectContent>
                 {pipelines?.items.map((p) => (
@@ -72,7 +74,7 @@ export function DealsPageClient() {
           <div className="relative w-full md:w-64">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search deals..."
+              placeholder={t('searchPlaceholder')}
               className="pl-8 h-9"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -83,27 +85,27 @@ export function DealsPageClient() {
             <TabsList className="h-9">
               <TabsTrigger value="kanban" className="px-3">
                 <Kanban className="h-4 w-4 mr-2" />
-                Kanban
+                {t('kanbanView')}
               </TabsTrigger>
               <TabsTrigger value="table" className="px-3">
                 <TableIcon className="h-4 w-4 mr-2" />
-                Table
+                {t('tableView')}
               </TabsTrigger>
             </TabsList>
           </Tabs>
 
           <Button size="sm" className="h-9" onClick={() => setIsCreateOpen(true)}>
             <Plus className="h-4 w-4 mr-2" />
-            New Deal
+            {t('newDeal')}
           </Button>
         </div>
       </div>
 
       {!pipelineId && !isLoadingPipelines ? (
         <div className="flex flex-col items-center justify-center p-12 border rounded-xl bg-muted/30 text-center">
-          <h3 className="text-lg font-medium">No pipelines found</h3>
+          <h3 className="text-lg font-medium">{t('noPipelines')}</h3>
           <p className="text-muted-foreground mb-4">
-            You need to create a pipeline first to manage deals.
+            {t('noPipelinesMessage')}
           </p>
         </div>
       ) : pipelineId ? (

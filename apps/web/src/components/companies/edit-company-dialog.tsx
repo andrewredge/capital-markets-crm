@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { useTRPC } from '@/lib/trpc'
@@ -21,6 +22,7 @@ interface EditCompanyDialogProps {
 }
 
 export function EditCompanyDialog({ company, open, onOpenChange }: EditCompanyDialogProps) {
+	const t = useTranslations('companies')
 	const trpc = useTRPC()
 	const queryClient = useQueryClient()
 
@@ -29,11 +31,11 @@ export function EditCompanyDialog({ company, open, onOpenChange }: EditCompanyDi
 			onSuccess: () => {
 				queryClient.invalidateQueries({ queryKey: trpc.companies.getById.queryKey({ id: company.id }) })
 				queryClient.invalidateQueries({ queryKey: trpc.companies.list.queryKey() })
-				toast.success('Company updated successfully')
+				toast.success(t('updateSuccess'))
 				onOpenChange(false)
 			},
 			onError: (error) => {
-				toast.error(error.message || 'Failed to update company')
+				toast.error(error.message || t('updateError'))
 			},
 		}),
 	)
@@ -46,9 +48,9 @@ export function EditCompanyDialog({ company, open, onOpenChange }: EditCompanyDi
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent className="sm:max-w-[600px]">
 				<DialogHeader>
-					<DialogTitle>Edit Company</DialogTitle>
+					<DialogTitle>{t('editTitle')}</DialogTitle>
 					<DialogDescription>
-						Update company information.
+						{t('editDescription')}
 					</DialogDescription>
 				</DialogHeader>
 				<CompanyForm

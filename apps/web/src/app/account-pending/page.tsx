@@ -1,5 +1,6 @@
 "use client"
 
+import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { ShieldAlert } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -7,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { authClient } from '@/lib/auth-client'
 
 export default function AccountPendingPage() {
+    const t = useTranslations('auth.accountPending')
     const router = useRouter()
 
     const handleSignOut = async () => {
@@ -21,15 +23,14 @@ export default function AccountPendingPage() {
                     <div className="mx-auto mb-4 p-3 bg-amber-100 dark:bg-amber-900/20 rounded-full w-fit">
                         <ShieldAlert className="h-8 w-8 text-amber-600 dark:text-amber-400" />
                     </div>
-                    <CardTitle>Account Not Active</CardTitle>
+                    <CardTitle>{t('title')}</CardTitle>
                 </CardHeader>
                 <CardContent className="text-center space-y-4">
                     <p className="text-sm text-muted-foreground">
-                        Your account is currently pending or has been suspended.
-                        Please contact a platform administrator for assistance.
+                        {t('message')}
                     </p>
                     <Button variant="outline" onClick={handleSignOut}>
-                        Sign Out
+                        {t('signOut')}
                     </Button>
                 </CardContent>
             </Card>

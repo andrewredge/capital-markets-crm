@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useReducer, useCallback } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { useTRPC } from '@/lib/trpc'
@@ -66,6 +67,8 @@ function reducer(state: WizardState, action: WizardAction): WizardState {
 // =============================================================================
 
 export function ImportWizard() {
+	const t = useTranslations('settings.import.wizard')
+	const tActions = useTranslations('actions')
 	const [state, dispatch] = useReducer(reducer, initialState)
 	const trpc = useTRPC()
 
@@ -106,6 +109,16 @@ export function ImportWizard() {
 	const stepIndex = STEPS.indexOf(state.step)
 	const progressValue = ((stepIndex + 1) / STEPS.length) * 100
 
+	const getStepLabel = (s: Step) => {
+		switch (s) {
+			case 'upload': return t('step1')
+			case 'mapping': return t('step2')
+			case 'preview': return t('step4')
+			case 'result': return t('step3')
+			default: return s
+		}
+	}
+
 	return (
 		<div className="space-y-6">
 			<Progress value={progressValue} className="h-2" />
@@ -114,10 +127,7 @@ export function ImportWizard() {
 				{STEPS.map((s, i) => (
 					<span key={s} className={i === stepIndex ? 'text-foreground font-medium' : ''}>
 						{i > 0 && ' → '}
-						{s === 'upload' && 'Upload'}
-						{s === 'mapping' && 'Map Columns'}
-						{s === 'preview' && 'Preview'}
-						{s === 'result' && 'Result'}
+						{getStepLabel(s)}
 					</span>
 				))}
 			</div>
@@ -160,7 +170,7 @@ export function ImportWizard() {
 							if (prev) dispatch({ type: 'GO_TO', payload: prev })
 						}}
 					>
-						Back
+						{tActions('back')}
 					</Button>
 
 					{state.step === 'mapping' && (
@@ -168,13 +178,13 @@ export function ImportWizard() {
 							onClick={() => dispatch({ type: 'GO_TO', payload: 'preview' })}
 							disabled={!canProceedToPreview()}
 						>
-							Continue to Preview
+							{tActions('next')}
 						</Button>
 					)}
 
 					{state.step === 'preview' && (
 						<Button onClick={handleImport} disabled={importMutation.isPending}>
-							{importMutation.isPending ? 'Importing...' : 'Import Contacts'}
+							{importMutation.isPending ? tActions('loading') : tActions('save')}
 						</Button>
 					)}
 				</div>
@@ -182,7 +192,7 @@ export function ImportWizard() {
 
 			{importMutation.isError && (
 				<p className="text-sm text-destructive">
-					Import failed: {importMutation.error?.message || 'Unknown error'}
+					{tActions('error')}: {importMutation.error?.message || 'Unknown error'}
 				</p>
 			)}
 		</div>

@@ -1,5 +1,7 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
@@ -11,16 +13,29 @@ import {
 	STAGE_OF_STUDY_OPTIONS,
 	TENURE_TYPE_OPTIONS,
 } from '@crm/shared'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import {
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useTRPC } from '@/lib/trpc'
 import { useQuery } from '@tanstack/react-query'
 import { Badge } from '@/components/ui/badge'
 import { X } from 'lucide-react'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 interface ProjectFormProps {
 	defaultValues?: Partial<CreateProjectInput>
@@ -29,48 +44,45 @@ interface ProjectFormProps {
 	mode?: 'create' | 'edit'
 }
 
-export function ProjectForm({ defaultValues, onSubmit, isLoading, mode = 'create' }: ProjectFormProps) {
+export function ProjectForm({
+	defaultValues,
+	onSubmit,
+	isLoading,
+	mode = 'create',
+}: ProjectFormProps) {
+	const t = useTranslations('projects')
+	const tActions = useTranslations('actions')
 	const trpc = useTRPC()
-	const { data: companiesData } = useQuery(
-		trpc.companies.list.queryOptions({ limit: 100 }),
-	)
-
 	const form = useForm<CreateProjectInput>({
 		resolver: zodResolver(createProjectSchema) as any,
 		defaultValues: {
 			name: '',
 			ownerCompanyId: '',
-			projectStatus: 'exploration',
-			primaryCommodity: undefined,
+			projectStatus: 'active',
+			primaryCommodity: 'copper',
 			secondaryCommodities: [],
+			description: '',
 			country: '',
 			stateProvince: '',
-			nearestTown: '',
-			description: '',
-			latitude: undefined,
-			longitude: undefined,
-			resourceEstimate: '',
-			reserveEstimate: '',
-			reportingStandard: undefined,
-			tenureType: undefined,
-			tenureExpiry: '',
-			tenureArea: '',
-			capexEstimate: '',
-			npv: '',
-			irr: '',
-			stageOfStudy: undefined,
 			...defaultValues,
 		} as any,
 	})
 
+	const { data: companies } = useQuery(
+		trpc.companies.list.queryOptions({ limit: 100 }),
+	)
+
 	const selectedSecondary = form.watch('secondaryCommodities') || []
 
-	const toggleSecondaryCommodity = (value: string) => {
+	const toggleSecondaryCommodity = (val: string) => {
 		const current = form.getValues('secondaryCommodities') || []
-		if (current.includes(value as any)) {
-			form.setValue('secondaryCommodities', current.filter((v) => v !== value) as any)
+		if (current.includes(val as any)) {
+			form.setValue(
+				'secondaryCommodities',
+				current.filter((c) => c !== val),
+			)
 		} else {
-			form.setValue('secondaryCommodities', [...current, value] as any)
+			form.setValue('secondaryCommodities', [...current, val as any])
 		}
 	}
 
@@ -81,9 +93,9 @@ export function ProjectForm({ defaultValues, onSubmit, isLoading, mode = 'create
 				name="name"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Project Name</FormLabel>
+						<FormLabel>{t('form.name')}</FormLabel>
 						<FormControl>
-							<Input placeholder="Escondida Copper Mine" {...field} />
+							<Input placeholder={t('form.namePlaceholder')} {...field} />
 						</FormControl>
 						<FormMessage />
 					</FormItem>
@@ -95,15 +107,15 @@ export function ProjectForm({ defaultValues, onSubmit, isLoading, mode = 'create
 					name="ownerCompanyId"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Owner Company</FormLabel>
+							<FormLabel>{t('form.owner')}</FormLabel>
 							<Select onValueChange={field.onChange} value={field.value}>
 								<FormControl>
 									<SelectTrigger>
-										<SelectValue placeholder="Select company" />
+										<SelectValue placeholder={t('form.selectOwner')} />
 									</SelectTrigger>
 								</FormControl>
 								<SelectContent>
-									{companiesData?.items.map((company) => (
+									{companies?.items.map((company) => (
 										<SelectItem key={company.id} value={company.id}>
 											{company.name}
 										</SelectItem>
@@ -119,11 +131,11 @@ export function ProjectForm({ defaultValues, onSubmit, isLoading, mode = 'create
 					name="projectStatus"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Status</FormLabel>
-							<Select onValueChange={field.onChange} defaultValue={field.value}>
+							<FormLabel>{t('form.status')}</FormLabel>
+							<Select onValueChange={field.onChange} value={field.value}>
 								<FormControl>
 									<SelectTrigger>
-										<SelectValue placeholder="Select status" />
+										<SelectValue placeholder={t('form.selectStatus')} />
 									</SelectTrigger>
 								</FormControl>
 								<SelectContent>
@@ -144,12 +156,12 @@ export function ProjectForm({ defaultValues, onSubmit, isLoading, mode = 'create
 				name="description"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Description</FormLabel>
+						<FormLabel>{t('form.description')}</FormLabel>
 						<FormControl>
-							<Textarea 
-								placeholder="Project description, geological setting, etc." 
-								className="min-h-[100px]"
-								{...field} 
+							<Textarea
+								placeholder={t('form.descriptionPlaceholder')}
+								className="h-32 resize-none"
+								{...field}
 								value={field.value || ''}
 							/>
 						</FormControl>
@@ -168,9 +180,9 @@ export function ProjectForm({ defaultValues, onSubmit, isLoading, mode = 'create
 					name="country"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Country</FormLabel>
+							<FormLabel>{t('form.country')}</FormLabel>
 							<FormControl>
-								<Input placeholder="Chile" {...field} value={field.value || ''} />
+								<Input placeholder={t('form.countryPlaceholder')} {...field} value={field.value || ''} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -181,41 +193,28 @@ export function ProjectForm({ defaultValues, onSubmit, isLoading, mode = 'create
 					name="stateProvince"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>State / Province</FormLabel>
+							<FormLabel>{t('form.region')}</FormLabel>
 							<FormControl>
-								<Input placeholder="Antofagasta" {...field} value={field.value || ''} />
+								<Input placeholder={t('form.regionPlaceholder')} {...field} value={field.value || ''} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
 					)}
 				/>
 			</div>
-			<FormField
-				control={form.control}
-				name="nearestTown"
-				render={({ field }) => (
-					<FormItem>
-						<FormLabel>Nearest Town</FormLabel>
-						<FormControl>
-							<Input placeholder="Antofagasta" {...field} value={field.value || ''} />
-						</FormControl>
-						<FormMessage />
-					</FormItem>
-				)}
-			/>
 			<div className="grid grid-cols-2 gap-4">
 				<FormField
 					control={form.control}
 					name="latitude"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Latitude</FormLabel>
+							<FormLabel>{t('form.latitude')}</FormLabel>
 							<FormControl>
-								<Input 
-									type="number" 
+								<Input
+									type="number"
 									step="any"
-									placeholder="-24.27" 
-									{...field} 
+									placeholder={t('form.latitudePlaceholder')}
+									{...field}
 									value={field.value ?? ''}
 									onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
 								/>
@@ -229,13 +228,13 @@ export function ProjectForm({ defaultValues, onSubmit, isLoading, mode = 'create
 					name="longitude"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Longitude</FormLabel>
+							<FormLabel>{t('form.longitude')}</FormLabel>
 							<FormControl>
-								<Input 
-									type="number" 
+								<Input
+									type="number"
 									step="any"
-									placeholder="-69.07" 
-									{...field} 
+									placeholder={t('form.longitudePlaceholder')}
+									{...field}
 									value={field.value ?? ''}
 									onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
 								/>
@@ -255,11 +254,11 @@ export function ProjectForm({ defaultValues, onSubmit, isLoading, mode = 'create
 				name="primaryCommodity"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Primary Commodity</FormLabel>
+						<FormLabel>{t('form.primaryCommodity')}</FormLabel>
 						<Select onValueChange={field.onChange} value={field.value}>
 							<FormControl>
 								<SelectTrigger>
-									<SelectValue placeholder="Select commodity" />
+									<SelectValue placeholder={t('form.selectCommodity')} />    
 								</SelectTrigger>
 							</FormControl>
 							<SelectContent>
@@ -275,16 +274,16 @@ export function ProjectForm({ defaultValues, onSubmit, isLoading, mode = 'create
 				)}
 			/>
 			<FormItem>
-				<FormLabel>Secondary Commodities</FormLabel>
+				<FormLabel>{t('form.secondaryCommodities')}</FormLabel>
 				<div className="flex flex-wrap gap-2 mb-2">
 					{selectedSecondary.map((val) => {
 						const option = COMMODITY_OPTIONS.find((o) => o.value === val)
 						return (
 							<Badge key={val} variant="secondary" className="gap-1">
 								{option?.label || val}
-								<X 
-									className="h-3 w-3 cursor-pointer" 
-									onClick={() => toggleSecondaryCommodity(val)}
+								<X
+									className="h-3 w-3 cursor-pointer"
+									onClick={() => toggleSecondaryCommodity(val)}     
 								/>
 							</Badge>
 						)
@@ -293,13 +292,13 @@ export function ProjectForm({ defaultValues, onSubmit, isLoading, mode = 'create
 				<Select onValueChange={toggleSecondaryCommodity}>
 					<FormControl>
 						<SelectTrigger>
-							<SelectValue placeholder="Add secondary commodity..." />
+							<SelectValue placeholder={t('form.addSecondary')} />
 						</SelectTrigger>
 					</FormControl>
 					<SelectContent>
 						{COMMODITY_OPTIONS.map((option) => (
-							<SelectItem 
-								key={option.value} 
+							<SelectItem
+								key={option.value}
 								value={option.value}
 								disabled={selectedSecondary.includes(option.value as any) || form.watch('primaryCommodity') === option.value}
 							>
@@ -315,15 +314,15 @@ export function ProjectForm({ defaultValues, onSubmit, isLoading, mode = 'create
 					name="reportingStandard"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Reporting Standard</FormLabel>
+							<FormLabel>{t('form.reportingStandard')}</FormLabel>
 							<Select onValueChange={field.onChange} value={field.value || undefined}>
 								<FormControl>
 									<SelectTrigger>
-										<SelectValue placeholder="Select standard" />
+										<SelectValue placeholder={t('form.selectStandard')} />
 									</SelectTrigger>
 								</FormControl>
 								<SelectContent>
-									{REPORTING_STANDARD_OPTIONS.map((option) => (
+									{REPORTING_STANDARD_OPTIONS.map((option) => (     
 										<SelectItem key={option.value} value={option.value}>
 											{option.label}
 										</SelectItem>
@@ -339,11 +338,11 @@ export function ProjectForm({ defaultValues, onSubmit, isLoading, mode = 'create
 					name="stageOfStudy"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Stage of Study</FormLabel>
+							<FormLabel>{t('form.stageOfStudy')}</FormLabel>
 							<Select onValueChange={field.onChange} value={field.value || undefined}>
 								<FormControl>
 									<SelectTrigger>
-										<SelectValue placeholder="Select stage" />
+										<SelectValue placeholder={t('form.selectStageOfStudy')} />
 									</SelectTrigger>
 								</FormControl>
 								<SelectContent>
@@ -364,9 +363,9 @@ export function ProjectForm({ defaultValues, onSubmit, isLoading, mode = 'create
 				name="resourceEstimate"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Resource Estimate</FormLabel>
+						<FormLabel>{t('form.resourceEstimate')}</FormLabel>
 						<FormControl>
-							<Input placeholder="e.g. 2,000 Mt @ 0.5% Cu" {...field} value={field.value || ''} />
+							<Input placeholder={t('form.resourceEstimatePlaceholder')} {...field} value={field.value || ''} />
 						</FormControl>
 						<FormMessage />
 					</FormItem>
@@ -377,9 +376,9 @@ export function ProjectForm({ defaultValues, onSubmit, isLoading, mode = 'create
 				name="reserveEstimate"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Reserve Estimate</FormLabel>
+						<FormLabel>{t('form.reserveEstimate')}</FormLabel>
 						<FormControl>
-							<Input placeholder="e.g. 1,500 Mt @ 0.6% Cu" {...field} value={field.value || ''} />
+							<Input placeholder={t('form.reserveEstimatePlaceholder')} {...field} value={field.value || ''} />
 						</FormControl>
 						<FormMessage />
 					</FormItem>
@@ -395,11 +394,11 @@ export function ProjectForm({ defaultValues, onSubmit, isLoading, mode = 'create
 				name="tenureType"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Tenure Type</FormLabel>
-						<Select onValueChange={field.onChange} value={field.value || undefined}>
+						<FormLabel>{t('form.tenureType')}</FormLabel>
+						<Select onValueChange={field.onChange} value={field.value || undefined}>  
 							<FormControl>
 								<SelectTrigger>
-									<SelectValue placeholder="Select type" />
+									<SelectValue placeholder={t('form.selectTenureType')} />
 								</SelectTrigger>
 							</FormControl>
 							<SelectContent>
@@ -420,9 +419,9 @@ export function ProjectForm({ defaultValues, onSubmit, isLoading, mode = 'create
 					name="tenureArea"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Tenure Area</FormLabel>
+							<FormLabel>{t('form.tenureArea')}</FormLabel>
 							<FormControl>
-								<Input placeholder="e.g. 500 hectares" {...field} value={field.value || ''} />
+								<Input placeholder={t('form.tenureAreaPlaceholder')} {...field} value={field.value || ''} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -433,7 +432,7 @@ export function ProjectForm({ defaultValues, onSubmit, isLoading, mode = 'create
 					name="tenureExpiry"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Tenure Expiry</FormLabel>
+							<FormLabel>{t('form.tenureExpiry')}</FormLabel>
 							<FormControl>
 								<Input type="date" {...field} value={field.value || ''} />
 							</FormControl>
@@ -452,9 +451,9 @@ export function ProjectForm({ defaultValues, onSubmit, isLoading, mode = 'create
 				name="capexEstimate"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>CAPEX Estimate</FormLabel>
+						<FormLabel>{t('form.capexEstimate')}</FormLabel>
 						<FormControl>
-							<Input placeholder="e.g. $1.2B" {...field} value={field.value || ''} />
+							<Input placeholder={t('form.capexEstimatePlaceholder')} {...field} value={field.value || ''} />
 						</FormControl>
 						<FormMessage />
 					</FormItem>
@@ -466,9 +465,9 @@ export function ProjectForm({ defaultValues, onSubmit, isLoading, mode = 'create
 					name="npv"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>NPV</FormLabel>
+							<FormLabel>{t('form.npv')}</FormLabel>
 							<FormControl>
-								<Input placeholder="e.g. $2.5B (8%)" {...field} value={field.value || ''} />
+								<Input placeholder={t('form.npvPlaceholder')} {...field} value={field.value || ''} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -479,9 +478,9 @@ export function ProjectForm({ defaultValues, onSubmit, isLoading, mode = 'create
 					name="irr"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>IRR</FormLabel>
+							<FormLabel>{t('form.irr')}</FormLabel>
 							<FormControl>
-								<Input placeholder="e.g. 22%" {...field} value={field.value || ''} />
+								<Input placeholder={t('form.irrPlaceholder')} {...field} value={field.value || ''} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -503,18 +502,18 @@ export function ProjectForm({ defaultValues, onSubmit, isLoading, mode = 'create
 								name="primaryCommodity"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Primary Commodity</FormLabel>
+										<FormLabel>{t('form.primaryCommodity')}</FormLabel>  
 										<Select onValueChange={field.onChange} value={field.value}>
 											<FormControl>
 												<SelectTrigger>
-													<SelectValue placeholder="Select commodity" />
+													<SelectValue placeholder={t('form.selectCommodity')} />
 												</SelectTrigger>
 											</FormControl>
 											<SelectContent>
 												{COMMODITY_OPTIONS.map((option) => (
 													<SelectItem key={option.value} value={option.value}>
 														{option.label}
-													</SelectItem>
+													</SelectItem>     
 												))}
 											</SelectContent>
 										</Select>
@@ -527,9 +526,9 @@ export function ProjectForm({ defaultValues, onSubmit, isLoading, mode = 'create
 								name="country"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Country</FormLabel>
+										<FormLabel>{t('form.country')}</FormLabel>
 										<FormControl>
-											<Input placeholder="Chile" {...field} value={field.value || ''} />
+											<Input placeholder={t('form.countryPlaceholder')} {...field} value={field.value || ''} />
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -540,11 +539,11 @@ export function ProjectForm({ defaultValues, onSubmit, isLoading, mode = 'create
 				) : (
 					<Tabs defaultValue="general" className="w-full">
 						<TabsList className="grid w-full grid-cols-5">
-							<TabsTrigger value="general">General</TabsTrigger>
-							<TabsTrigger value="location">Location</TabsTrigger>
-							<TabsTrigger value="geology">Geology</TabsTrigger>
-							<TabsTrigger value="tenure">Tenure</TabsTrigger>
-							<TabsTrigger value="financial">Financial</TabsTrigger>
+							<TabsTrigger value="general">{t('tabs.general')}</TabsTrigger>
+							<TabsTrigger value="location">{t('tabs.location')}</TabsTrigger>
+							<TabsTrigger value="geology">{t('tabs.geology')}</TabsTrigger>
+							<TabsTrigger value="tenure">{t('tabs.tenure')}</TabsTrigger>
+							<TabsTrigger value="financial">{t('tabs.financial')}</TabsTrigger>
 						</TabsList>
 						<TabsContent value="general" className="pt-4">{renderGeneralFields()}</TabsContent>
 						<TabsContent value="location" className="pt-4">{renderLocationFields()}</TabsContent>
@@ -556,7 +555,7 @@ export function ProjectForm({ defaultValues, onSubmit, isLoading, mode = 'create
 
 				<div className="flex justify-end gap-3 pt-4 border-t">
 					<Button type="submit" disabled={isLoading}>
-						{isLoading ? 'Saving...' : mode === 'create' ? 'Create Project' : 'Save Changes'}
+						{isLoading ? tActions('saving') : mode === 'create' ? t('createProject') : tActions('save')}
 					</Button>
 				</div>
 			</form>

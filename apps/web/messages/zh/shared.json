@@ -1,0 +1,80 @@
+{
+  "activity": {
+    "title": "Activity Timeline",
+    "logActivity": "Log Activity",
+    "noActivities": "No activities yet. Log your first activity.",
+    "deleteSuccess": "Activity deleted",
+    "deleteError": "Failed to delete activity",
+    "deleteConfirmMessage": "This action cannot be undone.",
+    "justNow": "just now",
+    "minsAgo": "{n}m ago",
+    "hoursAgo": "{n}h ago",
+    "daysAgo": "{n}d ago",
+    "meeting": "Meeting",
+    "call": "Call",
+    "email": "Email",
+    "note": "Note",
+    "task": "Task",
+    "dealUpdate": "Deal Update",
+    "logTitle": "Log Activity",
+    "editTitle": "Edit Activity",
+    "form": {
+      "type": "Activity Type",
+      "subject": "Subject",
+      "subjectPlaceholder": "e.g. Project Update Call",
+      "occurredAt": "Date & Time",
+      "duration": "Duration (minutes)",
+      "description": "Description"
+    }
+  },
+  "notes": {
+    "title": "Notes",
+    "addNote": "Add Note",
+    "noNotes": "No notes yet.",
+    "deleteSuccess": "Note deleted",
+    "deleteError": "Failed to delete note",
+    "createSuccess": "Note added",
+    "createError": "Failed to create note",
+    "updateSuccess": "Note updated",
+    "updateError": "Failed to update note",
+    "addTitle": "Add Note",
+    "editTitle": "Edit Note",
+    "deleteConfirmMessage": "This action cannot be undone.",
+    "form": {
+      "title": "Title (Optional)",
+      "titlePlaceholder": "Note title",
+      "content": "Note content",
+      "placeholder": "Write your note here...",
+      "pinToTop": "Pin to top",
+      "pinDescription": "Pinned notes appear at the top of the list."
+    }
+  },
+  "documents": {
+    "title": "Documents",
+    "upload": "Upload",
+    "noDocuments": "No documents uploaded yet.",
+    "uploadSuccess": "Document uploaded",
+    "uploadError": "Failed to upload document",
+    "deleteSuccess": "Document deleted",
+    "deleteError": "Failed to delete document",
+    "fileTooLarge": "File must be under 100 MB",
+    "uploadStorageFailed": "Upload to storage failed",
+    "uploadFailed": "Upload failed",
+    "downloadError": "Failed to get download link",
+    "dropZone": "Drop a file here, or click to browse",
+    "maxSize": "Max 100 MB",
+    "showcase": "Showcase",
+    "deleteConfirmMessage": "Are you sure you want to delete this document? The file will be permanently removed.",
+    "editTitle": "Edit Document",
+    "form": {
+      "name": "Document Name",
+      "type": "Document Type"
+    }
+  },
+  "tags": {
+    "placeholder": "Add tag...",
+    "addSuccess": "Tag added",
+    "removeSuccess": "Tag removed",
+    "error": "Failed to update tags"
+  }
+}

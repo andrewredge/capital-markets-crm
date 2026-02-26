@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { useTRPC } from '@/lib/trpc'
@@ -21,6 +22,7 @@ interface EditContactDialogProps {
 }
 
 export function EditContactDialog({ contact, open, onOpenChange }: EditContactDialogProps) {
+	const t = useTranslations('contacts')
 	const trpc = useTRPC()
 	const queryClient = useQueryClient()
 
@@ -29,11 +31,11 @@ export function EditContactDialog({ contact, open, onOpenChange }: EditContactDi
 			onSuccess: () => {
 				queryClient.invalidateQueries({ queryKey: trpc.contacts.getById.queryKey({ id: contact.id }) })
 				queryClient.invalidateQueries({ queryKey: trpc.contacts.list.queryKey() })
-				toast.success('Contact updated successfully')
+				toast.success(t('updateSuccess'))
 				onOpenChange(false)
 			},
 			onError: (error) => {
-				toast.error(error.message || 'Failed to update contact')
+				toast.error(error.message || t('updateError'))
 			},
 		}),
 	)
@@ -46,9 +48,9 @@ export function EditContactDialog({ contact, open, onOpenChange }: EditContactDi
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent className="sm:max-w-[500px]">
 				<DialogHeader>
-					<DialogTitle>Edit Contact</DialogTitle>
+					<DialogTitle>{t('editTitle')}</DialogTitle>
 					<DialogDescription>
-						Update contact information.
+						{t('editDescription')}
 					</DialogDescription>
 				</DialogHeader>
 				<ContactForm

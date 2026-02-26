@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { CheckCircle2, AlertTriangle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -13,6 +14,7 @@ interface ImportResultStepProps {
 }
 
 export function ImportResultStep({ result, onImportMore }: ImportResultStepProps) {
+	const t = useTranslations('settings.import.result')
 	const hasErrors = result.errors.length > 0
 	const totalProcessed = result.imported + result.updated + result.skipped + result.errors.length
 
@@ -25,30 +27,30 @@ export function ImportResultStep({ result, onImportMore }: ImportResultStepProps
 					<CheckCircle2 className="h-8 w-8 text-green-500" />
 				)}
 				<div>
-					<h3 className="text-lg font-semibold">Import Complete</h3>
-					<p className="text-sm text-muted-foreground">{totalProcessed} rows processed.</p>
+					<h3 className="text-lg font-semibold">{t('title')}</h3>
+					<p className="text-sm text-muted-foreground">{t('rowsProcessed', { count: totalProcessed })}</p>
 				</div>
 			</div>
 
 			<div className="flex gap-4 flex-wrap">
 				{result.imported > 0 && (
 					<Badge variant="secondary" className="text-sm text-green-700">
-						{result.imported} imported
+						{t('imported', { count: result.imported })}
 					</Badge>
 				)}
 				{result.updated > 0 && (
 					<Badge variant="secondary" className="text-sm text-blue-700">
-						{result.updated} updated
+						{t('updated', { count: result.updated })}
 					</Badge>
 				)}
 				{result.skipped > 0 && (
 					<Badge variant="secondary" className="text-sm">
-						{result.skipped} skipped
+						{t('skipped', { count: result.skipped })}
 					</Badge>
 				)}
 				{result.errors.length > 0 && (
 					<Badge variant="destructive" className="text-sm">
-						{result.errors.length} errors
+						{t('errors', { count: result.errors.length })}
 					</Badge>
 				)}
 			</div>
@@ -58,14 +60,14 @@ export function ImportResultStep({ result, onImportMore }: ImportResultStepProps
 					<AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
 					<div className="flex-1 space-y-1">
 						<p className="text-sm font-medium text-amber-800 dark:text-amber-400">
-							{result.flaggedForReview} contacts flagged for review
+							{t('flaggedForReview', { count: result.flaggedForReview })}
 						</p>
 						<p className="text-xs text-amber-700 dark:text-amber-500">
-							Some imported contacts have incomplete data or missing signals. You can review them in the Data Quality queue.
+							{t('flaggedDescription')}
 						</p>
 						<div className="pt-2">
 							<Link href="/settings/enrichment" className="text-xs font-semibold text-amber-800 dark:text-amber-400 hover:underline inline-flex items-center gap-1">
-								Go to Enrichment Queue
+								{t('goToEnrichment')}
 							</Link>
 						</div>
 					</div>
@@ -74,14 +76,14 @@ export function ImportResultStep({ result, onImportMore }: ImportResultStepProps
 
 			{hasErrors && (
 				<div className="space-y-2">
-					<h4 className="text-sm font-medium">Error Details</h4>
+					<h4 className="text-sm font-medium">{t('errorDetails')}</h4>
 					<div className="rounded-md border overflow-auto max-h-[300px]">
 						<Table>
 							<TableHeader>
 								<TableRow>
-									<TableHead className="w-[80px]">Row</TableHead>
-									<TableHead className="w-[120px]">Field</TableHead>
-									<TableHead>Error</TableHead>
+									<TableHead className="w-[80px]">{t('errorRow')}</TableHead>
+									<TableHead className="w-[120px]">{t('errorField')}</TableHead>
+									<TableHead>{t('errorMessage')}</TableHead>
 								</TableRow>
 							</TableHeader>
 							<TableBody>
@@ -100,10 +102,10 @@ export function ImportResultStep({ result, onImportMore }: ImportResultStepProps
 
 			<div className="flex gap-3">
 				<Button variant="outline" onClick={onImportMore}>
-					Import More
+					{t('importMore')}
 				</Button>
 				<Link href="/contacts">
-					<Button>View Contacts</Button>
+					<Button>{t('viewContacts')}</Button>
 				</Link>
 			</div>
 		</div>

@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { useTRPC } from '@/lib/trpc'
@@ -17,6 +18,7 @@ interface ContactCompanyRolesSectionProps {
 }
 
 export function ContactCompanyRolesSection({ contactId, roles }: ContactCompanyRolesSectionProps) {
+	const t = useTranslations('contacts')
 	const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
 	const trpc = useTRPC()
 	const queryClient = useQueryClient()
@@ -25,10 +27,10 @@ export function ContactCompanyRolesSection({ contactId, roles }: ContactCompanyR
 		trpc.contactCompanyRoles.delete.mutationOptions({
 			onSuccess: () => {
 				queryClient.invalidateQueries({ queryKey: trpc.contacts.getById.queryKey({ id: contactId }) })
-				toast.success('Company role removed')
+				toast.success(t('removeRoleSuccess'))
 			},
 			onError: (error) => {
-				toast.error(error.message || 'Failed to remove company role')
+				toast.error(error.message || t('removeRoleError'))
 			},
 		}),
 	)
@@ -36,7 +38,7 @@ export function ContactCompanyRolesSection({ contactId, roles }: ContactCompanyR
 	return (
 		<Card>
 			<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-				<CardTitle className="text-lg font-bold">Companies</CardTitle>
+				<CardTitle className="text-lg font-bold">{t('companiesSection')}</CardTitle>
 				<Button size="sm" variant="ghost" onClick={() => setIsAddDialogOpen(true)}>
 					<Plus className="h-4 w-4" />
 				</Button>
@@ -44,7 +46,7 @@ export function ContactCompanyRolesSection({ contactId, roles }: ContactCompanyR
 			<CardContent>
 				<div className="space-y-4">
 					{roles.length === 0 ? (
-						<p className="text-sm text-muted-foreground">No companies associated.</p>
+						<p className="text-sm text-muted-foreground">{t('noCompanies')}</p> 
 					) : (
 						roles.map((role) => (
 							<div key={role.id} className="flex items-center justify-between group">
@@ -59,13 +61,13 @@ export function ContactCompanyRolesSection({ contactId, roles }: ContactCompanyR
 										>
 											{role.company.name}
 										</Link>
-										<div className="flex items-center gap-2">
+										<div className="flex items-center gap-2"> 
 											<span className="text-xs text-muted-foreground capitalize">
 												{role.role.replace('_', ' ')}
 											</span>
 											{role.isPrimary && (
 												<Badge variant="outline" className="text-[10px] h-4 px-1 py-0">
-													Primary
+													{t('primary')}
 												</Badge>
 											)}
 										</div>
@@ -78,7 +80,7 @@ export function ContactCompanyRolesSection({ contactId, roles }: ContactCompanyR
 									onClick={() => deleteMutation.mutate({ id: role.id })}
 									disabled={deleteMutation.isPending}
 								>
-									<Trash2 className="h-4 w-4 text-destructive" />
+									<Trash2 className="h-4 w-4 text-destructive" />   
 								</Button>
 							</div>
 						))

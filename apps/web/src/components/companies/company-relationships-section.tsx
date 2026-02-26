@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { useTRPC } from '@/lib/trpc'
@@ -22,6 +23,7 @@ export function CompanyRelationshipsSection({
 	relationshipsFrom,
 	relationshipsTo,
 }: CompanyRelationshipsSectionProps) {
+	const t = useTranslations('companies')
 	const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
 	const trpc = useTRPC()
 	const queryClient = useQueryClient()
@@ -30,10 +32,10 @@ export function CompanyRelationshipsSection({
 		trpc.companyRelationships.delete.mutationOptions({
 			onSuccess: () => {
 				queryClient.invalidateQueries({ queryKey: trpc.companies.getById.queryKey({ id: companyId }) })
-				toast.success('Relationship removed')
+				toast.success(t('removeRelationshipSuccess'))
 			},
 			onError: (error) => {
-				toast.error(error.message || 'Failed to remove relationship')
+				toast.error(error.message || t('removeRelationshipError'))
 			},
 		}),
 	)
@@ -46,7 +48,7 @@ export function CompanyRelationshipsSection({
 	return (
 		<Card>
 			<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-				<CardTitle className="text-lg font-bold">Relationships</CardTitle>
+				<CardTitle className="text-lg font-bold">{t('relationshipsSection')}</CardTitle>
 				<Button size="sm" variant="ghost" onClick={() => setIsAddDialogOpen(true)}>
 					<Plus className="h-4 w-4" />
 				</Button>
@@ -54,7 +56,7 @@ export function CompanyRelationshipsSection({
 			<CardContent>
 				<div className="space-y-4">
 					{allRelationships.length === 0 ? (
-						<p className="text-sm text-muted-foreground">No relationships.</p>
+						<p className="text-sm text-muted-foreground">{t('noRelationships')}</p>        
 					) : (
 						allRelationships.map((rel) => (
 							<div key={rel.id} className="flex items-center justify-between group">
@@ -69,7 +71,7 @@ export function CompanyRelationshipsSection({
 										>
 											{rel.relatedCompany.name}
 										</Link>
-										<div className="flex items-center gap-2">
+										<div className="flex items-center gap-2"> 
 											<Badge variant="outline" className="text-[10px] h-4 px-1 py-0">
 												{rel.relationshipType.replace('_', ' ')}
 											</Badge>
@@ -83,7 +85,7 @@ export function CompanyRelationshipsSection({
 									onClick={() => deleteMutation.mutate({ id: rel.id })}
 									disabled={deleteMutation.isPending}
 								>
-									<Trash2 className="h-4 w-4 text-destructive" />
+									<Trash2 className="h-4 w-4 text-destructive" />   
 								</Button>
 							</div>
 						))

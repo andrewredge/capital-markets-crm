@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
@@ -30,11 +31,13 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ENTITY_TYPE_OPTIONS, type EntityType } from '@crm/shared'
 import { Search, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react'
-import { columns } from './companies-columns'
+import { getColumns } from './companies-columns'
 import { CreateCompanyDialog } from './create-company-dialog'
 import { useDebounce } from '@/hooks/use-debounce'
 
 export function CompaniesPageClient() {
+	const t = useTranslations('companies')
+	const tTable = useTranslations('table')
 	const router = useRouter()
 	const trpc = useTRPC()
 	const [search, setSearch] = useState('')
@@ -42,6 +45,8 @@ export function CompaniesPageClient() {
 	const [page, setPage] = useState(1)
 	const [sorting, setSorting] = useState<SortingState>([])
 	const limit = 25
+
+	const columns = getColumns(t)
 
 	const debouncedSearch = useDebounce(search, 300)
 
@@ -78,15 +83,15 @@ export function CompaniesPageClient() {
 	return (
 		<div className="space-y-4">
 			<div className="flex items-center justify-between">
-				<h1 className="text-2xl font-bold tracking-tight">Companies</h1>
+				<h1 className="text-2xl font-bold tracking-tight">{t('pageTitle')}</h1>
 				<CreateCompanyDialog />
 			</div>
 
 			<div className="flex items-center gap-4">
 				<div className="relative flex-1 max-w-sm">
-					<Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+					<Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />    
 					<Input
-						placeholder="Search companies..."
+						placeholder={t('searchPlaceholder')}
 						className="pl-8"
 						value={search}
 						onChange={(e) => {
@@ -103,10 +108,10 @@ export function CompaniesPageClient() {
 					}}
 				>
 					<SelectTrigger className="w-[180px]">
-						<SelectValue placeholder="Filter by type" />
+						<SelectValue placeholder={t('filterByType')} />
 					</SelectTrigger>
 					<SelectContent>
-						<SelectItem value="all">All Types</SelectItem>
+						<SelectItem value="all">{t('allTypes')}</SelectItem>
 						{ENTITY_TYPE_OPTIONS.map((option) => (
 							<SelectItem key={option.value} value={option.value}>
 								{option.label}
@@ -122,12 +127,12 @@ export function CompaniesPageClient() {
 						{table.getHeaderGroups().map((headerGroup) => (
 							<TableRow key={headerGroup.id}>
 								{headerGroup.headers.map((header) => (
-									<TableHead 
+									<TableHead
 										key={header.id}
 										className={header.column.getCanSort() ? 'cursor-pointer select-none' : ''}
 										onClick={header.column.getToggleSortingHandler()}
 									>
-										<div className="flex items-center gap-1">
+										<div className="flex items-center gap-1"> 
 											{header.isPlaceholder
 												? null
 												: flexRender(
@@ -181,7 +186,7 @@ export function CompaniesPageClient() {
 									colSpan={columns.length}
 									className="h-24 text-center"
 								>
-									No companies found.
+									{t('noResults')}
 								</TableCell>
 							</TableRow>
 						)}
@@ -191,7 +196,11 @@ export function CompaniesPageClient() {
 
 			<div className="flex items-center justify-between">
 				<div className="text-sm text-muted-foreground">
-					Showing {data?.items.length ?? 0} of {data?.total ?? 0} companies
+					{tTable('showing', {
+						from: (page - 1) * limit + 1,
+						to: Math.min(page * limit, data?.total ?? 0),
+						total: data?.total ?? 0
+					})}
 				</div>
 				<div className="flex items-center gap-2">
 					<Button
@@ -201,10 +210,10 @@ export function CompaniesPageClient() {
 						disabled={page === 1 || isLoading}
 					>
 						<ChevronLeft className="h-4 w-4 mr-1" />
-						Previous
+						{tTable('previous')}
 					</Button>
 					<div className="text-sm font-medium">
-						Page {page} of {Math.max(1, totalPages)}
+						{t('showingCount', { count: data?.items.length ?? 0, total: data?.total ?? 0 })}
 					</div>
 					<Button
 						variant="outline"
@@ -212,7 +221,7 @@ export function CompaniesPageClient() {
 						onClick={() => setPage((p) => p + 1)}
 						disabled={page >= totalPages || isLoading}
 					>
-						Next
+						{tTable('next')}
 						<ChevronRight className="h-4 w-4 ml-1" />
 					</Button>
 				</div>

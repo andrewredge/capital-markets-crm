@@ -1,0 +1,70 @@
+{
+  "users": {
+    "title": "User Management",
+    "description": "Manage platform users and their access.",
+    "searchPlaceholder": "Search users...",
+    "filterByStatus": "Filter by status",
+    "allStatuses": "All Statuses",
+    "active": "Active",
+    "pending": "Pending",
+    "suspended": "Suspended",
+    "updateStatusSuccess": "Account status updated",
+    "updateRoleSuccess": "Platform role updated",
+    "columns": {
+      "name": "Name",
+      "email": "Email",
+      "status": "Status",
+      "role": "Role",
+      "actions": "Actions"
+    },
+    "roles": {
+      "user": "User",
+      "superAdmin": "Super Admin"
+    },
+    "actions": {
+      "suspend": "Suspend",
+      "activate": "Activate",
+      "promote": "Promote",
+      "demote": "Demote"
+    },
+    "noUsers": "No users found"
+  },
+  "invitations": {
+    "title": "Invitations",
+    "description": "Send and manage platform invitations.",
+    "sendInvitation": "Send Invitation",
+    "newInvitation": "New Invitation",
+    "form": {
+      "email": "Email Address",
+      "role": "Role",
+      "org": "Organization (optional)",
+      "noOrg": "No organization",
+      "send": "Send",
+      "sending": "Sending..."
+    },
+    "columns": {
+      "status": "Status",
+      "expires": "Expires",
+      "actions": "Actions"
+    },
+    "roles": {
+      "user": "User",
+      "superAdmin": "Super Admin"
+    },
+    "status": {
+      "pending": "pending",
+      "accepted": "accepted",
+      "revoked": "revoked"
+    },
+    "actions": {
+      "copyLink": "Copy Link",
+      "revoke": "Revoke"
+    },
+    "messages": {
+      "sendSuccess": "Invitation sent! Link copied to clipboard.",
+      "revokeSuccess": "Invitation revoked",
+      "copySuccess": "Invite link copied to clipboard"
+    },
+    "noInvitations": "No invitations yet"
+  }
+}

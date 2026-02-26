@@ -1,5 +1,6 @@
 "use client"
 
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
@@ -18,6 +19,7 @@ import {
 import { Input } from '@/components/ui/input'
 
 export function LoginForm() {
+    const t = useTranslations('auth.login')
     const router = useRouter()
     const [error, setError] = useState<string | null>(null)
     const [isPending, setIsPending] = useState(false)
@@ -40,7 +42,7 @@ export function LoginForm() {
         })
 
         if (error) {
-            setError(error.message || 'Invalid email or password')
+            setError(error.message || t('error'))
             setIsPending(false)
         } else {
             router.push('/')
@@ -61,7 +63,7 @@ export function LoginForm() {
                     name="email"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Email</FormLabel>
+                            <FormLabel>{t('email')}</FormLabel>
                             <FormControl>
                                 <Input placeholder="name@example.com" {...field} />
                             </FormControl>
@@ -74,7 +76,7 @@ export function LoginForm() {
                     name="password"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Password</FormLabel>
+                            <FormLabel>{t('password')}</FormLabel>
                             <FormControl>
                                 <Input type="password" placeholder="••••••••" {...field} />
                             </FormControl>
@@ -83,7 +85,7 @@ export function LoginForm() {
                     )}
                 />
                 <Button type="submit" className="w-full" disabled={isPending}>
-                    {isPending ? 'Signing in...' : 'Sign in'}
+                    {isPending ? t('signingIn') : t('signIn')}
                 </Button>
             </form>
         </Form>

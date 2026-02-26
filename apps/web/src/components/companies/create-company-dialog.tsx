@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { useTRPC } from '@/lib/trpc'
@@ -18,6 +19,7 @@ import { CompanyForm } from './company-form'
 import type { CreateCompanyInput } from '@crm/shared'
 
 export function CreateCompanyDialog() {
+	const t = useTranslations('companies')
 	const [open, setOpen] = useState(false)
 	const trpc = useTRPC()
 	const queryClient = useQueryClient()
@@ -26,11 +28,11 @@ export function CreateCompanyDialog() {
 		trpc.companies.create.mutationOptions({
 			onSuccess: () => {
 				queryClient.invalidateQueries({ queryKey: trpc.companies.list.queryKey() })
-				toast.success('Company created successfully')
+				toast.success(t('createSuccess'))
 				setOpen(false)
 			},
 			onError: (error) => {
-				toast.error(error.message || 'Failed to create company')
+				toast.error(error.message || t('createError'))
 			},
 		}),
 	)
@@ -44,14 +46,14 @@ export function CreateCompanyDialog() {
 			<DialogTrigger asChild>
 				<Button size="sm" className="gap-2">
 					<Plus className="h-4 w-4" />
-					New Company
+					{t('createTitle')}
 				</Button>
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-[600px]">
 				<DialogHeader>
-					<DialogTitle>Create New Company</DialogTitle>
+					<DialogTitle>{t('createTitle')}</DialogTitle>
 					<DialogDescription>
-						Add a new company, investor, or startup to your CRM.
+						{t('createDescription')}
 					</DialogDescription>
 				</DialogHeader>
 				<CompanyForm onSubmit={onSubmit} isLoading={createMutation.isPending} />

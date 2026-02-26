@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
@@ -58,24 +59,24 @@ function formatCurrency(amount: string | null, currency: string) {
   }).format(Number(amount))
 }
 
-const columns = [
+const getColumns = (t: any) => [
   columnHelper.accessor('name', {
-    header: 'Name',
+    header: t('columns.name'),
     cell: (info) => <span className="font-semibold">{info.getValue()}</span>,
   }),
   columnHelper.accessor('dealType', {
-    header: 'Type',
+    header: t('columns.type'),
     cell: (info) => {
       const type = DEAL_TYPES.find((t) => t.value === info.getValue())
       return <Badge variant="secondary">{type?.label || info.getValue()}</Badge>
     },
   }),
   columnHelper.accessor('amount', {
-    header: 'Amount',
+    header: t('columns.amount'),
     cell: (info) => formatCurrency(info.getValue(), info.row.original.currency),
   }),
   columnHelper.accessor('stageName', {
-    header: 'Stage',
+    header: t('columns.stage'),
     cell: (info) => (
       <div className="flex items-center gap-2">
         <div
@@ -87,31 +88,35 @@ const columns = [
     ),
   }),
   columnHelper.accessor('confidence', {
-    header: 'Confidence',
+    header: t('columns.confidence'),
     cell: (info) => {
       const val = info.getValue()
       return val !== null ? `${val}%` : '—'
     },
   }),
   columnHelper.accessor('expectedCloseDate', {
-    header: 'Expected Close',
+    header: t('columns.expectedClose'),
     cell: (info) => {
       const date = info.getValue()
       return date ? format(new Date(date), 'MMM d, yyyy') : '—'
     },
   }),
   columnHelper.accessor('createdAt', {
-    header: 'Created',
+    header: t('columns.created'),
     cell: (info) => format(new Date(info.getValue()), 'MMM d, yyyy'),
   }),
 ]
 
 export function DealsTableView({ pipelineId, search }: DealsTableViewProps) {
+  const t = useTranslations('deals')
+  const tTable = useTranslations('table')
   const router = useRouter()
   const trpc = useTRPC()
   const [page, setPage] = useState(1)
   const [sorting, setSorting] = useState<SortingState>([])
   const limit = 25
+
+  const columns = getColumns(t)
 
   const handleSortingChange = (updater: SortingState | ((old: SortingState) => SortingState)) => {
     setSorting(updater)
@@ -151,7 +156,7 @@ export function DealsTableView({ pipelineId, search }: DealsTableViewProps) {
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <TableHead 
+                  <TableHead
                     key={header.id}
                     className={header.column.getCanSort() ? 'cursor-pointer select-none' : ''}
                     onClick={header.column.getToggleSortingHandler()}
@@ -210,7 +215,7 @@ export function DealsTableView({ pipelineId, search }: DealsTableViewProps) {
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No deals found.
+                  {t('noResults')}
                 </TableCell>
               </TableRow>
             )}
@@ -220,7 +225,11 @@ export function DealsTableView({ pipelineId, search }: DealsTableViewProps) {
 
       <div className="flex items-center justify-between">
         <div className="text-sm text-muted-foreground">
-          Showing {data?.items.length ?? 0} of {data?.total ?? 0} deals
+          {tTable('showing', {
+            from: (page - 1) * limit + 1,
+            to: Math.min(page * limit, data?.total ?? 0),
+            total: data?.total ?? 0
+          })}
         </div>
         <div className="flex items-center gap-2">
           <Button
@@ -230,10 +239,10 @@ export function DealsTableView({ pipelineId, search }: DealsTableViewProps) {
             disabled={page === 1 || isLoading}
           >
             <ChevronLeft className="h-4 w-4 mr-1" />
-            Previous
+            {tTable('previous')}
           </Button>
-          <div className="text-sm font-medium px-2">
-            Page {page} of {Math.max(1, totalPages)}
+          <div className="text-sm font-medium">
+            {tTable('pageCount', { page, total: Math.max(1, totalPages) })}
           </div>
           <Button
             variant="outline"
@@ -241,7 +250,7 @@ export function DealsTableView({ pipelineId, search }: DealsTableViewProps) {
             onClick={() => setPage((p) => p + 1)}
             disabled={page >= totalPages || isLoading}
           >
-            Next
+            {tTable('next')}
             <ChevronRight className="h-4 w-4 ml-1" />
           </Button>
         </div>

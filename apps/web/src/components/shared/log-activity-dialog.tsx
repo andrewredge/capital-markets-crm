@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTRPC } from '@/lib/trpc'
@@ -58,6 +59,8 @@ export function LogActivityDialog({
 	dealId,
 	projectId,
 }: LogActivityDialogProps) {
+	const t = useTranslations('shared.activity')
+	const tActions = useTranslations('actions')
 	const trpc = useTRPC()
 	const queryClient = useQueryClient()
 
@@ -97,11 +100,11 @@ export function LogActivityDialog({
 		trpc.activities.create.mutationOptions({
 			onSuccess: () => {
 				queryClient.invalidateQueries({ queryKey: trpc.activities.list.queryKey() })
-				toast.success('Activity logged')
+				toast.success(t('createSuccess') || 'Activity logged')
 				onOpenChange(false)
 			},
 			onError: (error) => {
-				toast.error(error.message || 'Failed to log activity')
+				toast.error(error.message || t('createError') || 'Failed to log activity')
 			},
 		}),
 	)
@@ -121,7 +124,7 @@ export function LogActivityDialog({
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent className="sm:max-w-[500px]">
 				<DialogHeader>
-					<DialogTitle>Log Activity</DialogTitle>
+					<DialogTitle>{t('logTitle')}</DialogTitle>
 				</DialogHeader>
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -130,11 +133,11 @@ export function LogActivityDialog({
 							name="activityType"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Activity Type</FormLabel>
+									<FormLabel>{t('form.type')}</FormLabel>
 									<Select onValueChange={field.onChange} defaultValue={field.value}>
 										<FormControl>
 											<SelectTrigger>
-												<SelectValue placeholder="Select type" />
+												<SelectValue placeholder={tActions('search')} />
 											</SelectTrigger>
 										</FormControl>
 										<SelectContent>
@@ -154,9 +157,9 @@ export function LogActivityDialog({
 							name="subject"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Subject</FormLabel>
+									<FormLabel>{t('form.subject')}</FormLabel>
 									<FormControl>
-										<Input placeholder="Brief summary" {...field} value={field.value || ''} />
+										<Input placeholder={t('form.subjectPlaceholder')} {...field} value={field.value || ''} />
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -167,10 +170,10 @@ export function LogActivityDialog({
 							name="description"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Description</FormLabel>
+									<FormLabel>{t('form.description')}</FormLabel>
 									<FormControl>
 										<Textarea
-											placeholder="Detailed notes..."
+											placeholder={t('form.descriptionPlaceholder')}
 											className="min-h-[100px]"
 											{...field}
 											value={field.value || ''}
@@ -186,7 +189,7 @@ export function LogActivityDialog({
 								name="occurredAt"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Date & Time</FormLabel>
+										<FormLabel>{t('form.occurredAt')}</FormLabel>
 										<FormControl>
 											<Input type="datetime-local" {...field} value={field.value || ''} />
 										</FormControl>
@@ -199,7 +202,7 @@ export function LogActivityDialog({
 								name="duration"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Duration (mins)</FormLabel>
+										<FormLabel>{t('form.duration')}</FormLabel>
 										<FormControl>
 											<Input
 												type="number"
@@ -223,10 +226,10 @@ export function LogActivityDialog({
 								onClick={() => onOpenChange(false)}
 								disabled={createMutation.isPending}
 							>
-								Cancel
+								{tActions('cancel')}
 							</Button>
 							<Button type="submit" disabled={createMutation.isPending}>
-								{createMutation.isPending ? 'Logging...' : 'Log Activity'}
+								{createMutation.isPending ? tActions('loading') : t('logActivity')}
 							</Button>
 						</DialogFooter>
 					</form>

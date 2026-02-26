@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useTRPC } from '@/lib/trpc'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Badge } from '@/components/ui/badge'
@@ -15,6 +16,7 @@ interface EntityTagsProps {
 }
 
 export function EntityTags({ contactId, companyId, dealId, projectId }: EntityTagsProps) {
+	const t = useTranslations('shared.tags')
 	const trpc = useTRPC()
 	const queryClient = useQueryClient()
 
@@ -26,10 +28,10 @@ export function EntityTags({ contactId, companyId, dealId, projectId }: EntityTa
 		trpc.tags.addTagging.mutationOptions({
 			onSuccess: () => {
 				queryClient.invalidateQueries({ queryKey: trpc.tags.getForEntity.queryKey({ contactId, companyId, dealId, projectId }) })
-				toast.success('Tag added')
+				toast.success(t('addSuccess'))
 			},
 			onError: (error) => {
-				toast.error(error.message || 'Failed to add tag')
+				toast.error(error.message || t('error'))
 			},
 		})
 	)
@@ -38,10 +40,10 @@ export function EntityTags({ contactId, companyId, dealId, projectId }: EntityTa
 		trpc.tags.removeTagging.mutationOptions({
 			onSuccess: () => {
 				queryClient.invalidateQueries({ queryKey: trpc.tags.getForEntity.queryKey({ contactId, companyId, dealId, projectId }) })
-				toast.success('Tag removed')
+				toast.success(t('removeSuccess'))
 			},
 			onError: (error) => {
-				toast.error(error.message || 'Failed to remove tag')
+				toast.error(error.message || t('error'))
 			},
 		})
 	)
@@ -81,6 +83,7 @@ export function EntityTags({ contactId, companyId, dealId, projectId }: EntityTa
 			<TagCombobox
 				onSelect={handleSelectTag}
 				excludeTagIds={tags?.map(t => t.tagId)}
+				placeholder={t('placeholder')}
 			/>
 		</div>
 	)

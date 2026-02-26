@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTRPC } from '@/lib/trpc'
@@ -45,6 +46,9 @@ interface CompanyDetailProps {
 }
 
 export function CompanyDetail({ id }: CompanyDetailProps) {
+	const t = useTranslations('companies')
+	const tNav = useTranslations('nav')
+	const tActions = useTranslations('actions')
 	const router = useRouter()
 	const trpc = useTRPC()
 	const queryClient = useQueryClient()
@@ -58,12 +62,12 @@ export function CompanyDetail({ id }: CompanyDetailProps) {
 	const deleteMutation = useMutation(
 		trpc.companies.delete.mutationOptions({
 			onSuccess: () => {
-				toast.success('Company deleted')
+				toast.success(t('deleteSuccess'))
 				router.push('/companies')
 				queryClient.invalidateQueries({ queryKey: trpc.companies.list.queryKey() })
 			},
 			onError: (error) => {
-				toast.error(error.message || 'Failed to delete company')
+				toast.error(error.message || t('deleteError'))
 			},
 		}),
 	)
@@ -75,9 +79,9 @@ export function CompanyDetail({ id }: CompanyDetailProps) {
 	if (error || !company) {
 		return (
 			<div className="flex flex-col items-center justify-center h-[50vh] space-y-4">
-				<h2 className="text-xl font-semibold">Company not found</h2>
+				<h2 className="text-xl font-semibold">{t('notFound')}</h2>
 				<Button variant="outline" asChild>
-					<Link href="/companies">Back to Companies</Link>
+					<Link href="/companies">{t('backToCompanies')}</Link>
 				</Button>
 			</div>
 		)
@@ -87,9 +91,9 @@ export function CompanyDetail({ id }: CompanyDetailProps) {
 		<div className="space-y-6">
 			{/* Breadcrumbs */}
 			<nav className="flex items-center gap-2 text-sm text-muted-foreground">
-				<Link href="/" className="hover:text-foreground">Dashboard</Link>
+				<Link href="/" className="hover:text-foreground">{tNav('dashboard')}</Link>
 				<span>/</span>
-				<Link href="/companies" className="hover:text-foreground">Companies</Link>
+				<Link href="/companies" className="hover:text-foreground">{tNav('companies')}</Link>
 				<span>/</span>
 				<span className="text-foreground font-medium">{company.name}</span>
 			</nav>
@@ -118,16 +122,11 @@ export function CompanyDetail({ id }: CompanyDetailProps) {
 				<div className="flex items-center gap-2">
 					<Button variant="outline" size="sm" onClick={() => setIsEditDialogOpen(true)}>
 						<Edit className="h-4 w-4 mr-2" />
-						Edit
+						{tActions('edit')}
 					</Button>
-					<Button
-						variant="outline"
-						size="sm"
-						className="text-destructive hover:bg-destructive/10"
-						onClick={() => setIsDeleteDialogOpen(true)}
-					>
+					<Button variant="outline" size="sm" className="text-destructive hover:bg-destructive/10" onClick={() => setIsDeleteDialogOpen(true)}>
 						<Trash2 className="h-4 w-4 mr-2" />
-						Delete
+						{tActions('delete')}
 					</Button>
 				</div>
 			</div>
@@ -137,14 +136,14 @@ export function CompanyDetail({ id }: CompanyDetailProps) {
 				<div className="lg:col-span-2 space-y-6">
 					<Card>
 						<CardHeader>
-							<CardTitle>Company Details</CardTitle>
+							<CardTitle>{t('details')}</CardTitle>
 						</CardHeader>
 						<CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
 							<div className="space-y-4">
 								<div className="flex items-center gap-3">
 									<Globe className="h-4 w-4 text-muted-foreground" />
 									<div className="space-y-0.5">
-										<p className="text-xs text-muted-foreground">Website</p>
+										<p className="text-xs text-muted-foreground">{t('website')}</p>
 										{company.website ? (
 											<a
 												href={company.website.startsWith('http') ? company.website : `https://${company.website}`}
@@ -155,21 +154,21 @@ export function CompanyDetail({ id }: CompanyDetailProps) {
 												{company.website.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')}
 											</a>
 										) : (
-											<p className="text-sm text-muted-foreground">No website</p>
+											<p className="text-sm text-muted-foreground">{t('noResults')}</p>
 										)}
 									</div>
 								</div>
 								<div className="flex items-center gap-3">
 									<MapPin className="h-4 w-4 text-muted-foreground" />
 									<div className="space-y-0.5">
-										<p className="text-xs text-muted-foreground">Headquarters</p>
+										<p className="text-xs text-muted-foreground">{t('form.headquarters')}</p>
 										<p className="text-sm font-medium">{company.headquarters || '-'}</p>
 									</div>
 								</div>
 								<div className="flex items-center gap-3">
 									<Users className="h-4 w-4 text-muted-foreground" />
 									<div className="space-y-0.5">
-										<p className="text-xs text-muted-foreground">Employees</p>
+										<p className="text-xs text-muted-foreground">{t('employees')}</p>
 										<p className="text-sm font-medium">{company.employeeCountRange || '-'}</p>
 									</div>
 								</div>
@@ -178,7 +177,7 @@ export function CompanyDetail({ id }: CompanyDetailProps) {
 								<div className="flex items-center gap-3">
 									<Calendar className="h-4 w-4 text-muted-foreground" />
 									<div className="space-y-0.5">
-										<p className="text-xs text-muted-foreground">Founded</p>
+										<p className="text-xs text-muted-foreground">{t('founded')}</p>
 										<p className="text-sm font-medium">{company.foundedYear || '-'}</p>
 									</div>
 								</div>
@@ -192,21 +191,21 @@ export function CompanyDetail({ id }: CompanyDetailProps) {
 							<CardHeader>
 								<div className="flex items-center gap-2">
 									<Briefcase className="h-5 w-5 text-primary" />
-									<CardTitle>Investor Profile</CardTitle>
+									<CardTitle>{t('form.investorDetails')}</CardTitle>
 								</div>
 							</CardHeader>
 							<CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
 								<div className="space-y-1">
-									<p className="text-xs text-muted-foreground">Investor Type</p>
+									<p className="text-xs text-muted-foreground">{t('form.investorType')}</p>
 									<p className="text-sm font-medium capitalize">{company.investorType || '-'}</p>
 								</div>
 								<div className="space-y-1">
-									<p className="text-xs text-muted-foreground">AUM</p>
+									<p className="text-xs text-muted-foreground">{t('form.aum')}</p>
 									<p className="text-sm font-medium">{company.aum || '-'}</p>
 								</div>
 								{Array.isArray(company.investmentStageFocus) && company.investmentStageFocus.length > 0 && (
 									<div className="space-y-1 col-span-2">
-										<p className="text-xs text-muted-foreground">Investment Stage Focus</p>
+										<p className="text-xs text-muted-foreground">{t('investmentStageFocus')}</p>
 										<div className="flex flex-wrap gap-1 mt-1">
 											{(company.investmentStageFocus as string[]).map((stage: string) => (
 												<Badge key={stage} variant="outline" className="text-[10px]">
@@ -225,20 +224,20 @@ export function CompanyDetail({ id }: CompanyDetailProps) {
 							<CardHeader>
 								<div className="flex items-center gap-2">
 									<BarChart3 className="h-5 w-5 text-primary" />
-									<CardTitle>Market Information</CardTitle>
+									<CardTitle>{t('form.marketDetails')}</CardTitle>
 								</div>
 							</CardHeader>
 							<CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6">
 								<div className="space-y-1">
-									<p className="text-xs text-muted-foreground">Ticker</p>
+									<p className="text-xs text-muted-foreground">{t('form.ticker')}</p>
 									<p className="text-sm font-medium uppercase">{company.tickerSymbol || '-'}</p>
 								</div>
 								<div className="space-y-1">
-									<p className="text-xs text-muted-foreground">Exchange</p>
+									<p className="text-xs text-muted-foreground">{t('form.exchange')}</p>
 									<p className="text-sm font-medium uppercase">{company.exchange || '-'}</p>
 								</div>
 								<div className="space-y-1">
-									<p className="text-xs text-muted-foreground">Market Cap</p>
+									<p className="text-xs text-muted-foreground">{t('form.marketCap')}</p>
 									<p className="text-sm font-medium">{company.marketCap || '-'}</p>
 								</div>
 							</CardContent>
@@ -250,16 +249,16 @@ export function CompanyDetail({ id }: CompanyDetailProps) {
 							<CardHeader>
 								<div className="flex items-center gap-2">
 									<Rocket className="h-5 w-5 text-primary" />
-									<CardTitle>Startup & Funding</CardTitle>
+									<CardTitle>{t('form.fundingDetails')}</CardTitle>
 								</div>
 							</CardHeader>
 							<CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
 								<div className="space-y-1">
-									<p className="text-xs text-muted-foreground">Funding Stage</p>
+									<p className="text-xs text-muted-foreground">{t('form.fundingStage')}</p>
 									<p className="text-sm font-medium">{company.fundingStage || '-'}</p>
 								</div>
 								<div className="space-y-1">
-									<p className="text-xs text-muted-foreground">Total Funding</p>
+									<p className="text-xs text-muted-foreground">{t('form.totalFunding')}</p>
 									<p className="text-sm font-medium">{company.totalFunding || '-'}</p>
 								</div>
 							</CardContent>
@@ -294,19 +293,18 @@ export function CompanyDetail({ id }: CompanyDetailProps) {
 			<AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
 				<AlertDialogContent>
 					<AlertDialogHeader>
-						<AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+						<AlertDialogTitle>{t('deleteConfirmTitle')}</AlertDialogTitle>
 						<AlertDialogDescription>
-							This action cannot be undone. This will permanently delete the company
-							and all associated data.
+							{t('deleteConfirmMessage')}
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
-						<AlertDialogCancel>Cancel</AlertDialogCancel>
+						<AlertDialogCancel>{tActions('cancel')}</AlertDialogCancel>
 						<AlertDialogAction
 							onClick={() => deleteMutation.mutate({ id: company.id })}
 							className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
 						>
-							Delete
+							{tActions('delete')}
 						</AlertDialogAction>
 					</AlertDialogFooter>
 				</AlertDialogContent>

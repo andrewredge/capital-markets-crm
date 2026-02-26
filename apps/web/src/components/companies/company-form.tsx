@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
@@ -8,10 +9,24 @@ import {
 	ENTITY_TYPE_OPTIONS,
 	INVESTOR_TYPES,
 } from '@crm/shared'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import {
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
 import { Separator } from '@/components/ui/separator'
 
 interface CompanyFormProps {
@@ -20,25 +35,21 @@ interface CompanyFormProps {
 	isLoading?: boolean
 }
 
-export function CompanyForm({ defaultValues, onSubmit, isLoading }: CompanyFormProps) {
+export function CompanyForm({
+	defaultValues,
+	onSubmit,
+	isLoading,
+}: CompanyFormProps) {
+	const t = useTranslations('companies')
+	const tActions = useTranslations('actions')
 	const form = useForm<CreateCompanyInput>({
 		resolver: zodResolver(createCompanySchema) as any,
 		defaultValues: {
 			name: '',
-			entityType: 'startup',
 			website: '',
+			entityType: 'startup',
 			industry: '',
 			headquarters: '',
-			foundedYear: undefined,
-			employeeCountRange: '',
-			investorType: '',
-			aum: '',
-			investmentStageFocus: [],
-			tickerSymbol: '',
-			exchange: '',
-			marketCap: '',
-			fundingStage: '',
-			totalFunding: '',
 			...defaultValues,
 		} as any,
 	})
@@ -48,15 +59,33 @@ export function CompanyForm({ defaultValues, onSubmit, isLoading }: CompanyFormP
 	return (
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+				<FormField
+					control={form.control}
+					name="name"
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>{t('form.name')}</FormLabel>
+							<FormControl>
+								<Input placeholder={t('form.namePlaceholder')} {...field} />
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+
 				<div className="grid grid-cols-2 gap-4">
 					<FormField
 						control={form.control}
-						name="name"
+						name="website"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Company Name</FormLabel>
+								<FormLabel>{t('form.website')}</FormLabel>
 								<FormControl>
-									<Input placeholder="Acme Corp" {...field} />
+									<Input
+										placeholder={t('form.websitePlaceholder')}
+										{...field}
+										value={field.value || ''}
+									/>
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -67,17 +96,11 @@ export function CompanyForm({ defaultValues, onSubmit, isLoading }: CompanyFormP
 						name="entityType"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Entity Type</FormLabel>
-								<Select
-									onValueChange={(value) => {
-										field.onChange(value)
-										// Optional: Clear specific fields when type changes
-									}}
-									defaultValue={field.value}
-								>
+								<FormLabel>{t('form.entityType')}</FormLabel>
+								<Select onValueChange={field.onChange} defaultValue={field.value}>
 									<FormControl>
 										<SelectTrigger>
-											<SelectValue placeholder="Select type" />
+											<SelectValue placeholder={t('form.selectType')} />
 										</SelectTrigger>
 									</FormControl>
 									<SelectContent>
@@ -97,59 +120,15 @@ export function CompanyForm({ defaultValues, onSubmit, isLoading }: CompanyFormP
 				<div className="grid grid-cols-2 gap-4">
 					<FormField
 						control={form.control}
-						name="website"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>Website</FormLabel>
-								<FormControl>
-									<Input placeholder="https://acme.com" {...field} value={field.value || ''} />
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
-					<FormField
-						control={form.control}
 						name="industry"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Industry</FormLabel>
-								<FormControl>
-									<Input placeholder="Software / FinTech" {...field} value={field.value || ''} />
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
-				</div>
-
-				<div className="grid grid-cols-3 gap-4">
-					<FormField
-						control={form.control}
-						name="headquarters"
-						render={({ field }) => (
-							<FormItem className="col-span-1">
-								<FormLabel>HQ</FormLabel>
-								<FormControl>
-									<Input placeholder="New York, NY" {...field} value={field.value || ''} />
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
-					<FormField
-						control={form.control}
-						name="foundedYear"
-						render={({ field }) => (
-							<FormItem className="col-span-1">
-								<FormLabel>Founded Year</FormLabel>
+								<FormLabel>{t('form.industry')}</FormLabel>
 								<FormControl>
 									<Input
-										type="number"
-										placeholder="2020"
+										placeholder={t('form.industryPlaceholder')}
 										{...field}
 										value={field.value || ''}
-										onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
 									/>
 								</FormControl>
 								<FormMessage />
@@ -158,12 +137,16 @@ export function CompanyForm({ defaultValues, onSubmit, isLoading }: CompanyFormP
 					/>
 					<FormField
 						control={form.control}
-						name="employeeCountRange"
+						name="headquarters"
 						render={({ field }) => (
-							<FormItem className="col-span-1">
-								<FormLabel>Employees</FormLabel>
+							<FormItem>
+								<FormLabel>{t('form.headquarters')}</FormLabel>
 								<FormControl>
-									<Input placeholder="11-50" {...field} value={field.value || ''} />
+									<Input
+										placeholder={t('form.headquartersPlaceholder')}
+										{...field}
+										value={field.value || ''}
+									/>
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -175,18 +158,21 @@ export function CompanyForm({ defaultValues, onSubmit, isLoading }: CompanyFormP
 				{entityType === 'investor' && (
 					<div className="space-y-4 pt-2">
 						<Separator />
-						<h4 className="text-sm font-medium">Investor Details</h4>
+						<h4 className="text-sm font-medium">{t('form.investorDetails')}</h4>
 						<div className="grid grid-cols-2 gap-4">
 							<FormField
 								control={form.control}
 								name="investorType"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Investor Type</FormLabel>
-										<Select onValueChange={field.onChange} defaultValue={field.value || undefined}>
+										<FormLabel>{t('form.investorType')}</FormLabel>
+										<Select
+											onValueChange={field.onChange}
+											defaultValue={field.value || undefined}
+										>
 											<FormControl>
 												<SelectTrigger>
-													<SelectValue placeholder="Select type" />
+													<SelectValue placeholder={t('form.selectType')} />
 												</SelectTrigger>
 											</FormControl>
 											<SelectContent>
@@ -206,9 +192,13 @@ export function CompanyForm({ defaultValues, onSubmit, isLoading }: CompanyFormP
 								name="aum"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>AUM</FormLabel>
+										<FormLabel>{t('form.aum')}</FormLabel>
 										<FormControl>
-											<Input placeholder="$500M" {...field} value={field.value || ''} />
+											<Input
+												placeholder={t('form.aumPlaceholder')}
+												{...field}
+												value={field.value || ''}
+											/>
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -222,16 +212,20 @@ export function CompanyForm({ defaultValues, onSubmit, isLoading }: CompanyFormP
 				{entityType === 'listed_company' && (
 					<div className="space-y-4 pt-2">
 						<Separator />
-						<h4 className="text-sm font-medium">Market Details</h4>
+						<h4 className="text-sm font-medium">{t('form.marketDetails')}</h4>
 						<div className="grid grid-cols-3 gap-4">
 							<FormField
 								control={form.control}
 								name="tickerSymbol"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Ticker</FormLabel>
+										<FormLabel>{t('form.ticker')}</FormLabel>
 										<FormControl>
-											<Input placeholder="AAPL" {...field} value={field.value || ''} />
+											<Input
+												placeholder={t('form.tickerPlaceholder')}
+												{...field}
+												value={field.value || ''}
+											/>
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -242,9 +236,13 @@ export function CompanyForm({ defaultValues, onSubmit, isLoading }: CompanyFormP
 								name="exchange"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Exchange</FormLabel>
+										<FormLabel>{t('form.exchange')}</FormLabel>
 										<FormControl>
-											<Input placeholder="NASDAQ" {...field} value={field.value || ''} />
+											<Input
+												placeholder={t('form.exchangePlaceholder')}
+												{...field}
+												value={field.value || ''}
+											/>
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -255,9 +253,13 @@ export function CompanyForm({ defaultValues, onSubmit, isLoading }: CompanyFormP
 								name="marketCap"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Market Cap</FormLabel>
+										<FormLabel>{t('form.marketCap')}</FormLabel>
 										<FormControl>
-											<Input placeholder="$3T" {...field} value={field.value || ''} />
+											<Input
+												placeholder={t('form.marketCapPlaceholder')}
+												{...field}
+												value={field.value || ''}
+											/>
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -271,16 +273,20 @@ export function CompanyForm({ defaultValues, onSubmit, isLoading }: CompanyFormP
 				{entityType === 'startup' && (
 					<div className="space-y-4 pt-2">
 						<Separator />
-						<h4 className="text-sm font-medium">Funding Details</h4>
+						<h4 className="text-sm font-medium">{t('form.fundingDetails')}</h4>
 						<div className="grid grid-cols-2 gap-4">
 							<FormField
 								control={form.control}
 								name="fundingStage"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Funding Stage</FormLabel>
+										<FormLabel>{t('form.fundingStage')}</FormLabel>
 										<FormControl>
-											<Input placeholder="Series B" {...field} value={field.value || ''} />
+											<Input
+												placeholder={t('form.fundingStagePlaceholder')}
+												{...field}
+												value={field.value || ''}
+											/>
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -291,9 +297,13 @@ export function CompanyForm({ defaultValues, onSubmit, isLoading }: CompanyFormP
 								name="totalFunding"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Total Funding</FormLabel>
+										<FormLabel>{t('form.totalFunding')}</FormLabel>
 										<FormControl>
-											<Input placeholder="$25M" {...field} value={field.value || ''} />
+											<Input
+												placeholder={t('form.totalFundingPlaceholder')}
+												{...field}
+												value={field.value || ''}
+											/>
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -305,7 +315,7 @@ export function CompanyForm({ defaultValues, onSubmit, isLoading }: CompanyFormP
 
 				<div className="flex justify-end gap-3 pt-4">
 					<Button type="submit" disabled={isLoading}>
-						{isLoading ? 'Saving...' : 'Save Company'}
+						{isLoading ? tActions('saving') : tActions('save')}
 					</Button>
 				</div>
 			</form>

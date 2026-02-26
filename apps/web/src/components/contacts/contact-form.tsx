@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { createContactSchema, type CreateContactInput, CONTACT_STATUS_OPTIONS } from '@crm/shared'
@@ -15,6 +16,8 @@ interface ContactFormProps {
 }
 
 export function ContactForm({ defaultValues, onSubmit, isLoading }: ContactFormProps) {
+	const t = useTranslations('contacts')
+	const tActions = useTranslations('actions')
 	const form = useForm<CreateContactInput>({
 		resolver: zodResolver(createContactSchema) as any,
 		defaultValues: {
@@ -39,9 +42,9 @@ export function ContactForm({ defaultValues, onSubmit, isLoading }: ContactFormP
 						name="firstName"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>First Name</FormLabel>
+								<FormLabel>{t('form.firstName')}</FormLabel>
 								<FormControl>
-									<Input placeholder="John" {...field} />
+									<Input placeholder={t('form.firstNamePlaceholder')} {...field} />
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -52,9 +55,9 @@ export function ContactForm({ defaultValues, onSubmit, isLoading }: ContactFormP
 						name="lastName"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Last Name</FormLabel>
+								<FormLabel>{t('form.lastName')}</FormLabel>
 								<FormControl>
-									<Input placeholder="Doe" {...field} />
+									<Input placeholder={t('form.lastNamePlaceholder')} {...field} />
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -67,9 +70,9 @@ export function ContactForm({ defaultValues, onSubmit, isLoading }: ContactFormP
 					name="email"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Email</FormLabel>
+							<FormLabel>{t('form.email')}</FormLabel>
 							<FormControl>
-								<Input type="email" placeholder="john.doe@example.com" {...field} value={field.value || ''} />
+								<Input type="email" placeholder={t('form.emailPlaceholder')} {...field} value={field.value || ''} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -82,9 +85,9 @@ export function ContactForm({ defaultValues, onSubmit, isLoading }: ContactFormP
 						name="phone"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Phone</FormLabel>
+								<FormLabel>{t('form.phone')}</FormLabel>
 								<FormControl>
-									<Input placeholder="+1 234 567 890" {...field} value={field.value || ''} />
+									<Input placeholder={t('form.phonePlaceholder')} {...field} value={field.value || ''} />
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -95,15 +98,15 @@ export function ContactForm({ defaultValues, onSubmit, isLoading }: ContactFormP
 						name="status"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Status</FormLabel>
+								<FormLabel>{t('form.status')}</FormLabel>
 								<Select onValueChange={field.onChange} defaultValue={field.value}>
 									<FormControl>
 										<SelectTrigger>
-											<SelectValue placeholder="Select status" />
+											<SelectValue placeholder={t('form.selectStatus')} />
 										</SelectTrigger>
 									</FormControl>
 									<SelectContent>
-										{CONTACT_STATUS_OPTIONS.map((option) => (
+										{CONTACT_STATUS_OPTIONS.map((option) => ( 
 											<SelectItem key={option.value} value={option.value}>
 												{option.label}
 											</SelectItem>
@@ -121,9 +124,9 @@ export function ContactForm({ defaultValues, onSubmit, isLoading }: ContactFormP
 					name="title"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Title</FormLabel>
+							<FormLabel>{t('form.title')}</FormLabel>
 							<FormControl>
-								<Input placeholder="Managing Director" {...field} value={field.value || ''} />
+								<Input placeholder={t('form.titlePlaceholder')} {...field} value={field.value || ''} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -135,9 +138,9 @@ export function ContactForm({ defaultValues, onSubmit, isLoading }: ContactFormP
 					name="linkedinUrl"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>LinkedIn URL</FormLabel>
+							<FormLabel>{t('form.linkedinUrl')}</FormLabel>
 							<FormControl>
-								<Input placeholder="https://linkedin.com/in/johndoe" {...field} value={field.value || ''} />
+								<Input placeholder={t('form.linkedinPlaceholder')} {...field} value={field.value || ''} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -149,9 +152,9 @@ export function ContactForm({ defaultValues, onSubmit, isLoading }: ContactFormP
 					name="source"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Source</FormLabel>
+							<FormLabel>{t('form.source')}</FormLabel>
 							<FormControl>
-								<Input placeholder="Referral" {...field} value={field.value || ''} />
+								<Input placeholder={t('form.sourcePlaceholder')} {...field} value={field.value || ''} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -160,7 +163,7 @@ export function ContactForm({ defaultValues, onSubmit, isLoading }: ContactFormP
 
 				<div className="flex justify-end gap-3 pt-4">
 					<Button type="submit" disabled={isLoading}>
-						{isLoading ? 'Saving...' : 'Save Contact'}
+						{isLoading ? tActions('saving') : tActions('save')}
 					</Button>
 				</div>
 			</form>

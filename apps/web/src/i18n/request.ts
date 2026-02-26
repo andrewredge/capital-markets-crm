@@ -19,8 +19,28 @@ export default getRequestConfig(async () => {
 		if (match) locale = match
 	}
 
+	const common = (await import(`../../messages/${locale}/common.json`)).default
+	const contacts = (await import(`../../messages/${locale}/contacts.json`)).default
+	const companies = (await import(`../../messages/${locale}/companies.json`)).default
+	const deals = (await import(`../../messages/${locale}/deals.json`)).default
+	const projects = (await import(`../../messages/${locale}/projects.json`)).default
+	const shared = (await import(`../../messages/${locale}/shared.json`)).default
+	const settings = (await import(`../../messages/${locale}/settings.json`)).default
+	const admin = (await import(`../../messages/${locale}/admin.json`)).default
+	const auth = (await import(`../../messages/${locale}/auth.json`)).default
+
 	return {
 		locale,
-		messages: (await import(`../../messages/${locale}/common.json`)).default,
+		messages: {
+			...common,
+			contacts,
+			companies,
+			deals,
+			projects,
+			shared,
+			settings,
+			admin,
+			auth,
+		},
 	}
 })

@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { useTRPC } from '@/lib/trpc'
@@ -17,6 +18,7 @@ interface CompanyContactsSectionProps {
 }
 
 export function CompanyContactsSection({ companyId, roles }: CompanyContactsSectionProps) {
+	const t = useTranslations('companies')
 	const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
 	const trpc = useTRPC()
 	const queryClient = useQueryClient()
@@ -25,10 +27,10 @@ export function CompanyContactsSection({ companyId, roles }: CompanyContactsSect
 		trpc.contactCompanyRoles.delete.mutationOptions({
 			onSuccess: () => {
 				queryClient.invalidateQueries({ queryKey: trpc.companies.getById.queryKey({ id: companyId }) })
-				toast.success('Contact removed')
+				toast.success(t('removeContactSuccess'))
 			},
 			onError: (error) => {
-				toast.error(error.message || 'Failed to remove contact')
+				toast.error(error.message || t('removeContactError'))
 			},
 		}),
 	)
@@ -36,7 +38,7 @@ export function CompanyContactsSection({ companyId, roles }: CompanyContactsSect
 	return (
 		<Card>
 			<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-				<CardTitle className="text-lg font-bold">Contacts</CardTitle>
+				<CardTitle className="text-lg font-bold">{t('contactsSection')}</CardTitle>
 				<Button size="sm" variant="ghost" onClick={() => setIsAddDialogOpen(true)}>
 					<Plus className="h-4 w-4" />
 				</Button>
@@ -44,7 +46,7 @@ export function CompanyContactsSection({ companyId, roles }: CompanyContactsSect
 			<CardContent>
 				<div className="space-y-4">
 					{roles.length === 0 ? (
-						<p className="text-sm text-muted-foreground">No contacts associated.</p>
+						<p className="text-sm text-muted-foreground">{t('noContacts')}</p>  
 					) : (
 						roles.map((role) => (
 							<div key={role.id} className="flex items-center justify-between group">
@@ -59,7 +61,7 @@ export function CompanyContactsSection({ companyId, roles }: CompanyContactsSect
 										>
 											{role.contact.firstName} {role.contact.lastName}
 										</Link>
-										<div className="flex items-center gap-2">
+										<div className="flex items-center gap-2"> 
 											<span className="text-xs text-muted-foreground capitalize">
 												{role.role.replace('_', ' ')}
 											</span>
@@ -78,7 +80,7 @@ export function CompanyContactsSection({ companyId, roles }: CompanyContactsSect
 									onClick={() => deleteMutation.mutate({ id: role.id })}
 									disabled={deleteMutation.isPending}
 								>
-									<Trash2 className="h-4 w-4 text-destructive" />
+									<Trash2 className="h-4 w-4 text-destructive" />   
 								</Button>
 							</div>
 						))

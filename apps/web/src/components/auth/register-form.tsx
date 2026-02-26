@@ -1,5 +1,6 @@
 "use client"
 
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
@@ -18,6 +19,7 @@ import {
 import { Input } from '@/components/ui/input'
 
 export function RegisterForm() {
+    const t = useTranslations('auth.register')
     const router = useRouter()
     const [error, setError] = useState<string | null>(null)
     const [isPending, setIsPending] = useState(false)
@@ -42,7 +44,7 @@ export function RegisterForm() {
         })
 
         if (error) {
-            setError(error.message || 'Something went wrong')
+            setError(error.message || t('error'))
             setIsPending(false)
         } else {
             router.push('/')
@@ -63,7 +65,7 @@ export function RegisterForm() {
                     name="name"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Name</FormLabel>
+                            <FormLabel>{t('name')}</FormLabel>
                             <FormControl>
                                 <Input placeholder="John Doe" {...field} />
                             </FormControl>
@@ -76,7 +78,7 @@ export function RegisterForm() {
                     name="email"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Email</FormLabel>
+                            <FormLabel>{t('email')}</FormLabel>
                             <FormControl>
                                 <Input placeholder="name@example.com" {...field} />
                             </FormControl>
@@ -89,7 +91,7 @@ export function RegisterForm() {
                     name="password"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Password</FormLabel>
+                            <FormLabel>{t('password')}</FormLabel>
                             <FormControl>
                                 <Input type="password" placeholder="••••••••" {...field} />
                             </FormControl>
@@ -98,7 +100,7 @@ export function RegisterForm() {
                     )}
                 />
                 <Button type="submit" className="w-full" disabled={isPending}>
-                    {isPending ? 'Creating account...' : 'Create account'}
+                    {isPending ? t('creatingAccount') : t('createAccount')}
                 </Button>
             </form>
         </Form>

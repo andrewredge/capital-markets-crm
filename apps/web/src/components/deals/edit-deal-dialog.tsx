@@ -1,13 +1,14 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTRPC } from '@/lib/trpc'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { 
-  updateDealSchema, 
+import {
+  updateDealSchema,
   type UpdateDealInput,
-  DEAL_TYPES 
+  DEAL_TYPES
 } from '@crm/shared'
 import { z } from 'zod'
 
@@ -52,14 +53,16 @@ interface EditDealDialogProps {
   onOpenChange: (open: boolean) => void
 }
 
-export function EditDealDialog({ 
-  deal, 
-  open, 
-  onOpenChange 
+export function EditDealDialog({
+  deal,
+  open,
+  onOpenChange
 }: EditDealDialogProps) {
+  const t = useTranslations('deals')
+  const tActions = useTranslations('actions')
   const trpc = useTRPC()
   const queryClient = useQueryClient()
-  
+
   const form = useForm<DealFormValues>({
     resolver: zodResolver(dealFormSchema) as any,
     defaultValues: {
@@ -70,8 +73,8 @@ export function EditDealDialog({
       currency: deal?.currency || 'USD',
       confidence: deal?.confidence || null,
       description: deal?.description || '',
-      expectedCloseDate: deal?.expectedCloseDate 
-        ? new Date(deal.expectedCloseDate).toISOString().slice(0, 16) 
+      expectedCloseDate: deal?.expectedCloseDate
+        ? new Date(deal.expectedCloseDate).toISOString().slice(0, 16)
         : null,
     },
   })
@@ -87,8 +90,8 @@ export function EditDealDialog({
         currency: deal.currency,
         confidence: deal.confidence,
         description: deal.description || '',
-        expectedCloseDate: deal.expectedCloseDate 
-          ? new Date(deal.expectedCloseDate).toISOString().slice(0, 16) 
+        expectedCloseDate: deal.expectedCloseDate
+          ? new Date(deal.expectedCloseDate).toISOString().slice(0, 16)
           : null,
       })
     }
@@ -108,11 +111,11 @@ export function EditDealDialog({
         queryClient.invalidateQueries({ queryKey: trpc.deals.getById.queryKey({ id: deal.id }) })
         queryClient.invalidateQueries({ queryKey: trpc.deals.list.queryKey() })
         queryClient.invalidateQueries({ queryKey: trpc.deals.getForKanban.queryKey() })
-        toast.success('Deal updated')
+        toast.success(t('updateSuccess'))
         onOpenChange(false)
       },
       onError: (error) => {
-        toast.error(error.message || 'Failed to update deal')
+        toast.error(error.message || t('updateError'))
       },
     })
   )
@@ -129,9 +132,9 @@ export function EditDealDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Edit Deal</DialogTitle>
+          <DialogTitle>{t('editTitle')}</DialogTitle>
           <DialogDescription>
-            Update the deal information.
+            {t('editDescription')}
           </DialogDescription>
         </DialogHeader>
 
@@ -142,9 +145,9 @@ export function EditDealDialog({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Deal Name</FormLabel>
+                  <FormLabel>{t('form.name')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g. Acme Series A" {...field} />
+                    <Input placeholder={t('form.namePlaceholder')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -153,9 +156,9 @@ export function EditDealDialog({
 
             <div className="grid grid-cols-2 gap-4">
               <FormItem>
-                <FormLabel>Pipeline</FormLabel>
+                <FormLabel>{t('form.pipeline')}</FormLabel>
                 <Input value={deal?.pipeline?.name || ''} disabled className="bg-muted/50" />
-                <p className="text-[10px] text-muted-foreground mt-1">Pipeline cannot be changed after creation.</p>
+                <p className="text-[10px] text-muted-foreground mt-1">{t('form.pipelineFixed')}</p>      
               </FormItem>
 
               <FormField
@@ -163,15 +166,15 @@ export function EditDealDialog({
                 name="currentStageId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Stage</FormLabel>
-                    <Select 
-                      onValueChange={field.onChange} 
+                    <FormLabel>{t('form.stage')}</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
                       value={field.value}
                       disabled={isLoadingStages}
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select stage" />
+                          <SelectValue placeholder={t('form.selectStage')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -194,11 +197,11 @@ export function EditDealDialog({
                 name="dealType"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Deal Type</FormLabel>
+                    <FormLabel>{t('form.type')}</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select type" />
+                          <SelectValue placeholder={t('form.selectType')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -221,10 +224,10 @@ export function EditDealDialog({
                     name="amount"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Amount</FormLabel>
+                        <FormLabel>{t('form.amount')}</FormLabel>
                         <FormControl>
-                          <Input 
-                            type="number" 
+                          <Input
+                            type="number"
                             placeholder="0"
                             {...field}
                             value={field.value === null ? '' : field.value}
@@ -241,7 +244,7 @@ export function EditDealDialog({
                   name="currency"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Currency</FormLabel>
+                      <FormLabel>{t('form.currency')}</FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
@@ -258,7 +261,7 @@ export function EditDealDialog({
                 name="expectedCloseDate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Expected Close</FormLabel>
+                    <FormLabel>{t('form.expectedClose')}</FormLabel>
                     <FormControl>
                       <Input type="datetime-local" {...field} value={field.value || ''} />
                     </FormControl>
@@ -272,11 +275,11 @@ export function EditDealDialog({
                 name="confidence"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Confidence (%)</FormLabel>
+                    <FormLabel>{t('form.confidence')}</FormLabel>
                     <FormControl>
-                      <Input 
-                        type="number" 
-                        placeholder="0-100"
+                      <Input
+                        type="number"
+                        placeholder={t('form.confidencePlaceholder')}
                         {...field}
                         value={field.value === null ? '' : field.value}
                         onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : null)}
@@ -293,12 +296,12 @@ export function EditDealDialog({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>{t('form.description')}</FormLabel>
                   <FormControl>
-                    <Textarea 
-                      placeholder="Optional deal details..." 
+                    <Textarea
+                      placeholder={t('form.descriptionPlaceholder')}
                       className="resize-none"
-                      {...field} 
+                      {...field}
                       value={field.value || ''}
                     />
                   </FormControl>
@@ -314,10 +317,10 @@ export function EditDealDialog({
                 onClick={() => onOpenChange(false)}
                 disabled={updateMutation.isPending}
               >
-                Cancel
+                {tActions('cancel')}
               </Button>
               <Button type="submit" disabled={updateMutation.isPending}>
-                {updateMutation.isPending ? 'Saving...' : 'Save Changes'}
+                {updateMutation.isPending ? tActions('saving') : tActions('save')}
               </Button>
             </DialogFooter>
           </form>

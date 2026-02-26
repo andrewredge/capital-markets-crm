@@ -1,14 +1,17 @@
+import { getTranslations } from 'next-intl/server'
 import { StalenessQueueTable } from '@/components/enrichment/staleness-queue-table'
 import { EnrichmentStatsCards } from '@/components/enrichment/enrichment-stats-cards'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
-export default function EnrichmentPage() {
+export default async function EnrichmentPage() {
+	const t = await getTranslations('settings.enrichment')
+
 	return (
 		<div className="space-y-6">
 			<div>
-				<h1 className="text-2xl font-bold tracking-tight">Data Quality & Enrichment</h1>
+				<h1 className="text-2xl font-bold tracking-tight">{t('pageTitle')}</h1>
 				<p className="text-muted-foreground">
-					Monitor data staleness and review proposed updates for your contacts.
+					{t('pageDescription')}
 				</p>
 			</div>
 
@@ -16,9 +19,9 @@ export default function EnrichmentPage() {
 
 			<Card>
 				<CardHeader>
-					<CardTitle>Staleness Queue</CardTitle>
+					<CardTitle>{t('stalenessQueue')}</CardTitle>
 					<CardDescription>
-						Contacts sorted by staleness score. Review those with the highest scores first.
+						{t('stalenessDescription')}
 					</CardDescription>
 				</CardHeader>
 				<CardContent>

@@ -1,0 +1,96 @@
+{
+  "title": "Settings",
+  "import": {
+    "title": "Import Contacts",
+    "description": "Upload a CSV or Excel file to bulk import contacts into your CRM.",
+    "wizard": {
+      "step1": "Upload File",
+      "step2": "Map Fields",
+      "step3": "Review & Import",
+      "step4": "Preview",
+      "success": "Import completed successfully"
+    },
+    "fileUpload": {
+      "title": "Upload File",
+      "description": "Upload a CSV or Excel file containing your contacts.",
+      "rows": "{rows} rows, {cols} columns",
+      "dropZone": "Drop your file here, or click to browse",
+      "supportedFormats": "Supports .csv, .xlsx, .xls",
+      "parseError": "Failed to parse file",
+      "parsing": "Parsing file..."
+    },
+    "columnMapping": {
+      "title": "Map Columns",
+      "description": "Map each column from your file to a CRM field, or skip columns you don't need.",
+      "requiredNotMapped": "Required fields not mapped: {fields}",
+      "sourceColumn": "Source Column",
+      "mapsTo": "Maps To",
+      "preview": "Preview",
+      "skip": "Skip",
+      "required": "Required",
+      "fields": {
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "email": "Email",
+        "phone": "Phone",
+        "title": "Job Title",
+        "linkedinUrl": "LinkedIn URL",
+        "contactType": "Contact Type",
+        "contactSubtype": "Contact Subtype",
+        "companyName": "Company Name",
+        "companyRole": "Company Role",
+        "source": "Source",
+        "status": "Status"
+      }
+    },
+    "previewStep": {
+      "title": "Preview & Validate",
+      "description": "Review the mapped data before importing.",
+      "totalRows": "{count} total rows",
+      "valid": "{count} valid",
+      "withErrors": "{count} with errors",
+      "row": "Row",
+      "status": "Status",
+      "empty": "(empty)",
+      "errorCount": "{count} error(s)",
+      "ok": "OK",
+      "showingFirst": "Showing first 20 of {count} rows.",
+      "duplicateHandling": "Duplicate Handling",
+      "strategies": {
+        "skip": "Skip duplicates",
+        "skipDescription": "Existing contacts with matching emails will be left unchanged.",
+        "overwrite": "Overwrite duplicates",
+        "overwriteDescription": "Existing contacts with matching emails will be updated with the new data.",
+        "create_anyway": "Create anyway",
+        "create_anywayDescription": "All rows will be imported as new contacts, even if emails match."
+      }
+    },
+    "result": {
+      "title": "Import Complete",
+      "rowsProcessed": "{count} rows processed.",
+      "imported": "{count} imported",
+      "updated": "{count} updated",
+      "skipped": "{count} skipped",
+      "errors": "{count} errors",
+      "flaggedForReview": "{count} contacts flagged for review",
+      "flaggedDescription": "Some imported contacts have incomplete data or missing signals. You can review them in the Data Quality queue.",
+      "goToEnrichment": "Go to Enrichment Queue",
+      "errorDetails": "Error Details",
+      "errorRow": "Row",
+      "errorField": "Field",
+      "errorMessage": "Error",
+      "importMore": "Import More",
+      "viewContacts": "View Contacts"
+    }
+  },
+  "enrichment": {
+    "pageTitle": "Data Quality & Enrichment",
+    "pageDescription": "Monitor data staleness and review proposed updates for your contacts.",
+    "stalenessQueue": "Staleness Queue",
+    "stalenessDescription": "Contacts sorted by staleness score. Review those with the highest scores first.",
+    "title": "Data Enrichment",
+    "staleData": "Stale Data",
+    "proposals": "Enrichment Proposals",
+    "description": "Review contacts with stale data and manage enrichment proposals."
+  }
+}

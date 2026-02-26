@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { useTRPC } from '@/lib/trpc'
@@ -18,6 +19,7 @@ import { ContactForm } from './contact-form'
 import type { CreateContactInput } from '@crm/shared'
 
 export function CreateContactDialog() {
+	const t = useTranslations('contacts')
 	const [open, setOpen] = useState(false)
 	const trpc = useTRPC()
 	const queryClient = useQueryClient()
@@ -26,11 +28,11 @@ export function CreateContactDialog() {
 		trpc.contacts.create.mutationOptions({
 			onSuccess: () => {
 				queryClient.invalidateQueries({ queryKey: trpc.contacts.list.queryKey() })
-				toast.success('Contact created successfully')
+				toast.success(t('createSuccess'))
 				setOpen(false)
 			},
 			onError: (error) => {
-				toast.error(error.message || 'Failed to create contact')
+				toast.error(error.message || t('createError'))
 			},
 		}),
 	)
@@ -44,14 +46,14 @@ export function CreateContactDialog() {
 			<DialogTrigger asChild>
 				<Button size="sm" className="gap-2">
 					<Plus className="h-4 w-4" />
-					New Contact
+					{t('createTitle')}
 				</Button>
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-[500px]">
 				<DialogHeader>
-					<DialogTitle>Create New Contact</DialogTitle>
+					<DialogTitle>{t('createTitle')}</DialogTitle>
 					<DialogDescription>
-						Add a new contact to your CRM.
+						{t('createDescription')}
 					</DialogDescription>
 				</DialogHeader>
 				<ContactForm onSubmit={onSubmit} isLoading={createMutation.isPending} />

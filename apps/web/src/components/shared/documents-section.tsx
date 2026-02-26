@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
 import { useTRPC } from '@/lib/trpc'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -82,6 +83,8 @@ function formatDate(date: Date | string) {
 }
 
 export function DocumentsSection({ contactId, companyId, dealId, projectId }: DocumentsSectionProps) {
+	const t = useTranslations('shared.documents')
+	const tActions = useTranslations('actions')
 	const trpc = useTRPC()
 	const queryClient = useQueryClient()
 	const [uploading, setUploading] = useState(false)
@@ -111,12 +114,12 @@ export function DocumentsSection({ contactId, companyId, dealId, projectId }: Do
 		trpc.documents.confirmUpload.mutationOptions({
 			onSuccess: () => {
 				queryClient.invalidateQueries({ queryKey: trpc.documents.list.queryKey() })
-				toast.success('Document uploaded')
+				toast.success(t('uploadSuccess'))
 				setUploading(false)
 				setUploadProgress(0)
 			},
 			onError: (error) => {
-				toast.error(error.message || 'Failed to confirm upload')
+				toast.error(error.message || t('uploadError'))
 				setUploading(false)
 				setUploadProgress(0)
 			},
@@ -127,11 +130,11 @@ export function DocumentsSection({ contactId, companyId, dealId, projectId }: Do
 		trpc.documents.delete.mutationOptions({
 			onSuccess: () => {
 				queryClient.invalidateQueries({ queryKey: trpc.documents.list.queryKey() })
-				toast.success('Document deleted')
+				toast.success(t('deleteSuccess'))
 				setDeletingDocId(null)
 			},
 			onError: (error) => {
-				toast.error(error.message || 'Failed to delete document')
+				toast.error(error.message || t('deleteError'))
 			},
 		}),
 	)
@@ -139,7 +142,7 @@ export function DocumentsSection({ contactId, companyId, dealId, projectId }: Do
 	const handleUpload = useCallback(
 		async (file: File) => {
 			if (file.size > 100 * 1024 * 1024) {
-				toast.error('File must be under 100 MB')
+				toast.error(t('fileTooLarge'))
 				return
 			}
 
@@ -171,7 +174,7 @@ export function DocumentsSection({ contactId, companyId, dealId, projectId }: Do
 				})
 
 				if (!uploadResponse.ok) {
-					throw new Error('Upload to storage failed')
+					throw new Error(t('uploadStorageFailed'))
 				}
 
 				setUploadProgress(80)
@@ -191,12 +194,12 @@ export function DocumentsSection({ contactId, companyId, dealId, projectId }: Do
 
 				setUploadProgress(100)
 			} catch (e) {
-				toast.error(e instanceof Error ? e.message : 'Upload failed')
+				toast.error(e instanceof Error ? e.message : t('uploadFailed'))
 				setUploading(false)
 				setUploadProgress(0)
 			}
 		},
-		[contactId, companyId, dealId, projectId, documentType, getUploadUrlMutation, confirmUploadMutation],
+		[contactId, companyId, dealId, projectId, documentType, getUploadUrlMutation, confirmUploadMutation, t],
 	)
 
 	const handleDrop = useCallback(
@@ -227,7 +230,7 @@ export function DocumentsSection({ contactId, companyId, dealId, projectId }: Do
 				const data = await queryClient.fetchQuery(result)
 				window.open(data.url, '_blank')
 			} catch {
-				toast.error('Failed to get download link')
+				toast.error(t('downloadError'))
 			}
 		},
 		[trpc, queryClient],
@@ -236,7 +239,7 @@ export function DocumentsSection({ contactId, companyId, dealId, projectId }: Do
 	return (
 		<Card>
 			<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-				<CardTitle className="text-xl font-bold">Documents</CardTitle>
+				<CardTitle className="text-xl font-bold">{t('title')}</CardTitle>
 			</CardHeader>
 			<CardContent className="space-y-4">
 				{/* Upload zone */}
@@ -244,7 +247,7 @@ export function DocumentsSection({ contactId, companyId, dealId, projectId }: Do
 					<div className="flex items-center gap-2">
 						<Select value={documentType} onValueChange={setDocumentType}>
 							<SelectTrigger className="w-[200px]">
-								<SelectValue placeholder="Document type" />
+								<SelectValue placeholder={t('form.type')} />
 							</SelectTrigger>
 							<SelectContent>
 								{DOCUMENT_TYPE_OPTIONS.map((opt) => (
@@ -258,7 +261,7 @@ export function DocumentsSection({ contactId, companyId, dealId, projectId }: Do
 
 					{uploading ? (
 						<div className="rounded-lg border p-4 space-y-2">
-							<p className="text-sm text-muted-foreground">Uploading...</p>
+							<p className="text-sm text-muted-foreground">{tActions('loading')}</p>
 							<Progress value={uploadProgress} />
 						</div>
 					) : (
@@ -274,8 +277,8 @@ export function DocumentsSection({ contactId, companyId, dealId, projectId }: Do
 							onDrop={handleDrop}
 						>
 							<Upload className="h-6 w-6 text-muted-foreground mb-2" />
-							<p className="text-sm font-medium">Drop a file here, or click to browse</p>
-							<p className="text-xs text-muted-foreground mt-1">Max 100 MB</p>
+							<p className="text-sm font-medium">{t('dropZone')}</p>
+							<p className="text-xs text-muted-foreground mt-1">{t('maxSize')}</p>
 							<input
 								type="file"
 								className="hidden"
@@ -295,7 +298,7 @@ export function DocumentsSection({ contactId, companyId, dealId, projectId }: Do
 					</div>
 				) : !data?.items?.length ? (
 					<div className="text-center py-4 text-muted-foreground text-sm">
-						No documents yet.
+						{t('noDocuments')}
 					</div>
 				) : (
 					<div className="space-y-2">
@@ -323,7 +326,7 @@ export function DocumentsSection({ contactId, companyId, dealId, projectId }: Do
 										)}
 										{doc.visibility === 'showcase' && (
 											<Badge variant="outline" className="text-[10px] px-1.5 py-0">
-												Showcase
+												{t('showcase')}
 											</Badge>
 										)}
 									</div>
@@ -349,14 +352,14 @@ export function DocumentsSection({ contactId, companyId, dealId, projectId }: Do
 										<DropdownMenuContent align="end">
 											<DropdownMenuItem onClick={() => setEditingDoc(doc)}>
 												<Edit2 className="h-4 w-4 mr-2" />
-												Edit
+												{tActions('edit')}
 											</DropdownMenuItem>
 											<DropdownMenuItem
 												className="text-destructive"
 												onClick={() => setDeletingDocId(doc.id)}
 											>
 												<Trash2 className="h-4 w-4 mr-2" />
-												Delete
+												{tActions('delete')}
 											</DropdownMenuItem>
 										</DropdownMenuContent>
 									</DropdownMenu>
@@ -378,18 +381,18 @@ export function DocumentsSection({ contactId, companyId, dealId, projectId }: Do
 			<AlertDialog open={!!deletingDocId} onOpenChange={(open) => !open && setDeletingDocId(null)}>
 				<AlertDialogContent>
 					<AlertDialogHeader>
-						<AlertDialogTitle>Delete Document</AlertDialogTitle>
+						<AlertDialogTitle>{tActions('confirm')}</AlertDialogTitle>
 						<AlertDialogDescription>
-							Are you sure you want to delete this document? The file will be permanently removed.
+							{t('deleteConfirmMessage')}
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
-						<AlertDialogCancel>Cancel</AlertDialogCancel>
+						<AlertDialogCancel>{tActions('cancel')}</AlertDialogCancel>
 						<AlertDialogAction
 							onClick={() => deletingDocId && deleteMutation.mutate({ id: deletingDocId })}
 							className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
 						>
-							Delete
+							{tActions('delete')}
 						</AlertDialogAction>
 					</AlertDialogFooter>
 				</AlertDialogContent>

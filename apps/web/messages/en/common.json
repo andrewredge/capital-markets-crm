@@ -48,14 +48,17 @@
 		"download": "Download",
 		"loading": "Loading...",
 		"saving": "Saving...",
-		"deleting": "Deleting..."
+		"deleting": "Deleting...",
+		"error": "Error"
 	},
 	"table": {
 		"noResults": "No results found.",
 		"showing": "Showing {from} to {to} of {total}",
 		"previous": "Previous",
 		"next": "Next",
-		"rowsPerPage": "Rows per page"
+		"rowsPerPage": "Rows per page",
+		"pageCount": "Page {page} of {total}",
+		"loading": "Loading..."
 	},
 	"locale": {
 		"switchLanguage": "Language",

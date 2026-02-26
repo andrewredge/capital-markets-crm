@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTRPC } from '@/lib/trpc'
@@ -44,6 +45,8 @@ export function EditNoteDialog({
 	open,
 	onOpenChange,
 }: EditNoteDialogProps) {
+	const t = useTranslations('shared.notes')
+	const tActions = useTranslations('actions')
 	const trpc = useTRPC()
 	const queryClient = useQueryClient()
 
@@ -71,11 +74,11 @@ export function EditNoteDialog({
 			onSuccess: () => {
 				queryClient.invalidateQueries({ queryKey: trpc.notes.list.queryKey() })
 				queryClient.invalidateQueries({ queryKey: trpc.notes.getById.queryKey({ id: note.id }) })
-				toast.success('Note updated')
+				toast.success(t('updateSuccess'))
 				onOpenChange(false)
 			},
 			onError: (error) => {
-				toast.error(error.message || 'Failed to update note')
+				toast.error(error.message || t('updateError'))
 			},
 		}),
 	)
@@ -91,7 +94,7 @@ export function EditNoteDialog({
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent className="sm:max-w-[500px]">
 				<DialogHeader>
-					<DialogTitle>Edit Note</DialogTitle>
+					<DialogTitle>{t('editTitle')}</DialogTitle>
 				</DialogHeader>
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -100,9 +103,9 @@ export function EditNoteDialog({
 							name="title"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Title (Optional)</FormLabel>
+									<FormLabel>{t('form.title')}</FormLabel>
 									<FormControl>
-										<Input placeholder="Note title" {...field} value={field.value || ''} />
+										<Input placeholder={t('form.titlePlaceholder')} {...field} value={field.value || ''} />
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -113,10 +116,10 @@ export function EditNoteDialog({
 							name="content"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Content</FormLabel>
+									<FormLabel>{t('form.content')}</FormLabel>
 									<FormControl>
 										<Textarea
-											placeholder="Write your note here..."
+											placeholder={t('form.placeholder')}
 											className="min-h-[150px]"
 											{...field}
 										/>
@@ -131,9 +134,9 @@ export function EditNoteDialog({
 							render={({ field }) => (
 								<FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
 									<div className="space-y-0.5">
-										<FormLabel>Pin to top</FormLabel>
+										<FormLabel>{t('form.pinToTop')}</FormLabel>
 										<FormDescription>
-											Pinned notes appear at the top of the list.
+											{t('form.pinDescription')}
 										</FormDescription>
 									</div>
 									<FormControl>
@@ -152,10 +155,10 @@ export function EditNoteDialog({
 								onClick={() => onOpenChange(false)}
 								disabled={updateMutation.isPending}
 							>
-								Cancel
+								{tActions('cancel')}
 							</Button>
 							<Button type="submit" disabled={updateMutation.isPending}>
-								{updateMutation.isPending ? 'Saving...' : 'Save Changes'}
+								{updateMutation.isPending ? tActions('saving') : tActions('save')}
 							</Button>
 						</DialogFooter>
 					</form>

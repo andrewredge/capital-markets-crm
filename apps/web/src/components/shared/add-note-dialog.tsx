@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTRPC } from '@/lib/trpc'
@@ -50,6 +51,8 @@ export function AddNoteDialog({
 	dealId,
 	projectId,
 }: AddNoteDialogProps) {
+	const t = useTranslations('shared.notes')
+	const tActions = useTranslations('actions')
 	const trpc = useTRPC()
 	const queryClient = useQueryClient()
 
@@ -84,11 +87,11 @@ export function AddNoteDialog({
 		trpc.notes.create.mutationOptions({
 			onSuccess: () => {
 				queryClient.invalidateQueries({ queryKey: trpc.notes.list.queryKey() })
-				toast.success('Note added')
+				toast.success(t('createSuccess'))
 				onOpenChange(false)
 			},
 			onError: (error) => {
-				toast.error(error.message || 'Failed to add note')
+				toast.error(error.message || t('createError'))
 			},
 		}),
 	)
@@ -107,7 +110,7 @@ export function AddNoteDialog({
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent className="sm:max-w-[500px]">
 				<DialogHeader>
-					<DialogTitle>Add Note</DialogTitle>
+					<DialogTitle>{t('addTitle')}</DialogTitle>
 				</DialogHeader>
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -116,9 +119,9 @@ export function AddNoteDialog({
 							name="title"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Title (Optional)</FormLabel>
+									<FormLabel>{t('form.title')}</FormLabel>
 									<FormControl>
-										<Input placeholder="Note title" {...field} value={field.value || ''} />
+										<Input placeholder={t('form.titlePlaceholder')} {...field} value={field.value || ''} />
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -129,10 +132,10 @@ export function AddNoteDialog({
 							name="content"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Content</FormLabel>
+									<FormLabel>{t('form.content')}</FormLabel>
 									<FormControl>
 										<Textarea
-											placeholder="Write your note here..."
+											placeholder={t('form.placeholder')}
 											className="min-h-[150px]"
 											{...field}
 										/>
@@ -147,9 +150,9 @@ export function AddNoteDialog({
 							render={({ field }) => (
 								<FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
 									<div className="space-y-0.5">
-										<FormLabel>Pin to top</FormLabel>
+										<FormLabel>{t('form.pinToTop')}</FormLabel>
 										<FormDescription>
-											Pinned notes appear at the top of the list.
+											{t('form.pinDescription')}
 										</FormDescription>
 									</div>
 									<FormControl>
@@ -168,10 +171,10 @@ export function AddNoteDialog({
 								onClick={() => onOpenChange(false)}
 								disabled={createMutation.isPending}
 							>
-								Cancel
+								{tActions('cancel')}
 							</Button>
 							<Button type="submit" disabled={createMutation.isPending}>
-								{createMutation.isPending ? 'Adding...' : 'Add Note'}
+								{createMutation.isPending ? tActions('loading') : t('addNote')}
 							</Button>
 						</DialogFooter>
 					</form>

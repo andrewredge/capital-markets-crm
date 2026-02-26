@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
 import { Upload, FileSpreadsheet, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -11,6 +12,7 @@ interface FileUploadStepProps {
 }
 
 export function FileUploadStep({ onFileParsed }: FileUploadStepProps) {
+	const t = useTranslations('settings.import.fileUpload')
 	const [dragOver, setDragOver] = useState(false)
 	const [error, setError] = useState<string | null>(null)
 	const [parsing, setParsing] = useState(false)
@@ -29,13 +31,13 @@ export function FileUploadStep({ onFileParsed }: FileUploadStepProps) {
 				})
 				onFileParsed(parsed)
 			} catch (e) {
-				setError(e instanceof Error ? e.message : 'Failed to parse file')
+				setError(e instanceof Error ? e.message : t('parseError'))
 				setSelectedFile(null)
 			} finally {
 				setParsing(false)
 			}
 		},
-		[onFileParsed],
+		[onFileParsed, t],
 	)
 
 	const handleDrop = useCallback(
@@ -64,8 +66,8 @@ export function FileUploadStep({ onFileParsed }: FileUploadStepProps) {
 	return (
 		<div className="space-y-4">
 			<div>
-				<h3 className="text-lg font-semibold">Upload File</h3>
-				<p className="text-sm text-muted-foreground">Upload a CSV or Excel file containing your contacts.</p>
+				<h3 className="text-lg font-semibold">{t('title')}</h3>
+				<p className="text-sm text-muted-foreground">{t('description')}</p>
 			</div>
 
 			{selectedFile ? (
@@ -76,7 +78,7 @@ export function FileUploadStep({ onFileParsed }: FileUploadStepProps) {
 							<div>
 								<p className="font-medium">{selectedFile.name}</p>
 								<p className="text-sm text-muted-foreground">
-									{selectedFile.rows} rows, {selectedFile.cols} columns
+									{t('rows', { rows: selectedFile.rows, cols: selectedFile.cols })}
 								</p>
 							</div>
 						</div>
@@ -98,8 +100,8 @@ export function FileUploadStep({ onFileParsed }: FileUploadStepProps) {
 					onDrop={handleDrop}
 				>
 					<Upload className="h-10 w-10 text-muted-foreground mb-4" />
-					<p className="text-sm font-medium">Drop your file here, or click to browse</p>
-					<p className="text-xs text-muted-foreground mt-1">Supports .csv, .xlsx, .xls</p>
+					<p className="text-sm font-medium">{t('dropZone')}</p>
+					<p className="text-xs text-muted-foreground mt-1">{t('supportedFormats')}</p>
 					<input
 						type="file"
 						accept=".csv,.xlsx,.xls"
@@ -111,7 +113,7 @@ export function FileUploadStep({ onFileParsed }: FileUploadStepProps) {
 			)}
 
 			{error && <p className="text-sm text-destructive">{error}</p>}
-			{parsing && <p className="text-sm text-muted-foreground">Parsing file...</p>}
+			{parsing && <p className="text-sm text-muted-foreground">{t('parsing')}</p>}
 		</div>
 	)
 }

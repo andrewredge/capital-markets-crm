@@ -1,14 +1,15 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTRPC } from '@/lib/trpc'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { 
-  createDealSchema, 
+import {
+  createDealSchema,
   type CreateDealInput,
-  DEAL_TYPES 
+  DEAL_TYPES
 } from '@crm/shared'
 import { z } from 'zod'
 
@@ -52,14 +53,16 @@ interface CreateDealDialogProps {
   defaultPipelineId?: string
 }
 
-export function CreateDealDialog({ 
-  open, 
-  onOpenChange, 
-  defaultPipelineId 
+export function CreateDealDialog({
+  open,
+  onOpenChange,
+  defaultPipelineId
 }: CreateDealDialogProps) {
+  const t = useTranslations('deals')
+  const tActions = useTranslations('actions')
   const trpc = useTRPC()
   const queryClient = useQueryClient()
-  
+
   const form = useForm<DealFormValues>({
     resolver: zodResolver(dealFormSchema) as any,
     defaultValues: {
@@ -114,12 +117,12 @@ export function CreateDealDialog({
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: trpc.deals.list.queryKey() })
         queryClient.invalidateQueries({ queryKey: trpc.deals.getForKanban.queryKey() })
-        toast.success('Deal created')
+        toast.success(t('createSuccess'))
         onOpenChange(false)
         form.reset()
       },
       onError: (error) => {
-        toast.error(error.message || 'Failed to create deal')
+        toast.error(error.message || t('createError'))
       },
     })
   )
@@ -135,9 +138,9 @@ export function CreateDealDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Create New Deal</DialogTitle>
+          <DialogTitle>{t('createTitle')}</DialogTitle>
           <DialogDescription>
-            Enter the details for the new deal.
+            {t('createDescription')}
           </DialogDescription>
         </DialogHeader>
 
@@ -148,9 +151,9 @@ export function CreateDealDialog({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Deal Name</FormLabel>
+                  <FormLabel>{t('form.name')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g. Acme Series A" {...field} />
+                    <Input placeholder={t('form.namePlaceholder')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -163,14 +166,14 @@ export function CreateDealDialog({
                 name="pipelineId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Pipeline</FormLabel>
-                    <Select 
-                      onValueChange={field.onChange} 
+                    <FormLabel>{t('form.pipeline')}</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
                       value={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select pipeline" />
+                          <SelectValue placeholder={t('form.selectPipeline')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -191,15 +194,15 @@ export function CreateDealDialog({
                 name="currentStageId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Initial Stage</FormLabel>
-                    <Select 
-                      onValueChange={field.onChange} 
+                    <FormLabel>{t('form.initialStage')}</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
                       value={field.value}
                       disabled={!selectedPipelineId || isLoadingStages}
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select stage" />
+                          <SelectValue placeholder={t('form.selectStage')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -222,11 +225,11 @@ export function CreateDealDialog({
                 name="dealType"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Deal Type</FormLabel>
+                    <FormLabel>{t('form.type')}</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select type" />
+                          <SelectValue placeholder={t('form.selectType')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -249,10 +252,10 @@ export function CreateDealDialog({
                     name="amount"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Amount</FormLabel>
+                        <FormLabel>{t('form.amount')}</FormLabel>
                         <FormControl>
-                          <Input 
-                            type="number" 
+                          <Input
+                            type="number"
                             placeholder="0"
                             {...field}
                             value={field.value === null ? '' : field.value}
@@ -269,7 +272,7 @@ export function CreateDealDialog({
                   name="currency"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Currency</FormLabel>
+                      <FormLabel>{t('form.currency')}</FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
@@ -286,7 +289,7 @@ export function CreateDealDialog({
                 name="expectedCloseDate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Expected Close</FormLabel>
+                    <FormLabel>{t('form.expectedClose')}</FormLabel>
                     <FormControl>
                       <Input type="datetime-local" {...field} value={field.value || ''} />
                     </FormControl>
@@ -300,11 +303,11 @@ export function CreateDealDialog({
                 name="confidence"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Confidence (%)</FormLabel>
+                    <FormLabel>{t('form.confidence')}</FormLabel>
                     <FormControl>
-                      <Input 
-                        type="number" 
-                        placeholder="0-100"
+                      <Input
+                        type="number"
+                        placeholder={t('form.confidencePlaceholder')}
                         {...field}
                         value={field.value === null ? '' : field.value}
                         onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : null)}
@@ -321,12 +324,12 @@ export function CreateDealDialog({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>{t('form.description')}</FormLabel>
                   <FormControl>
-                    <Textarea 
-                      placeholder="Optional deal details..." 
+                    <Textarea
+                      placeholder={t('form.descriptionPlaceholder')}
                       className="resize-none"
-                      {...field} 
+                      {...field}
                       value={field.value || ''}
                     />
                   </FormControl>
@@ -342,10 +345,10 @@ export function CreateDealDialog({
                 onClick={() => onOpenChange(false)}
                 disabled={createMutation.isPending}
               >
-                Cancel
+                {tActions('cancel')}
               </Button>
               <Button type="submit" disabled={createMutation.isPending}>
-                {createMutation.isPending ? 'Creating...' : 'Create Deal'}
+                {createMutation.isPending ? tActions('saving') : t('createTitle')}
               </Button>
             </DialogFooter>
           </form>

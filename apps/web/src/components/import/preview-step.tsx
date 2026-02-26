@@ -1,38 +1,12 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useMemo } from 'react'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { createContactSchema, type CrmContactField, type DuplicateStrategy, DUPLICATE_STRATEGIES } from '@crm/shared'
-
-const STRATEGY_LABELS: Record<DuplicateStrategy, { label: string; description: string }> = {
-	skip: { label: 'Skip duplicates', description: 'Existing contacts with matching emails will be left unchanged.' },
-	overwrite: {
-		label: 'Overwrite duplicates',
-		description: 'Existing contacts with matching emails will be updated with the new data.',
-	},
-	create_anyway: {
-		label: 'Create anyway',
-		description: 'All rows will be imported as new contacts, even if emails match.',
-	},
-}
-
-const FIELD_LABELS: Record<CrmContactField, string> = {
-	firstName: 'First Name',
-	lastName: 'Last Name',
-	email: 'Email',
-	phone: 'Phone',
-	title: 'Job Title',
-	linkedinUrl: 'LinkedIn URL',
-	contactType: 'Contact Type',
-	contactSubtype: 'Contact Subtype',
-	companyName: 'Company Name',
-	companyRole: 'Company Role',
-	source: 'Source',
-	status: 'Status',
-}
 
 interface MappedRow {
 	data: Record<string, string>
@@ -84,6 +58,8 @@ export function PreviewStep({
 	duplicateStrategy,
 	onDuplicateStrategyChange,
 }: PreviewStepProps) {
+	const t = useTranslations('settings.import.previewStep')
+	const tFields = useTranslations('settings.import.columnMapping.fields')
 	const mappedRows = useMemo(() => applyMapping(headers, rows, mapping), [headers, rows, mapping])
 
 	const activeFields = useMemo(() => {
@@ -102,20 +78,20 @@ export function PreviewStep({
 	return (
 		<div className="space-y-6">
 			<div>
-				<h3 className="text-lg font-semibold">Preview & Validate</h3>
-				<p className="text-sm text-muted-foreground">Review the mapped data before importing.</p>
+				<h3 className="text-lg font-semibold">{t('title')}</h3>
+				<p className="text-sm text-muted-foreground">{t('description')}</p>
 			</div>
 
 			<div className="flex gap-4">
 				<Badge variant="secondary" className="text-sm">
-					{rows.length} total rows
+					{t('totalRows', { count: rows.length })}
 				</Badge>
 				<Badge variant="secondary" className="text-sm text-green-700">
-					{validCount} valid
+					{t('valid', { count: validCount })}
 				</Badge>
 				{errorCount > 0 && (
 					<Badge variant="destructive" className="text-sm">
-						{errorCount} with errors
+						{t('withErrors', { count: errorCount })}
 					</Badge>
 				)}
 			</div>
@@ -124,11 +100,11 @@ export function PreviewStep({
 				<Table>
 					<TableHeader>
 						<TableRow>
-							<TableHead className="w-[60px]">Row</TableHead>
+							<TableHead className="w-[60px]">{t('row')}</TableHead>
 							{activeFields.map((field) => (
-								<TableHead key={field}>{FIELD_LABELS[field]}</TableHead>
+								<TableHead key={field}>{tFields(field)}</TableHead>
 							))}
-							<TableHead className="w-[100px]">Status</TableHead>
+							<TableHead className="w-[100px]">{t('status')}</TableHead>
 						</TableRow>
 					</TableHeader>
 					<TableBody>
@@ -144,7 +120,7 @@ export function PreviewStep({
 													<Tooltip>
 														<TooltipTrigger asChild>
 															<span className="text-destructive border-b border-destructive border-dashed cursor-help">
-																{row.data[field] || '(empty)'}
+																{row.data[field] || t('empty')}
 															</span>
 														</TooltipTrigger>
 														<TooltipContent>{fieldError.message}</TooltipContent>
@@ -159,11 +135,11 @@ export function PreviewStep({
 								<TableCell>
 									{row.errors.length > 0 ? (
 										<Badge variant="destructive" className="text-xs">
-											{row.errors.length} error{row.errors.length > 1 ? 's' : ''}
+											{t('errorCount', { count: row.errors.length })}
 										</Badge>
 									) : (
 										<Badge variant="secondary" className="text-xs">
-											OK
+											{t('ok')}
 										</Badge>
 									)}
 								</TableCell>
@@ -174,11 +150,11 @@ export function PreviewStep({
 			</div>
 
 			{rows.length > 20 && (
-				<p className="text-sm text-muted-foreground">Showing first 20 of {rows.length} rows.</p>
+				<p className="text-sm text-muted-foreground">{t('showingFirst', { count: rows.length })}</p>
 			)}
 
 			<div className="space-y-3">
-				<label className="text-sm font-medium">Duplicate Handling</label>
+				<label className="text-sm font-medium">{t('duplicateHandling')}</label>
 				<RadioGroup
 					value={duplicateStrategy}
 					onValueChange={(v) => onDuplicateStrategyChange(v as DuplicateStrategy)}
@@ -189,9 +165,9 @@ export function PreviewStep({
 							<RadioGroupItem value={strategy} id={strategy} className="mt-0.5" />
 							<div>
 								<label htmlFor={strategy} className="text-sm font-medium cursor-pointer">
-									{STRATEGY_LABELS[strategy].label}
+									{t(`strategies.${strategy}`)}
 								</label>
-								<p className="text-xs text-muted-foreground">{STRATEGY_LABELS[strategy].description}</p>
+								<p className="text-xs text-muted-foreground">{t(`strategies.${strategy}Description`)}</p>
 							</div>
 						</div>
 					))}

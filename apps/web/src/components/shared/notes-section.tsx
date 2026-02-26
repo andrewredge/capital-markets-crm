@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { useTRPC } from '@/lib/trpc'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -10,8 +11,7 @@ import {
 	MoreHorizontal,
 	Edit2,
 	Trash2,
-	Pin,
-	PinOff,
+	FileText,
 } from 'lucide-react'
 import {
 	DropdownMenu,
@@ -32,7 +32,6 @@ import {
 	AlertDialogHeader,
 	AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { cn } from '@/lib/utils'
 
 interface NotesSectionProps {
 	contactId?: string
@@ -41,24 +40,13 @@ interface NotesSectionProps {
 	projectId?: string
 }
 
-function formatDate(date: Date | string) {
-	return new Intl.DateTimeFormat('en-US', {
-		month: 'short',
-		day: 'numeric',
-		year: 'numeric',
-	}).format(new Date(date))
-}
-
 export function NotesSection({ contactId, companyId, dealId, projectId }: NotesSectionProps) {
+	const t = useTranslations('shared.notes')
+	const tActions = useTranslations('actions')
 	const trpc = useTRPC()
 	const queryClient = useQueryClient()
 	const [isAddOpen, setIsAddOpen] = useState(false)
-	const [editingNote, setEditingNote] = useState<{
-		id: string
-		title: string | null
-		content: string
-		isPinned: boolean
-	} | null>(null)
+	const [editingNote, setEditingNote] = useState<{ id: string; title: string | null; content: string; isPinned: boolean } | null>(null)
 	const [deletingNoteId, setDeletingNoteId] = useState<string | null>(null)
 
 	const { data, isLoading } = useQuery(
@@ -67,7 +55,6 @@ export function NotesSection({ contactId, companyId, dealId, projectId }: NotesS
 			companyId,
 			dealId,
 			projectId,
-			limit: 50,
 		}),
 	)
 
@@ -75,22 +62,11 @@ export function NotesSection({ contactId, companyId, dealId, projectId }: NotesS
 		trpc.notes.delete.mutationOptions({
 			onSuccess: () => {
 				queryClient.invalidateQueries({ queryKey: trpc.notes.list.queryKey() })
-				toast.success('Note deleted')
+				toast.success(t('deleteSuccess'))
 				setDeletingNoteId(null)
 			},
 			onError: (error) => {
-				toast.error(error.message || 'Failed to delete note')
-			},
-		}),
-	)
-
-	const pinMutation = useMutation(
-		trpc.notes.update.mutationOptions({
-			onSuccess: () => {
-				queryClient.invalidateQueries({ queryKey: trpc.notes.list.queryKey() })
-			},
-			onError: (error) => {
-				toast.error(error.message || 'Failed to update note')
+				toast.error(error.message || t('deleteError'))
 			},
 		}),
 	)
@@ -98,85 +74,54 @@ export function NotesSection({ contactId, companyId, dealId, projectId }: NotesS
 	return (
 		<Card>
 			<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-				<CardTitle className="text-xl font-bold">Notes</CardTitle>
+				<CardTitle className="text-xl font-bold">{t('title')}</CardTitle>
 				<Button size="sm" onClick={() => setIsAddOpen(true)}>
 					<Plus className="h-4 w-4 mr-2" />
-					Add Note
+					{t('addNote')}
 				</Button>
 			</CardHeader>
 			<CardContent>
 				{isLoading ? (
 					<div className="space-y-4 mt-4">
 						{[1, 2].map((i) => (
-							<div key={i} className="h-32 w-full bg-muted animate-pulse rounded-lg" />
+							<div key={i} className="h-20 w-full bg-muted animate-pulse rounded-md" />
 						))}
 					</div>
 				) : !data?.items?.length ? (
 					<div className="text-center py-8 text-muted-foreground">
-						No notes yet. Add your first note.
+						{t('noNotes')}
 					</div>
 				) : (
-					<div className="grid grid-cols-1 gap-4 mt-4">
+					<div className="space-y-4 mt-4">
 						{data.items.map((note) => (
-							<div
-								key={note.id}
-								className={cn(
-									"group relative p-4 rounded-lg border bg-card transition-shadow hover:shadow-sm",
-									note.isPinned && "border-primary/20 bg-primary/5 shadow-sm"
-								)}
-							>
-								<div className="flex items-start justify-between gap-4">
-									<div className="flex-1 space-y-1">
-										<div className="flex items-center gap-2">
-											{note.isPinned && (
-												<Pin className="h-3 w-3 text-primary fill-primary" />
-											)}
-											{note.title && (
-												<h3 className="font-semibold text-sm">{note.title}</h3>
-											)}
-										</div>
-										<p className="text-sm whitespace-pre-wrap text-foreground">
-											{note.content}
-										</p>
-										<p className="text-[10px] text-muted-foreground pt-2">
-											{formatDate(note.createdAt)}
-										</p>
+							<div key={note.id} className="relative group p-4 rounded-lg border bg-card hover:bg-muted/50 transition-colors">
+								<div className="flex justify-between items-start mb-2">
+									<div className="flex items-center gap-2 text-xs text-muted-foreground">
+										<FileText className="h-3 w-3" />
+										<span>{new Date(note.createdAt).toLocaleDateString()}</span>
 									</div>
-									<div className="flex items-center gap-1">
-										<Button
-											variant="ghost"
-											size="icon"
-											className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
-											onClick={() => pinMutation.mutate({ id: note.id, isPinned: !note.isPinned })}
-										>
-											{note.isPinned ? (
-												<PinOff className="h-4 w-4 text-primary" />
-											) : (
-												<Pin className="h-4 w-4 text-muted-foreground" />
-											)}
-										</Button>
-										<DropdownMenu>
-											<DropdownMenuTrigger asChild>
-												<Button variant="ghost" size="icon" className="h-7 w-7">
-													<MoreHorizontal className="h-4 w-4" />
-												</Button>
-											</DropdownMenuTrigger>
-											<DropdownMenuContent align="end">
-												<DropdownMenuItem onClick={() => setEditingNote(note)}>
-													<Edit2 className="h-4 w-4 mr-2" />
-													Edit
-												</DropdownMenuItem>
-												<DropdownMenuItem
-													className="text-destructive"
-													onClick={() => setDeletingNoteId(note.id)}
-												>
-													<Trash2 className="h-4 w-4 mr-2" />
-													Delete
-												</DropdownMenuItem>
-											</DropdownMenuContent>
-										</DropdownMenu>
-									</div>
+									<DropdownMenu>
+										<DropdownMenuTrigger asChild>
+											<Button variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100">
+												<MoreHorizontal className="h-4 w-4" />
+											</Button>
+										</DropdownMenuTrigger>
+										<DropdownMenuContent align="end">
+											<DropdownMenuItem onClick={() => setEditingNote(note)}>
+												<Edit2 className="h-4 w-4 mr-2" />
+												{tActions('edit')}
+											</DropdownMenuItem>
+											<DropdownMenuItem 
+												className="text-destructive"
+												onClick={() => setDeletingNoteId(note.id)}
+											>
+												<Trash2 className="h-4 w-4 mr-2" />
+												{tActions('delete')}
+											</DropdownMenuItem>
+										</DropdownMenuContent>
+									</DropdownMenu>
 								</div>
+								<p className="text-sm whitespace-pre-wrap">{note.content}</p>
 							</div>
 						))}
 					</div>
@@ -184,12 +129,12 @@ export function NotesSection({ contactId, companyId, dealId, projectId }: NotesS
 			</CardContent>
 
 			<AddNoteDialog
-				open={isAddOpen}
-				onOpenChange={setIsAddOpen}
 				contactId={contactId}
 				companyId={companyId}
 				dealId={dealId}
 				projectId={projectId}
+				open={isAddOpen}
+				onOpenChange={setIsAddOpen}
 			/>
 
 			{editingNote && (
@@ -200,21 +145,24 @@ export function NotesSection({ contactId, companyId, dealId, projectId }: NotesS
 				/>
 			)}
 
-			<AlertDialog open={!!deletingNoteId} onOpenChange={(open) => !open && setDeletingNoteId(null)}>
+			<AlertDialog 
+				open={!!deletingNoteId} 
+				onOpenChange={(open) => !open && setDeletingNoteId(null)}
+			>
 				<AlertDialogContent>
 					<AlertDialogHeader>
-						<AlertDialogTitle>Delete Note</AlertDialogTitle>
+						<AlertDialogTitle>{tActions('confirm')}</AlertDialogTitle>
 						<AlertDialogDescription>
-							Are you sure you want to delete this note? This action cannot be undone.
+							{t('deleteConfirmMessage')}
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
-						<AlertDialogCancel>Cancel</AlertDialogCancel>
+						<AlertDialogCancel>{tActions('cancel')}</AlertDialogCancel>
 						<AlertDialogAction
 							onClick={() => deletingNoteId && deleteMutation.mutate({ id: deletingNoteId })}
 							className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
 						>
-							Delete
+							{tActions('delete')}
 						</AlertDialogAction>
 					</AlertDialogFooter>
 				</AlertDialogContent>

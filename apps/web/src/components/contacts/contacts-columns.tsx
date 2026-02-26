@@ -13,10 +13,10 @@ export type Contact = {
 	createdAt: Date
 }
 
-export const columns: ColumnDef<Contact>[] = [
+export const getColumns = (t: any): ColumnDef<Contact>[] => [
 	{
 		accessorKey: 'name',
-		header: 'Name',
+		header: t('columns.name'),
 		cell: ({ row }) => {
 			const contact = row.original
 			return (
@@ -28,22 +28,22 @@ export const columns: ColumnDef<Contact>[] = [
 	},
 	{
 		accessorKey: 'email',
-		header: 'Email',
+		header: t('columns.email'),
 		cell: ({ row }) => row.getValue('email') || '-',
 	},
 	{
 		accessorKey: 'phone',
-		header: 'Phone',
+		header: t('columns.phone'),
 		cell: ({ row }) => row.getValue('phone') || '-',
 	},
 	{
 		accessorKey: 'title',
-		header: 'Title',
+		header: t('columns.title'),
 		cell: ({ row }) => row.getValue('title') || '-',
 	},
 	{
 		accessorKey: 'status',
-		header: 'Status',
+		header: t('columns.status'),
 		cell: ({ row }) => {
 			const status = row.getValue('status') as string
 			let variant: 'default' | 'secondary' | 'destructive' | 'outline' = 'secondary'
@@ -73,7 +73,7 @@ export const columns: ColumnDef<Contact>[] = [
 	},
 	{
 		accessorKey: 'createdAt',
-		header: 'Created',
+		header: t('columns.createdAt'),
 		cell: ({ row }) => {
 			const date = new Date(row.getValue('createdAt'))
 			return new Intl.DateTimeFormat('en-US', {

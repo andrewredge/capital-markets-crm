@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { useTRPC } from '@/lib/trpc'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -29,6 +30,7 @@ interface DealParticipantsSectionProps {
 }
 
 export function DealParticipantsSection({ dealId, participants }: DealParticipantsSectionProps) {
+  const t = useTranslations('deals')
   const [isAddOpen, setIsAddOpen] = useState(false)
   const trpc = useTRPC()
   const queryClient = useQueryClient()
@@ -37,16 +39,16 @@ export function DealParticipantsSection({ dealId, participants }: DealParticipan
     trpc.deals.deleteParticipant.mutationOptions({
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: trpc.deals.getById.queryKey({ id: dealId }) })
-        toast.success('Participant removed')
+        toast.success(t('removeParticipantSuccess'))
       },
       onError: (error) => {
-        toast.error(error.message || 'Failed to remove participant')
+        toast.error(error.message || t('removeParticipantError'))
       },
     })
   )
 
   const handleDelete = (id: string, name: string) => {
-    if (confirm(`Remove ${name} from this deal?`)) {
+    if (confirm(t('removeParticipantConfirm', { name }))) {
       deleteMutation.mutate({ id })
     }
   }
@@ -54,30 +56,30 @@ export function DealParticipantsSection({ dealId, participants }: DealParticipan
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between py-4">
-        <CardTitle className="text-sm font-medium uppercase tracking-wider text-muted-foreground">Participants</CardTitle>
+        <CardTitle className="text-sm font-medium uppercase tracking-wider text-muted-foreground">{t('participants')}</CardTitle>
         <Button variant="ghost" size="sm" className="h-8 px-2" onClick={() => setIsAddOpen(true)}>
           <Plus className="h-4 w-4 mr-1" />
-          Add
+          {t('addParticipant')}
         </Button>
       </CardHeader>
       <CardContent className="px-4 pb-4">
         <div className="space-y-3">
           {participants.length === 0 ? (
-            <div className="text-center py-4 text-sm text-muted-foreground italic border-2 border-dashed rounded-lg">
-              No participants added yet.
+            <div className="text-center py-4 text-sm text-muted-foreground italic border-2 border-dashed rounded-lg">     
+              {t('noParticipants')}
             </div>
           ) : (
             participants.map((p) => {
               const roleLabel = DEAL_PARTICIPANT_ROLES.find(r => r.value === p.role)?.label || p.role
-              const name = p.contact 
-                ? `${p.contact.firstName} ${p.contact.lastName}` 
+              const name = p.contact
+                ? `${p.contact.firstName} ${p.contact.lastName}`
                 : p.company?.name || 'Unknown'
               const href = p.contactId ? `/contacts/${p.contactId}` : `/companies/${p.companyId}`
 
               return (
                 <div key={p.id} className="flex items-center justify-between group">
                   <div className="flex items-center gap-3 overflow-hidden">
-                    <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
+                    <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center flex-shrink-0">        
                       {p.contactId ? (
                         <User className="h-4 w-4 text-muted-foreground" />
                       ) : (
@@ -86,8 +88,8 @@ export function DealParticipantsSection({ dealId, participants }: DealParticipan
                     </div>
                     <div className="flex flex-col min-w-0">
                       <div className="flex items-center gap-1.5 overflow-hidden">
-                        <Link 
-                          href={href} 
+                        <Link
+                          href={href}
                           className="text-sm font-medium truncate hover:text-primary transition-colors"
                         >
                           {name}
@@ -99,9 +101,9 @@ export function DealParticipantsSection({ dealId, participants }: DealParticipan
                       <span className="text-xs text-muted-foreground truncate">{roleLabel}</span>
                     </div>
                   </div>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
                     onClick={() => handleDelete(p.id, name)}
                     disabled={deleteMutation.isPending}
@@ -115,10 +117,10 @@ export function DealParticipantsSection({ dealId, participants }: DealParticipan
         </div>
       </CardContent>
 
-      <AddParticipantDialog 
-        dealId={dealId} 
-        open={isAddOpen} 
-        onOpenChange={setIsAddOpen} 
+      <AddParticipantDialog
+        dealId={dealId}
+        open={isAddOpen}
+        onOpenChange={setIsAddOpen}
       />
     </Card>
   )

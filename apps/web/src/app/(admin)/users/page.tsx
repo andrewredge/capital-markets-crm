@@ -1,5 +1,6 @@
 "use client"
 
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { trpcClient } from '@/lib/trpc'
@@ -26,6 +27,8 @@ import { toast } from 'sonner'
 import { Search, Shield, ShieldOff } from 'lucide-react'
 
 export default function AdminUsersPage() {
+    const t = useTranslations('admin.users')
+    const tTable = useTranslations('table')
     const queryClient = useQueryClient()
     const [search, setSearch] = useState('')
     const [statusFilter, setStatusFilter] = useState<string>('all')
@@ -36,7 +39,7 @@ export default function AdminUsersPage() {
         queryFn: () =>
             trpcClient.platformAdmin.listUsers.query({
                 search: search || undefined,
-                accountStatus: statusFilter !== 'all' ? statusFilter as 'pending' | 'active' | 'suspended' : undefined,
+                accountStatus: statusFilter !== 'all' ? statusFilter as 'pending' | 'active' | 'suspended' : undefined,   
                 page,
                 limit: 25,
             }),
@@ -47,7 +50,7 @@ export default function AdminUsersPage() {
             trpcClient.platformAdmin.updateAccountStatus.mutate(input),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['admin-users'] })
-            toast.success('Account status updated')
+            toast.success(t('updateStatusSuccess'))
         },
         onError: (e) => toast.error(e.message),
     })
@@ -57,7 +60,7 @@ export default function AdminUsersPage() {
             trpcClient.platformAdmin.updatePlatformRole.mutate(input),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['admin-users'] })
-            toast.success('Platform role updated')
+            toast.success(t('updateRoleSuccess'))
         },
         onError: (e) => toast.error(e.message),
     })
@@ -65,17 +68,17 @@ export default function AdminUsersPage() {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold tracking-tight">User Management</h1>
-                <p className="text-muted-foreground">Manage platform users and their access.</p>
+                <h1 className="text-3xl font-bold tracking-tight">{t('title')}</h1>
+                <p className="text-muted-foreground">{t('description')}</p>
             </div>
 
             <Card>
                 <CardHeader>
                     <div className="flex items-center gap-4">
                         <div className="relative flex-1">
-                            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" /> 
                             <Input
-                                placeholder="Search users..."
+                                placeholder={t('searchPlaceholder')}
                                 value={search}
                                 onChange={(e) => { setSearch(e.target.value); setPage(1) }}
                                 className="pl-9"
@@ -83,13 +86,13 @@ export default function AdminUsersPage() {
                         </div>
                         <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setPage(1) }}>
                             <SelectTrigger className="w-[180px]">
-                                <SelectValue placeholder="Filter by status" />
+                                <SelectValue placeholder={t('filterByStatus')} />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">All Statuses</SelectItem>
-                                <SelectItem value="active">Active</SelectItem>
-                                <SelectItem value="pending">Pending</SelectItem>
-                                <SelectItem value="suspended">Suspended</SelectItem>
+                                <SelectItem value="all">{t('allStatuses')}</SelectItem>
+                                <SelectItem value="active">{t('active')}</SelectItem>
+                                <SelectItem value="pending">{t('pending')}</SelectItem>
+                                <SelectItem value="suspended">{t('suspended')}</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
@@ -98,24 +101,24 @@ export default function AdminUsersPage() {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Name</TableHead>
-                                <TableHead>Email</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead>Role</TableHead>
-                                <TableHead>Actions</TableHead>
+                                <TableHead>{t('columns.name')}</TableHead>
+                                <TableHead>{t('columns.email')}</TableHead>
+                                <TableHead>{t('columns.status')}</TableHead>
+                                <TableHead>{t('columns.role')}</TableHead>
+                                <TableHead>{t('columns.actions')}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {isLoading ? (
                                 <TableRow>
                                     <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                                        Loading...
+                                        {tTable('loading')}
                                     </TableCell>
                                 </TableRow>
                             ) : !data?.items.length ? (
                                 <TableRow>
                                     <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                                        No users found
+                                        {t('noUsers')}
                                     </TableCell>
                                 </TableRow>
                             ) : (
@@ -133,12 +136,12 @@ export default function AdminUsersPage() {
                                                         : 'secondary'
                                                 }
                                             >
-                                                {user.accountStatus}
+                                                {t(user.accountStatus as 'active' | 'pending' | 'suspended')}
                                             </Badge>
                                         </TableCell>
                                         <TableCell>
-                                            <Badge variant={user.platformRole === 'super_admin' ? 'default' : 'outline'}>
-                                                {user.platformRole === 'super_admin' ? 'Super Admin' : 'User'}
+                                            <Badge variant={user.platformRole === 'super_admin' ? 'default' : 'outline'}> 
+                                                {user.platformRole === 'super_admin' ? t('roles.superAdmin') : t('roles.user')}
                                             </Badge>
                                         </TableCell>
                                         <TableCell>
@@ -155,7 +158,7 @@ export default function AdminUsersPage() {
                                                         }
                                                     >
                                                         <ShieldOff className="h-4 w-4 mr-1" />
-                                                        Suspend
+                                                        {t('actions.suspend')}
                                                     </Button>
                                                 ) : (
                                                     <Button
@@ -169,7 +172,7 @@ export default function AdminUsersPage() {
                                                         }
                                                     >
                                                         <Shield className="h-4 w-4 mr-1" />
-                                                        Activate
+                                                        {t('actions.activate')}
                                                     </Button>
                                                 )}
                                                 {user.platformRole === 'user' ? (
@@ -183,7 +186,7 @@ export default function AdminUsersPage() {
                                                             })
                                                         }
                                                     >
-                                                        Promote
+                                                        {t('actions.promote')}
                                                     </Button>
                                                 ) : (
                                                     <Button
@@ -196,7 +199,7 @@ export default function AdminUsersPage() {
                                                             })
                                                         }
                                                     >
-                                                        Demote
+                                                        {t('actions.demote')}
                                                     </Button>
                                                 )}
                                             </div>
@@ -210,7 +213,11 @@ export default function AdminUsersPage() {
                     {data && data.total > data.limit && (
                         <div className="flex items-center justify-between mt-4">
                             <p className="text-sm text-muted-foreground">
-                                Showing {(page - 1) * data.limit + 1}-{Math.min(page * data.limit, data.total)} of {data.total}
+                                {tTable('showing', {
+                                    from: (page - 1) * data.limit + 1,
+                                    to: Math.min(page * data.limit, data.total),
+                                    total: data.total
+                                })}
                             </p>
                             <div className="flex gap-2">
                                 <Button
@@ -219,7 +226,7 @@ export default function AdminUsersPage() {
                                     disabled={page === 1}
                                     onClick={() => setPage(page - 1)}
                                 >
-                                    Previous
+                                    {tTable('previous')}
                                 </Button>
                                 <Button
                                     variant="outline"
@@ -227,7 +234,7 @@ export default function AdminUsersPage() {
                                     disabled={page * data.limit >= data.total}
                                     onClick={() => setPage(page + 1)}
                                 >
-                                    Next
+                                    {tTable('next')}
                                 </Button>
                             </div>
                         </div>

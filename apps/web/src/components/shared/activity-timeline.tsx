@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { useTRPC } from '@/lib/trpc'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -47,20 +48,6 @@ interface ActivityTimelineProps {
 	projectId?: string
 }
 
-function formatRelativeTime(date: Date | string): string {
-	const now = new Date()
-	const d = new Date(date)
-	const diffMs = now.getTime() - d.getTime()
-	const diffMins = Math.floor(diffMs / 60000)
-	if (diffMins < 1) return 'just now'
-	if (diffMins < 60) return `${diffMins}m ago`
-	const diffHours = Math.floor(diffMins / 60)
-	if (diffHours < 24) return `${diffHours}h ago`
-	const diffDays = Math.floor(diffHours / 24)
-	if (diffDays < 7) return `${diffDays}d ago`
-	return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(d)
-}
-
 const ACTIVITY_ICONS: Record<string, React.ReactNode> = {
 	meeting: <Users className="h-4 w-4" />,
 	call: <Phone className="h-4 w-4" />,
@@ -71,6 +58,8 @@ const ACTIVITY_ICONS: Record<string, React.ReactNode> = {
 }
 
 export function ActivityTimeline({ contactId, companyId, dealId, projectId }: ActivityTimelineProps) {
+	const t = useTranslations('shared.activity')
+	const tActions = useTranslations('actions')
 	const trpc = useTRPC()
 	const queryClient = useQueryClient()
 	const [isLogOpen, setIsLogOpen] = useState(false)
@@ -88,6 +77,20 @@ export function ActivityTimeline({ contactId, companyId, dealId, projectId }: Ac
 	} | null>(null)
 	const [deletingActivityId, setDeletingActivityId] = useState<string | null>(null)
 
+	function formatRelativeTime(date: Date | string): string {
+		const now = new Date()
+		const d = new Date(date)
+		const diffMs = now.getTime() - d.getTime()
+		const diffMins = Math.floor(diffMs / 60000)
+		if (diffMins < 1) return t('justNow')
+		if (diffMins < 60) return t('minsAgo', { n: diffMins })
+		const diffHours = Math.floor(diffMins / 60)
+		if (diffHours < 24) return t('hoursAgo', { n: diffHours })
+		const diffDays = Math.floor(diffHours / 24)
+		if (diffDays < 7) return t('daysAgo', { n: diffDays })
+		return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(d)
+	}
+
 	const { data, isLoading } = useQuery(
 		trpc.activities.list.queryOptions({
 			contactId,
@@ -102,11 +105,11 @@ export function ActivityTimeline({ contactId, companyId, dealId, projectId }: Ac
 		trpc.activities.delete.mutationOptions({
 			onSuccess: () => {
 				queryClient.invalidateQueries({ queryKey: trpc.activities.list.queryKey() })
-				toast.success('Activity deleted')
+				toast.success(t('deleteSuccess'))
 				setDeletingActivityId(null)
 			},
 			onError: (error) => {
-				toast.error(error.message || 'Failed to delete activity')
+				toast.error(error.message || t('deleteError'))
 			},
 		}),
 	)
@@ -114,10 +117,10 @@ export function ActivityTimeline({ contactId, companyId, dealId, projectId }: Ac
 	return (
 		<Card>
 			<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-				<CardTitle className="text-xl font-bold">Activity Timeline</CardTitle>
+				<CardTitle className="text-xl font-bold">{t('title')}</CardTitle>
 				<Button size="sm" onClick={() => setIsLogOpen(true)}>
 					<Plus className="h-4 w-4 mr-2" />
-					Log Activity
+					{t('logActivity')}
 				</Button>
 			</CardHeader>
 			<CardContent>
@@ -135,7 +138,7 @@ export function ActivityTimeline({ contactId, companyId, dealId, projectId }: Ac
 					</div>
 				) : !data?.items?.length ? (
 					<div className="text-center py-8 text-muted-foreground">
-						No activities yet. Log your first activity.
+						{t('noActivities')}
 					</div>
 				) : (
 					<div className="relative space-y-6 mt-4 before:absolute before:inset-0 before:ml-4 before:-translate-x-px before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-muted before:to-transparent">
@@ -146,45 +149,45 @@ export function ActivityTimeline({ contactId, companyId, dealId, projectId }: Ac
 								</div>
 								<div className="ml-10 flex-1 space-y-1">
 									<div className="flex items-center justify-between">
-										<div className="flex items-center gap-2">
+										<div className="flex items-center gap-2"> 
 											<span className="font-semibold">{activity.subject || activity.activityType.replace('_', ' ')}</span>
 											<Badge variant="outline" className="capitalize text-[10px] h-5">
 												{activity.activityType.replace('_', ' ')}
 											</Badge>
 										</div>
-										<div className="flex items-center gap-2">
+										<div className="flex items-center gap-2"> 
 											<span className="text-xs text-muted-foreground">
 												{formatRelativeTime(activity.occurredAt)}
 											</span>
 											<DropdownMenu>
 												<DropdownMenuTrigger asChild>
-													<Button variant="ghost" size="icon" className="h-7 w-7">
+													<Button variant="ghost" size="icon" className="h-8 w-8">
 														<MoreHorizontal className="h-4 w-4" />
 													</Button>
 												</DropdownMenuTrigger>
 												<DropdownMenuContent align="end">
-													<DropdownMenuItem onClick={() => setEditingActivity({ ...activity, activityType: activity.activityType as ActivityType })}>
+													<DropdownMenuItem onClick={() => setEditingActivity(activity as any)}>
 														<Edit2 className="h-4 w-4 mr-2" />
-														Edit
+														{tActions('edit')}
 													</DropdownMenuItem>
-													<DropdownMenuItem
+													<DropdownMenuItem 
 														className="text-destructive"
 														onClick={() => setDeletingActivityId(activity.id)}
 													>
 														<Trash2 className="h-4 w-4 mr-2" />
-														Delete
+														{tActions('delete')}
 													</DropdownMenuItem>
 												</DropdownMenuContent>
 											</DropdownMenu>
 										</div>
 									</div>
-									<p className="text-sm text-muted-foreground line-clamp-3">
+									<p className="text-sm text-muted-foreground whitespace-pre-wrap">
 										{activity.description}
 									</p>
 									{activity.duration && (
 										<div className="flex items-center gap-1 text-xs text-muted-foreground">
 											<Clock className="h-3 w-3" />
-											{activity.duration} mins
+											<span>{activity.duration} min</span>
 										</div>
 									)}
 								</div>
@@ -195,12 +198,12 @@ export function ActivityTimeline({ contactId, companyId, dealId, projectId }: Ac
 			</CardContent>
 
 			<LogActivityDialog
-				open={isLogOpen}
-				onOpenChange={setIsLogOpen}
 				contactId={contactId}
 				companyId={companyId}
 				dealId={dealId}
 				projectId={projectId}
+				open={isLogOpen}
+				onOpenChange={setIsLogOpen}
 			/>
 
 			{editingActivity && (
@@ -211,21 +214,24 @@ export function ActivityTimeline({ contactId, companyId, dealId, projectId }: Ac
 				/>
 			)}
 
-			<AlertDialog open={!!deletingActivityId} onOpenChange={(open) => !open && setDeletingActivityId(null)}>
+			<AlertDialog 
+				open={!!deletingActivityId} 
+				onOpenChange={(open) => !open && setDeletingActivityId(null)}
+			>
 				<AlertDialogContent>
 					<AlertDialogHeader>
-						<AlertDialogTitle>Delete Activity</AlertDialogTitle>
+						<AlertDialogTitle>{tActions('confirm')}</AlertDialogTitle>
 						<AlertDialogDescription>
-							Are you sure you want to delete this activity? This action cannot be undone.
+							{t('deleteConfirmMessage')}
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
-						<AlertDialogCancel>Cancel</AlertDialogCancel>
+						<AlertDialogCancel>{tActions('cancel')}</AlertDialogCancel>
 						<AlertDialogAction
 							onClick={() => deletingActivityId && deleteMutation.mutate({ id: deletingActivityId })}
 							className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
 						>
-							Delete
+							{tActions('delete')}
 						</AlertDialogAction>
 					</AlertDialogFooter>
 				</AlertDialogContent>

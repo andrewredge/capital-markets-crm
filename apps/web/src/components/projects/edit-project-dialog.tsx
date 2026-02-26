@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { useTRPC } from '@/lib/trpc'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -21,6 +22,7 @@ interface EditProjectDialogProps {
 }
 
 export function EditProjectDialog({ project, open, onOpenChange }: EditProjectDialogProps) {
+	const t = useTranslations('projects')
 	const trpc = useTRPC()
 	const queryClient = useQueryClient()
 
@@ -29,7 +31,7 @@ export function EditProjectDialog({ project, open, onOpenChange }: EditProjectDi
 			onSuccess: () => {
 				queryClient.invalidateQueries({ queryKey: trpc.projects.list.queryKey() })
 				queryClient.invalidateQueries({ queryKey: trpc.projects.getById.queryKey({ id: project.id }) })
-				toast.success('Project updated successfully')
+				toast.success(t('updateSuccess'))
 				onOpenChange(false)
 			},
 			onError: (error) => {
@@ -54,16 +56,16 @@ export function EditProjectDialog({ project, open, onOpenChange }: EditProjectDi
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent className="sm:max-w-[700px]">
 				<DialogHeader>
-					<DialogTitle>Edit Project</DialogTitle>
+					<DialogTitle>{t('editTitle')}</DialogTitle>
 					<DialogDescription>
-						Update the details for {project.name}.
+						{t('editDescription', { name: project.name })}
 					</DialogDescription>
 				</DialogHeader>
-				<ProjectForm 
-					defaultValues={defaultValues} 
-					onSubmit={onSubmit} 
-					isLoading={updateMutation.isPending} 
-					mode="edit" 
+				<ProjectForm
+					defaultValues={defaultValues}
+					onSubmit={onSubmit}
+					isLoading={updateMutation.isPending}
+					mode="edit"
 				/>
 			</DialogContent>
 		</Dialog>

@@ -23,9 +23,10 @@ import { toast } from 'sonner'
 interface TagComboboxProps {
 	onSelect: (tagId: string) => void
 	excludeTagIds?: string[]
+	placeholder?: string
 }
 
-export function TagCombobox({ onSelect, excludeTagIds = [] }: TagComboboxProps) {
+export function TagCombobox({ onSelect, excludeTagIds = [], placeholder = 'Search tags...' }: TagComboboxProps) {
 	const [open, setOpen] = React.useState(false)
 	const [search, setSearch] = React.useState('')
 	const trpc = useTRPC()
@@ -78,7 +79,7 @@ export function TagCombobox({ onSelect, excludeTagIds = [] }: TagComboboxProps) 
 			<PopoverContent className="w-[200px] p-0">
 				<Command shouldFilter={false}>
 					<CommandInput
-						placeholder="Search tags..."
+						placeholder={placeholder}
 						value={search}
 						onValueChange={setSearch}
 					/>

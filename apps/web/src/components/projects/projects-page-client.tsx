@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import {
 	useReactTable,
@@ -38,11 +39,13 @@ import {
 	ChevronsUpDown,
 } from 'lucide-react'
 import { useDebounce } from '@/hooks/use-debounce'
-import { columns } from './projects-columns'
+import { getColumns } from './projects-columns'
 import { CreateProjectDialog } from './create-project-dialog'
 import { PROJECT_STATUS_OPTIONS, COMMODITY_OPTIONS } from '@crm/shared'
 
 export function ProjectsPageClient() {
+	const t = useTranslations('projects')
+	const tTable = useTranslations('table')
 	const trpc = useTRPC()
 	const router = useRouter()
 	const [page, setPage] = useState(1)
@@ -52,6 +55,8 @@ export function ProjectsPageClient() {
 	const [commodityFilter, setCommodityFilter] = useState<string>('all')
 	const [sorting, setSorting] = useState<SortingState>([])
 	const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+
+	const columns = getColumns(t)
 
 	const debouncedSearch = useDebounce(search, 300)
 
@@ -91,19 +96,19 @@ export function ProjectsPageClient() {
 			<div className="flex items-center justify-between">
 				<div className="flex items-center gap-2">
 					<Mountain className="h-8 w-8 text-primary" />
-					<h1 className="text-3xl font-bold tracking-tight">Projects</h1>
+					<h1 className="text-3xl font-bold tracking-tight">{t('pageTitle')}</h1>
 				</div>
 				<Button onClick={() => setIsCreateDialogOpen(true)}>
 					<Plus className="mr-2 h-4 w-4" />
-					Create Project
+					{t('createProject')}
 				</Button>
 			</div>
 
 			<div className="flex items-center gap-4 py-4">
-				<div className="relative flex-1 max-w-sm">
-					<Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+				<div className="relative flex-1 max-sm">
+					<Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />    
 					<Input
-						placeholder="Search projects..."
+						placeholder={t('searchPlaceholder')}
 						className="pl-8"
 						value={search}
 						onChange={(e) => {
@@ -120,10 +125,10 @@ export function ProjectsPageClient() {
 					}}
 				>
 					<SelectTrigger className="w-[180px]">
-						<SelectValue placeholder="All Statuses" />
+						<SelectValue placeholder={t('allStatuses')} />
 					</SelectTrigger>
 					<SelectContent>
-						<SelectItem value="all">All Statuses</SelectItem>
+						<SelectItem value="all">{t('allStatuses')}</SelectItem>
 						{PROJECT_STATUS_OPTIONS.map((option) => (
 							<SelectItem key={option.value} value={option.value}>
 								{option.label}
@@ -139,10 +144,10 @@ export function ProjectsPageClient() {
 					}}
 				>
 					<SelectTrigger className="w-[180px]">
-						<SelectValue placeholder="All Commodities" />
+						<SelectValue placeholder={t('allCommodities')} />
 					</SelectTrigger>
 					<SelectContent>
-						<SelectItem value="all">All Commodities</SelectItem>
+						<SelectItem value="all">{t('allCommodities')}</SelectItem>
 						{COMMODITY_OPTIONS.map((option) => (
 							<SelectItem key={option.value} value={option.value}>
 								{option.label}
@@ -185,29 +190,39 @@ export function ProjectsPageClient() {
 					</TableHeader>
 					<TableBody>
 						{isLoading ? (
-							<TableRow>
-								<TableCell colSpan={columns.length} className="h-24 text-center">
-									Loading...
-								</TableCell>
-							</TableRow>
+							Array.from({ length: 5 }).map((_, i) => (
+								<TableRow key={i}>
+									{columns.map((_, j) => (
+										<TableCell key={j}>
+											<div className="h-6 w-full bg-muted animate-pulse rounded" />
+										</TableCell>
+									))}
+								</TableRow>
+							))
 						) : table.getRowModel().rows?.length ? (
 							table.getRowModel().rows.map((row) => (
 								<TableRow
 									key={row.id}
-									className="cursor-pointer"
+									className="cursor-pointer hover:bg-muted/50"
 									onClick={() => router.push(`/projects/${row.original.id}`)}
 								>
 									{row.getVisibleCells().map((cell) => (
 										<TableCell key={cell.id}>
-											{flexRender(cell.column.columnDef.cell, cell.getContext())}
+											{flexRender(
+												cell.column.columnDef.cell,
+												cell.getContext(),
+											)}
 										</TableCell>
 									))}
 								</TableRow>
 							))
 						) : (
 							<TableRow>
-								<TableCell colSpan={columns.length} className="h-24 text-center">
-									No results.
+								<TableCell
+									colSpan={columns.length}
+									className="h-24 text-center"
+								>
+									{t('noResults')}
 								</TableCell>
 							</TableRow>
 						)}
@@ -217,29 +232,33 @@ export function ProjectsPageClient() {
 
 			<div className="flex items-center justify-between py-4">
 				<div className="text-sm text-muted-foreground">
-					Total: {data?.total ?? 0} projects
+					{tTable('showing', {
+						from: (page - 1) * limit + 1,
+						to: Math.min(page * limit, data?.total ?? 0),
+						total: data?.total ?? 0
+					})}
 				</div>
-				<div className="flex items-center space-x-2">
+				<div className="flex items-center gap-2">
 					<Button
 						variant="outline"
 						size="sm"
 						onClick={() => setPage((p) => Math.max(1, p - 1))}
-						disabled={page === 1}
+						disabled={page === 1 || isLoading}
 					>
-						<ChevronLeft className="h-4 w-4" />
-						Previous
+						<ChevronLeft className="h-4 w-4 mr-1" />
+						{tTable('previous')}
 					</Button>
 					<div className="text-sm font-medium">
-						Page {page} of {totalPages || 1}
+						{tTable('pageCount', { page, total: Math.max(1, totalPages) })}
 					</div>
 					<Button
 						variant="outline"
 						size="sm"
-						onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-						disabled={page === totalPages || totalPages === 0}
+						onClick={() => setPage((p) => p + 1)}
+						disabled={page >= totalPages || isLoading}
 					>
-						Next
-						<ChevronRight className="h-4 w-4" />
+						{tTable('next')}
+						<ChevronRight className="h-4 w-4 ml-1" />
 					</Button>
 				</div>
 			</div>

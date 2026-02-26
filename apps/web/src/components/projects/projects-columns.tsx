@@ -6,10 +6,10 @@ import { PROJECT_STATUS_OPTIONS, COMMODITY_OPTIONS } from '@crm/shared'
 import { format } from 'date-fns'
 import Link from 'next/link'
 
-export const columns: ColumnDef<any>[] = [
+export const getColumns = (t: any): ColumnDef<any>[] => [
 	{
 		accessorKey: 'name',
-		header: 'Name',
+		header: t('columns.name'),
 		cell: ({ row }) => {
 			return (
 				<div className="font-medium text-primary">
@@ -20,7 +20,7 @@ export const columns: ColumnDef<any>[] = [
 	},
 	{
 		accessorKey: 'ownerCompanyName',
-		header: 'Owner Company',
+		header: t('columns.owner'),
 		cell: ({ row }) => {
 			const name = row.getValue('ownerCompanyName') as string
 			const id = row.original.ownerCompanyId as string
@@ -38,7 +38,7 @@ export const columns: ColumnDef<any>[] = [
 	},
 	{
 		accessorKey: 'projectStatus',
-		header: 'Status',
+		header: t('columns.status'),
 		cell: ({ row }) => {
 			const status = row.getValue('projectStatus') as string
 			const option = PROJECT_STATUS_OPTIONS.find((o) => o.value === status)
@@ -51,7 +51,7 @@ export const columns: ColumnDef<any>[] = [
 	},
 	{
 		accessorKey: 'primaryCommodity',
-		header: 'Primary Commodity',
+		header: t('columns.commodity'),
 		cell: ({ row }) => {
 			const commodity = row.getValue('primaryCommodity') as string
 			const option = COMMODITY_OPTIONS.find((o) => o.value === commodity)
@@ -64,12 +64,12 @@ export const columns: ColumnDef<any>[] = [
 	},
 	{
 		accessorKey: 'country',
-		header: 'Country',
+		header: t('columns.country'),
 		cell: ({ row }) => row.getValue('country') || '-',
 	},
 	{
 		accessorKey: 'createdAt',
-		header: 'Created',
+		header: t('columns.created'),
 		cell: ({ row }) => {
 			const date = row.getValue('createdAt')
 			if (!date) return '-'

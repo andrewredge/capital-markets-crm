@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTRPC } from '@/lib/trpc'
@@ -61,6 +62,8 @@ export function EditActivityDialog({
 	open,
 	onOpenChange,
 }: EditActivityDialogProps) {
+	const t = useTranslations('shared.activity')
+	const tActions = useTranslations('actions')
 	const trpc = useTRPC()
 	const queryClient = useQueryClient()
 
@@ -92,11 +95,11 @@ export function EditActivityDialog({
 			onSuccess: () => {
 				queryClient.invalidateQueries({ queryKey: trpc.activities.list.queryKey() })
 				queryClient.invalidateQueries({ queryKey: trpc.activities.getById.queryKey({ id: activity.id }) })
-				toast.success('Activity updated')
+				toast.success(t('updateSuccess') || 'Activity updated')
 				onOpenChange(false)
 			},
 			onError: (error) => {
-				toast.error(error.message || 'Failed to update activity')
+				toast.error(error.message || t('updateError') || 'Failed to update activity')
 			},
 		}),
 	)
@@ -113,7 +116,7 @@ export function EditActivityDialog({
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent className="sm:max-w-[500px]">
 				<DialogHeader>
-					<DialogTitle>Edit Activity</DialogTitle>
+					<DialogTitle>{t('editTitle')}</DialogTitle>
 				</DialogHeader>
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -122,11 +125,11 @@ export function EditActivityDialog({
 							name="activityType"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Activity Type</FormLabel>
+									<FormLabel>{t('form.type')}</FormLabel>
 									<Select onValueChange={field.onChange} defaultValue={field.value}>
 										<FormControl>
 											<SelectTrigger>
-												<SelectValue placeholder="Select type" />
+												<SelectValue placeholder={tActions('search')} />
 											</SelectTrigger>
 										</FormControl>
 										<SelectContent>
@@ -146,9 +149,9 @@ export function EditActivityDialog({
 							name="subject"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Subject</FormLabel>
+									<FormLabel>{t('form.subject')}</FormLabel>
 									<FormControl>
-										<Input placeholder="Brief summary" {...field} value={field.value || ''} />
+										<Input placeholder={t('form.subjectPlaceholder')} {...field} value={field.value || ''} />
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -159,10 +162,10 @@ export function EditActivityDialog({
 							name="description"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Description</FormLabel>
+									<FormLabel>{t('form.description')}</FormLabel>
 									<FormControl>
 										<Textarea
-											placeholder="Detailed notes..."
+											placeholder={t('form.descriptionPlaceholder')}
 											className="min-h-[100px]"
 											{...field}
 											value={field.value || ''}
@@ -178,7 +181,7 @@ export function EditActivityDialog({
 								name="occurredAt"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Date & Time</FormLabel>
+										<FormLabel>{t('form.occurredAt')}</FormLabel>
 										<FormControl>
 											<Input type="datetime-local" {...field} value={field.value || ''} />
 										</FormControl>
@@ -191,7 +194,7 @@ export function EditActivityDialog({
 								name="duration"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Duration (mins)</FormLabel>
+										<FormLabel>{t('form.duration')}</FormLabel>
 										<FormControl>
 											<Input
 												type="number"
@@ -215,10 +218,10 @@ export function EditActivityDialog({
 								onClick={() => onOpenChange(false)}
 								disabled={updateMutation.isPending}
 							>
-								Cancel
+								{tActions('cancel')}
 							</Button>
 							<Button type="submit" disabled={updateMutation.isPending}>
-								{updateMutation.isPending ? 'Saving...' : 'Save Changes'}
+								{updateMutation.isPending ? tActions('saving') : tActions('save')}
 							</Button>
 						</DialogFooter>
 					</form>

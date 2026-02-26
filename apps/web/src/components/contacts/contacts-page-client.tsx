@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
@@ -30,11 +31,13 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { CONTACT_STATUS_OPTIONS, type ContactStatus } from '@crm/shared'
 import { Search, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react'
-import { columns } from './contacts-columns'
+import { getColumns } from './contacts-columns'
 import { CreateContactDialog } from './create-contact-dialog'
 import { useDebounce } from '@/hooks/use-debounce'
 
 export function ContactsPageClient() {
+	const t = useTranslations('contacts')
+	const tTable = useTranslations('table')
 	const router = useRouter()
 	const trpc = useTRPC()
 	const [search, setSearch] = useState('')
@@ -42,6 +45,8 @@ export function ContactsPageClient() {
 	const [page, setPage] = useState(1)
 	const [sorting, setSorting] = useState<SortingState>([])
 	const limit = 25
+
+	const columns = getColumns(t)
 
 	const debouncedSearch = useDebounce(search, 300)
 
@@ -78,7 +83,7 @@ export function ContactsPageClient() {
 	return (
 		<div className="space-y-4">
 			<div className="flex items-center justify-between">
-				<h1 className="text-2xl font-bold tracking-tight">Contacts</h1>
+				<h1 className="text-2xl font-bold tracking-tight">{t('pageTitle')}</h1>
 				<CreateContactDialog />
 			</div>
 
@@ -86,7 +91,7 @@ export function ContactsPageClient() {
 				<div className="relative flex-1 max-w-sm">
 					<Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
 					<Input
-						placeholder="Search contacts..."
+						placeholder={t('searchPlaceholder')}
 						className="pl-8"
 						value={search}
 						onChange={(e) => {
@@ -103,10 +108,10 @@ export function ContactsPageClient() {
 					}}
 				>
 					<SelectTrigger className="w-[180px]">
-						<SelectValue placeholder="Filter by status" />
+						<SelectValue placeholder={t('filterByStatus')} />
 					</SelectTrigger>
 					<SelectContent>
-						<SelectItem value="all">All Statuses</SelectItem>
+						<SelectItem value="all">{t('allStatuses')}</SelectItem>
 						{CONTACT_STATUS_OPTIONS.map((option) => (
 							<SelectItem key={option.value} value={option.value}>
 								{option.label}
@@ -181,7 +186,7 @@ export function ContactsPageClient() {
 									colSpan={columns.length}
 									className="h-24 text-center"
 								>
-									No contacts found.
+									{t('noResults')}
 								</TableCell>
 							</TableRow>
 						)}
@@ -191,7 +196,11 @@ export function ContactsPageClient() {
 
 			<div className="flex items-center justify-between">
 				<div className="text-sm text-muted-foreground">
-					Showing {data?.items.length ?? 0} of {data?.total ?? 0} contacts
+					{tTable('showing', {
+						from: (page - 1) * limit + 1,
+						to: Math.min(page * limit, data?.total ?? 0),
+						total: data?.total ?? 0
+					})}
 				</div>
 				<div className="flex items-center gap-2">
 					<Button
@@ -201,10 +210,10 @@ export function ContactsPageClient() {
 						disabled={page === 1 || isLoading}
 					>
 						<ChevronLeft className="h-4 w-4 mr-1" />
-						Previous
+						{tTable('previous')}
 					</Button>
 					<div className="text-sm font-medium">
-						Page {page} of {Math.max(1, totalPages)}
+						{t('pageCount', { page, total: Math.max(1, totalPages) })}
 					</div>
 					<Button
 						variant="outline"
@@ -212,7 +221,7 @@ export function ContactsPageClient() {
 						onClick={() => setPage((p) => p + 1)}
 						disabled={page >= totalPages || isLoading}
 					>
-						Next
+						{tTable('next')}
 						<ChevronRight className="h-4 w-4 ml-1" />
 					</Button>
 				</div>

@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTRPC } from '@/lib/trpc'
@@ -50,6 +51,7 @@ interface DealsKanbanViewProps {
 }
 
 export function DealsKanbanView({ pipelineId, search }: DealsKanbanViewProps) {
+  const t = useTranslations('deals')
   const trpc = useTRPC()
   const queryClient = useQueryClient()
   const [activeDeal, setActiveDeal] = useState<Deal | null>(null)
@@ -65,7 +67,7 @@ export function DealsKanbanView({ pipelineId, search }: DealsKanbanViewProps) {
         queryClient.invalidateQueries({ queryKey: trpc.deals.list.queryKey() })
       },
       onError: (error) => {
-        toast.error(error.message || 'Failed to move deal')
+        toast.error(error.message || t('moveError'))
       },
     })
   )
@@ -197,6 +199,7 @@ export function DealsKanbanView({ pipelineId, search }: DealsKanbanViewProps) {
 }
 
 function KanbanColumn({ stage }: { stage: StageWithDeals }) {
+  const t = useTranslations('deals')
   return (
     <div className="flex-shrink-0 w-80 flex flex-col max-h-full bg-muted/30 rounded-lg border overflow-hidden">
       <div 
@@ -225,7 +228,7 @@ function KanbanColumn({ stage }: { stage: StageWithDeals }) {
         {/* Empty area drop zone */}
         {stage.deals.length === 0 && (
           <div className="h-32 border-2 border-dashed rounded-lg flex items-center justify-center text-muted-foreground text-xs">
-            Drop deals here
+            {t('dropDealsHere')}
           </div>
         )}
       </div>
@@ -262,6 +265,7 @@ function SortableDealCard({ deal }: { deal: Deal }) {
 }
 
 function DealCard({ deal, isOverlay }: { deal: Deal; isOverlay?: boolean }) {
+  const t = useTranslations('deals')
   const router = useRouter()
   const typeLabel = DEAL_TYPES.find(t => t.value === deal.dealType)?.label || deal.dealType
 
@@ -302,7 +306,7 @@ function DealCard({ deal, isOverlay }: { deal: Deal; isOverlay?: boolean }) {
         {deal.confidence !== null && (
           <div className="space-y-1">
             <div className="flex items-center justify-between text-[10px] text-muted-foreground">
-              <span>Confidence</span>
+              <span>{t('confidence')}</span>
               <span>{deal.confidence}%</span>
             </div>
             <div className="h-1 w-full bg-muted rounded-full overflow-hidden">

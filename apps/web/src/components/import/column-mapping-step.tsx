@@ -1,25 +1,11 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useEffect, useMemo, useRef } from 'react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { COLUMN_ALIAS_MAP, CRM_CONTACT_FIELDS, type CrmContactField } from '@crm/shared'
-
-const FIELD_LABELS: Record<CrmContactField, string> = {
-	firstName: 'First Name',
-	lastName: 'Last Name',
-	email: 'Email',
-	phone: 'Phone',
-	title: 'Job Title',
-	linkedinUrl: 'LinkedIn URL',
-	contactType: 'Contact Type',
-	contactSubtype: 'Contact Subtype',
-	companyName: 'Company Name',
-	companyRole: 'Company Role',
-	source: 'Source',
-	status: 'Status',
-}
 
 const REQUIRED_FIELDS: CrmContactField[] = ['firstName', 'lastName']
 
@@ -50,6 +36,7 @@ export function autoMapColumns(headers: string[]): Record<string, CrmContactFiel
 }
 
 export function ColumnMappingStep({ headers, sampleRows, mapping, onMappingChange }: ColumnMappingStepProps) {
+	const t = useTranslations('settings.import.columnMapping')
 	// Stabilize callback ref to avoid re-render loops from inline function props
 	const onMappingChangeRef = useRef(onMappingChange)
 	onMappingChangeRef.current = onMappingChange
@@ -80,15 +67,15 @@ export function ColumnMappingStep({ headers, sampleRows, mapping, onMappingChang
 	return (
 		<div className="space-y-4">
 			<div>
-				<h3 className="text-lg font-semibold">Map Columns</h3>
+				<h3 className="text-lg font-semibold">{t('title')}</h3>
 				<p className="text-sm text-muted-foreground">
-					Map each column from your file to a CRM field, or skip columns you don't need.
+					{t('description')}
 				</p>
 			</div>
 
 			{missingRequired.length > 0 && (
 				<div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-					Required fields not mapped: {missingRequired.map((f) => FIELD_LABELS[f]).join(', ')}
+					{t('requiredNotMapped', { fields: missingRequired.map((f) => t(`fields.${f}`)).join(', ') })}
 				</div>
 			)}
 
@@ -96,9 +83,9 @@ export function ColumnMappingStep({ headers, sampleRows, mapping, onMappingChang
 				<Table>
 					<TableHeader>
 						<TableRow>
-							<TableHead className="w-[200px]">Source Column</TableHead>
-							<TableHead className="w-[200px]">Maps To</TableHead>
-							<TableHead>Preview</TableHead>
+							<TableHead className="w-[200px]">{t('sourceColumn')}</TableHead>
+							<TableHead className="w-[200px]">{t('mapsTo')}</TableHead>
+							<TableHead>{t('preview')}</TableHead>
 						</TableRow>
 					</TableHeader>
 					<TableBody>
@@ -112,7 +99,7 @@ export function ColumnMappingStep({ headers, sampleRows, mapping, onMappingChang
 										</SelectTrigger>
 										<SelectContent>
 											<SelectItem value="skip">
-												<span className="text-muted-foreground">Skip</span>
+												<span className="text-muted-foreground">{t('skip')}</span>
 											</SelectItem>
 											{CRM_CONTACT_FIELDS.map((field) => (
 												<SelectItem
@@ -120,10 +107,10 @@ export function ColumnMappingStep({ headers, sampleRows, mapping, onMappingChang
 													value={field}
 													disabled={usedFields.has(field) && mapping[header] !== field}
 												>
-													{FIELD_LABELS[field]}
+													{t(`fields.${field}`)}
 													{REQUIRED_FIELDS.includes(field) && (
 														<Badge variant="outline" className="ml-2 text-xs">
-															Required
+															{t('required')}
 														</Badge>
 													)}
 												</SelectItem>

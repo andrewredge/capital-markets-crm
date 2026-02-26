@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { getTranslations } from 'next-intl/server'
 import { ImportWizard } from '@/components/import/import-wizard'
 
 export const metadata: Metadata = {
@@ -6,13 +7,15 @@ export const metadata: Metadata = {
 	description: 'Import contacts from CSV or Excel files.',
 }
 
-export default function ImportPage() {
+export default async function ImportPage() {
+	const t = await getTranslations('settings.import')
+
 	return (
 		<div className="space-y-6">
 			<div>
-				<h1 className="text-3xl font-bold tracking-tight">Import Contacts</h1>
+				<h1 className="text-3xl font-bold tracking-tight">{t('title')}</h1>
 				<p className="text-muted-foreground">
-					Upload a CSV or Excel file to bulk import contacts into your CRM.
+					{t('description')}
 				</p>
 			</div>
 			<ImportWizard />

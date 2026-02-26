@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { useTRPC } from '@/lib/trpc'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -19,6 +20,7 @@ interface CreateProjectDialogProps {
 }
 
 export function CreateProjectDialog({ open, onOpenChange }: CreateProjectDialogProps) {
+	const t = useTranslations('projects')
 	const trpc = useTRPC()
 	const queryClient = useQueryClient()
 
@@ -26,7 +28,7 @@ export function CreateProjectDialog({ open, onOpenChange }: CreateProjectDialogP
 		trpc.projects.create.mutationOptions({
 			onSuccess: () => {
 				queryClient.invalidateQueries({ queryKey: trpc.projects.list.queryKey() })
-				toast.success('Project created successfully')
+				toast.success(t('createSuccess'))
 				onOpenChange(false)
 			},
 			onError: (error) => {
@@ -43,12 +45,12 @@ export function CreateProjectDialog({ open, onOpenChange }: CreateProjectDialogP
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent className="sm:max-w-[600px]">
 				<DialogHeader>
-					<DialogTitle>Create New Project</DialogTitle>
+					<DialogTitle>{t('createTitle')}</DialogTitle>
 					<DialogDescription>
-						Add a new mining project or asset to your portfolio.
+						{t('createDescription')}
 					</DialogDescription>
 				</DialogHeader>
-				<ProjectForm onSubmit={onSubmit} isLoading={createMutation.isPending} mode="create" />
+				<ProjectForm onSubmit={onSubmit} isLoading={createMutation.isPending} mode="create" />    
 			</DialogContent>
 		</Dialog>
 	)
