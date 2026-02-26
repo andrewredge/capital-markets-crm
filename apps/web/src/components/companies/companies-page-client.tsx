@@ -6,6 +6,7 @@ import {
 	useReactTable,
 	getCoreRowModel,
 	flexRender,
+	type SortingState,
 } from '@tanstack/react-table'
 import { useTRPC } from '@/lib/trpc'
 import { useQuery } from '@tanstack/react-query'
@@ -28,7 +29,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ENTITY_TYPE_OPTIONS, type EntityType } from '@crm/shared'
-import { Search, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Search, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react'
 import { columns } from './companies-columns'
 import { CreateCompanyDialog } from './create-company-dialog'
 import { useDebounce } from '@/hooks/use-debounce'
@@ -39,14 +40,22 @@ export function CompaniesPageClient() {
 	const [search, setSearch] = useState('')
 	const [entityType, setEntityType] = useState<EntityType | 'all'>('all')
 	const [page, setPage] = useState(1)
+	const [sorting, setSorting] = useState<SortingState>([])
 	const limit = 25
 
 	const debouncedSearch = useDebounce(search, 300)
+
+	const handleSortingChange = (updater: SortingState | ((old: SortingState) => SortingState)) => {
+		setSorting(updater)
+		setPage(1)
+	}
 
 	const { data, isLoading } = useQuery(
 		trpc.companies.list.queryOptions({
 			search: debouncedSearch || undefined,
 			entityType: entityType === 'all' ? undefined : entityType,
+			sortBy: sorting[0]?.id,
+			sortDir: sorting[0]?.desc ? 'desc' : 'asc',
 			page,
 			limit,
 		}),
@@ -57,6 +66,11 @@ export function CompaniesPageClient() {
 		columns,
 		getCoreRowModel: getCoreRowModel(),
 		manualPagination: true,
+		manualSorting: true,
+		onSortingChange: handleSortingChange,
+		state: {
+			sorting,
+		},
 	})
 
 	const totalPages = Math.ceil((data?.total ?? 0) / limit)
@@ -108,13 +122,26 @@ export function CompaniesPageClient() {
 						{table.getHeaderGroups().map((headerGroup) => (
 							<TableRow key={headerGroup.id}>
 								{headerGroup.headers.map((header) => (
-									<TableHead key={header.id}>
-										{header.isPlaceholder
-											? null
-											: flexRender(
-													header.column.columnDef.header,
-													header.getContext(),
-												)}
+									<TableHead 
+										key={header.id}
+										className={header.column.getCanSort() ? 'cursor-pointer select-none' : ''}
+										onClick={header.column.getToggleSortingHandler()}
+									>
+										<div className="flex items-center gap-1">
+											{header.isPlaceholder
+												? null
+												: flexRender(
+														header.column.columnDef.header,
+														header.getContext(),
+												  )}
+											{header.column.getIsSorted() === 'asc' ? (
+												<ChevronUp className="h-4 w-4" />
+											) : header.column.getIsSorted() === 'desc' ? (
+												<ChevronDown className="h-4 w-4" />
+											) : header.column.getCanSort() ? (
+												<ChevronsUpDown className="h-3 w-3 text-muted-foreground" />
+											) : null}
+										</div>
 									</TableHead>
 								))}
 							</TableRow>

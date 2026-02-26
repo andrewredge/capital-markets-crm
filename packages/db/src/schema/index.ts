@@ -15,6 +15,9 @@ export * from './tags'
 export * from './pipelines'
 export * from './deals'
 
+// Sprint 2: Projects (Mining Assets)
+export * from './projects'
+
 // Phase 5B: Enrichment & Staleness
 export * from './enrichment'
 

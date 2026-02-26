@@ -195,6 +195,8 @@ export const companyFilterSchema = z.object({
 	entityType: z.enum(ENTITY_TYPES).optional(),
 	entitySubtype: z.string().optional(),
 	listingStatus: z.enum(LISTING_STATUSES).optional(),
+	sortBy: z.string().optional(),
+	sortDir: z.enum(['asc', 'desc']).optional(),
 	page: z.number().int().min(1).default(1),
 	limit: z.number().int().min(1).max(100).default(25),
 })

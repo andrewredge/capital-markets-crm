@@ -12,9 +12,10 @@ export const createNoteSchema = z
 		contactId: z.string().min(1).optional(),
 		companyId: z.string().min(1).optional(),
 		dealId: z.string().min(1).optional(),
+		projectId: z.string().min(1).optional(),
 	})
-	.refine((data) => data.contactId || data.companyId || data.dealId, {
-		message: 'At least one entity (contact, company, or deal) must be specified',
+	.refine((data) => data.contactId || data.companyId || data.dealId || data.projectId, {
+		message: 'At least one entity (contact, company, deal, or project) must be specified',
 	})
 
 export const updateNoteSchema = z.object({
@@ -24,12 +25,14 @@ export const updateNoteSchema = z.object({
 	contactId: z.string().min(1).optional(),
 	companyId: z.string().min(1).optional(),
 	dealId: z.string().min(1).optional(),
+	projectId: z.string().min(1).optional(),
 })
 
 export const noteFilterSchema = z.object({
 	contactId: z.string().min(1).optional(),
 	companyId: z.string().min(1).optional(),
 	dealId: z.string().min(1).optional(),
+	projectId: z.string().min(1).optional(),
 	page: z.number().int().min(1).default(1),
 	limit: z.number().int().min(1).max(100).default(25),
 })

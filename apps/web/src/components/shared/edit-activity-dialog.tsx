@@ -50,6 +50,7 @@ interface EditActivityDialogProps {
 		duration: number | null
 		contactId: string | null
 		companyId: string | null
+		projectId: string | null
 	}
 	open: boolean
 	onOpenChange: (open: boolean) => void

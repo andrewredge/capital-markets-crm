@@ -11,20 +11,21 @@ interface EntityTagsProps {
 	contactId?: string
 	companyId?: string
 	dealId?: string
+	projectId?: string
 }
 
-export function EntityTags({ contactId, companyId, dealId }: EntityTagsProps) {
+export function EntityTags({ contactId, companyId, dealId, projectId }: EntityTagsProps) {
 	const trpc = useTRPC()
 	const queryClient = useQueryClient()
 
 	const { data: tags, isLoading } = useQuery(
-		trpc.tags.getForEntity.queryOptions({ contactId, companyId, dealId })
+		trpc.tags.getForEntity.queryOptions({ contactId, companyId, dealId, projectId })
 	)
 
 	const addTagMutation = useMutation(
 		trpc.tags.addTagging.mutationOptions({
 			onSuccess: () => {
-				queryClient.invalidateQueries({ queryKey: trpc.tags.getForEntity.queryKey({ contactId, companyId, dealId }) })
+				queryClient.invalidateQueries({ queryKey: trpc.tags.getForEntity.queryKey({ contactId, companyId, dealId, projectId }) })
 				toast.success('Tag added')
 			},
 			onError: (error) => {
@@ -36,7 +37,7 @@ export function EntityTags({ contactId, companyId, dealId }: EntityTagsProps) {
 	const removeTagMutation = useMutation(
 		trpc.tags.removeTagging.mutationOptions({
 			onSuccess: () => {
-				queryClient.invalidateQueries({ queryKey: trpc.tags.getForEntity.queryKey({ contactId, companyId, dealId }) })
+				queryClient.invalidateQueries({ queryKey: trpc.tags.getForEntity.queryKey({ contactId, companyId, dealId, projectId }) })
 				toast.success('Tag removed')
 			},
 			onError: (error) => {
@@ -46,7 +47,7 @@ export function EntityTags({ contactId, companyId, dealId }: EntityTagsProps) {
 	)
 
 	const handleSelectTag = (tagId: string) => {
-		addTagMutation.mutate({ tagId, contactId, companyId, dealId })
+		addTagMutation.mutate({ tagId, contactId, companyId, dealId, projectId })
 	}
 
 	if (isLoading) {

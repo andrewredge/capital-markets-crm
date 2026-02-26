@@ -74,8 +74,9 @@ export const tagsRouter = router({
 					contactId: z.string().min(1).optional(),
 					companyId: z.string().min(1).optional(),
 					dealId: z.string().min(1).optional(),
+					projectId: z.string().min(1).optional(),
 				})
-				.refine((data) => data.contactId || data.companyId || data.dealId, {
+				.refine((data) => data.contactId || data.companyId || data.dealId || data.projectId, {
 					message: 'At least one entity must be specified',
 				}),
 		)

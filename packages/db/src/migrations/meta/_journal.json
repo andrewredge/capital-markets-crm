@@ -50,6 +50,13 @@
       "when": 1772100963848,
       "tag": "0006_past_terror",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1772102442422,
+      "tag": "0007_perpetual_frightful_four",
+      "breakpoints": true
     }
   ]
 }

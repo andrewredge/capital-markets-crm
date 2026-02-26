@@ -14,6 +14,7 @@ import { linkedImportRouter } from './routers/linked-import.js'
 import { enrichmentRouter } from './routers/enrichment.js'
 import { platformAdminRouter } from './routers/platform-admin.js'
 import { dashboardRouter } from './routers/dashboard.js'
+import { projectsRouter } from './routers/projects.js'
 
 /**
  * Root application router.
@@ -36,6 +37,7 @@ export const appRouter = router({
 	enrichment: enrichmentRouter,
 	platformAdmin: platformAdminRouter,
 	dashboard: dashboardRouter,
+	projects: projectsRouter,
 })
 
 export type AppRouter = typeof appRouter

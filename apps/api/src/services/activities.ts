@@ -5,7 +5,7 @@ import type { CreateActivityInput, UpdateActivityInput, ActivityFilterInput } fr
 import type { DrizzleDB } from '../lib/types.js'
 
 export async function list(db: DrizzleDB, tenantId: string, filters: ActivityFilterInput) {
-	const { contactId, companyId, dealId, activityType, page, limit } = filters
+	const { contactId, companyId, dealId, projectId, activityType, page, limit } = filters
 	const offset = (page - 1) * limit
 
 	const conditions = [eq(activities.organizationId, tenantId)]
@@ -18,6 +18,9 @@ export async function list(db: DrizzleDB, tenantId: string, filters: ActivityFil
 	}
 	if (dealId) {
 		conditions.push(eq(activities.dealId, dealId))
+	}
+	if (projectId) {
+		conditions.push(eq(activities.projectId, projectId))
 	}
 	if (activityType) {
 		conditions.push(eq(activities.activityType, activityType))
@@ -61,6 +64,7 @@ export async function create(db: DrizzleDB, tenantId: string, input: CreateActiv
 			contactId: input.contactId || null,
 			companyId: input.companyId || null,
 			dealId: input.dealId || null,
+			projectId: input.projectId || null,
 		})
 		.returning()
 
@@ -83,6 +87,7 @@ export async function update(
 	if (input.contactId !== undefined) values.contactId = input.contactId || null
 	if (input.companyId !== undefined) values.companyId = input.companyId || null
 	if (input.dealId !== undefined) values.dealId = input.dealId || null
+	if (input.projectId !== undefined) values.projectId = input.projectId || null
 
 	const [updated] = await db
 		.update(activities)

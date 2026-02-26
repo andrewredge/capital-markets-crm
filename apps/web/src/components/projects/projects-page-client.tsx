@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import {
 	useReactTable,
 	getCoreRowModel,
@@ -10,14 +9,7 @@ import {
 } from '@tanstack/react-table'
 import { useTRPC } from '@/lib/trpc'
 import { useQuery } from '@tanstack/react-query'
-import { Input } from '@/components/ui/input'
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from '@/components/ui/select'
+import { useRouter } from 'next/navigation'
 import {
 	Table,
 	TableBody,
@@ -27,21 +19,39 @@ import {
 	TableRow,
 } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
-import { CONTACT_STATUS_OPTIONS, type ContactStatus } from '@crm/shared'
-import { Search, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react'
-import { columns } from './contacts-columns'
-import { CreateContactDialog } from './create-contact-dialog'
+import { Input } from '@/components/ui/input'
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '@/components/ui/select'
+import {
+	ChevronLeft,
+	ChevronRight,
+	Plus,
+	Search,
+	Mountain,
+	ChevronUp,
+	ChevronDown,
+	ChevronsUpDown,
+} from 'lucide-react'
 import { useDebounce } from '@/hooks/use-debounce'
+import { columns } from './projects-columns'
+import { CreateProjectDialog } from './create-project-dialog'
+import { PROJECT_STATUS_OPTIONS, COMMODITY_OPTIONS } from '@crm/shared'
 
-export function ContactsPageClient() {
-	const router = useRouter()
+export function ProjectsPageClient() {
 	const trpc = useTRPC()
-	const [search, setSearch] = useState('')
-	const [status, setStatus] = useState<ContactStatus | 'all'>('all')
+	const router = useRouter()
 	const [page, setPage] = useState(1)
+	const [limit] = useState(25)
+	const [search, setSearch] = useState('')
+	const [statusFilter, setStatusFilter] = useState<string>('all')
+	const [commodityFilter, setCommodityFilter] = useState<string>('all')
 	const [sorting, setSorting] = useState<SortingState>([])
-	const limit = 25
+	const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
 
 	const debouncedSearch = useDebounce(search, 300)
 
@@ -51,9 +61,10 @@ export function ContactsPageClient() {
 	}
 
 	const { data, isLoading } = useQuery(
-		trpc.contacts.list.queryOptions({
+		trpc.projects.list.queryOptions({
 			search: debouncedSearch || undefined,
-			status: status === 'all' ? undefined : status,
+			projectStatus: statusFilter === 'all' ? undefined : (statusFilter as any),
+			primaryCommodity: commodityFilter === 'all' ? undefined : (commodityFilter as any),
 			sortBy: sorting[0]?.id,
 			sortDir: sorting[0]?.desc ? 'desc' : 'asc',
 			page,
@@ -76,17 +87,23 @@ export function ContactsPageClient() {
 	const totalPages = Math.ceil((data?.total ?? 0) / limit)
 
 	return (
-		<div className="space-y-4">
+		<div className="space-y-4 p-8">
 			<div className="flex items-center justify-between">
-				<h1 className="text-2xl font-bold tracking-tight">Contacts</h1>
-				<CreateContactDialog />
+				<div className="flex items-center gap-2">
+					<Mountain className="h-8 w-8 text-primary" />
+					<h1 className="text-3xl font-bold tracking-tight">Projects</h1>
+				</div>
+				<Button onClick={() => setIsCreateDialogOpen(true)}>
+					<Plus className="mr-2 h-4 w-4" />
+					Create Project
+				</Button>
 			</div>
 
-			<div className="flex items-center gap-4">
+			<div className="flex items-center gap-4 py-4">
 				<div className="relative flex-1 max-w-sm">
 					<Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
 					<Input
-						placeholder="Search contacts..."
+						placeholder="Search projects..."
 						className="pl-8"
 						value={search}
 						onChange={(e) => {
@@ -96,18 +113,37 @@ export function ContactsPageClient() {
 					/>
 				</div>
 				<Select
-					value={status}
+					value={statusFilter}
 					onValueChange={(value) => {
-						setStatus(value as ContactStatus | 'all')
+						setStatusFilter(value)
 						setPage(1)
 					}}
 				>
 					<SelectTrigger className="w-[180px]">
-						<SelectValue placeholder="Filter by status" />
+						<SelectValue placeholder="All Statuses" />
 					</SelectTrigger>
 					<SelectContent>
 						<SelectItem value="all">All Statuses</SelectItem>
-						{CONTACT_STATUS_OPTIONS.map((option) => (
+						{PROJECT_STATUS_OPTIONS.map((option) => (
+							<SelectItem key={option.value} value={option.value}>
+								{option.label}
+							</SelectItem>
+						))}
+					</SelectContent>
+				</Select>
+				<Select
+					value={commodityFilter}
+					onValueChange={(value) => {
+						setCommodityFilter(value)
+						setPage(1)
+					}}
+				>
+					<SelectTrigger className="w-[180px]">
+						<SelectValue placeholder="All Commodities" />
+					</SelectTrigger>
+					<SelectContent>
+						<SelectItem value="all">All Commodities</SelectItem>
+						{COMMODITY_OPTIONS.map((option) => (
 							<SelectItem key={option.value} value={option.value}>
 								{option.label}
 							</SelectItem>
@@ -122,7 +158,7 @@ export function ContactsPageClient() {
 						{table.getHeaderGroups().map((headerGroup) => (
 							<TableRow key={headerGroup.id}>
 								{headerGroup.headers.map((header) => (
-									<TableHead 
+									<TableHead
 										key={header.id}
 										className={header.column.getCanSort() ? 'cursor-pointer select-none' : ''}
 										onClick={header.column.getToggleSortingHandler()}
@@ -149,39 +185,29 @@ export function ContactsPageClient() {
 					</TableHeader>
 					<TableBody>
 						{isLoading ? (
-							Array.from({ length: 5 }).map((_, i) => (
-								<TableRow key={i}>
-									{columns.map((_, j) => (
-										<TableCell key={j}>
-											<Skeleton className="h-6 w-full" />
-										</TableCell>
-									))}
-								</TableRow>
-							))
+							<TableRow>
+								<TableCell colSpan={columns.length} className="h-24 text-center">
+									Loading...
+								</TableCell>
+							</TableRow>
 						) : table.getRowModel().rows?.length ? (
 							table.getRowModel().rows.map((row) => (
 								<TableRow
 									key={row.id}
-									className="cursor-pointer hover:bg-muted/50"
-									onClick={() => router.push(`/contacts/${row.original.id}`)}
+									className="cursor-pointer"
+									onClick={() => router.push(`/projects/${row.original.id}`)}
 								>
 									{row.getVisibleCells().map((cell) => (
 										<TableCell key={cell.id}>
-											{flexRender(
-												cell.column.columnDef.cell,
-												cell.getContext(),
-											)}
+											{flexRender(cell.column.columnDef.cell, cell.getContext())}
 										</TableCell>
 									))}
 								</TableRow>
 							))
 						) : (
 							<TableRow>
-								<TableCell
-									colSpan={columns.length}
-									className="h-24 text-center"
-								>
-									No contacts found.
+								<TableCell colSpan={columns.length} className="h-24 text-center">
+									No results.
 								</TableCell>
 							</TableRow>
 						)}
@@ -189,34 +215,39 @@ export function ContactsPageClient() {
 				</Table>
 			</div>
 
-			<div className="flex items-center justify-between">
+			<div className="flex items-center justify-between py-4">
 				<div className="text-sm text-muted-foreground">
-					Showing {data?.items.length ?? 0} of {data?.total ?? 0} contacts
+					Total: {data?.total ?? 0} projects
 				</div>
-				<div className="flex items-center gap-2">
+				<div className="flex items-center space-x-2">
 					<Button
 						variant="outline"
 						size="sm"
 						onClick={() => setPage((p) => Math.max(1, p - 1))}
-						disabled={page === 1 || isLoading}
+						disabled={page === 1}
 					>
-						<ChevronLeft className="h-4 w-4 mr-1" />
+						<ChevronLeft className="h-4 w-4" />
 						Previous
 					</Button>
 					<div className="text-sm font-medium">
-						Page {page} of {Math.max(1, totalPages)}
+						Page {page} of {totalPages || 1}
 					</div>
 					<Button
 						variant="outline"
 						size="sm"
-						onClick={() => setPage((p) => p + 1)}
-						disabled={page >= totalPages || isLoading}
+						onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+						disabled={page === totalPages || totalPages === 0}
 					>
 						Next
-						<ChevronRight className="h-4 w-4 ml-1" />
+						<ChevronRight className="h-4 w-4" />
 					</Button>
 				</div>
 			</div>
+
+			<CreateProjectDialog
+				open={isCreateDialogOpen}
+				onOpenChange={setIsCreateDialogOpen}
+			/>
 		</div>
 	)
 }

@@ -132,6 +132,93 @@ export const TAG_COLOR_OPTIONS: { value: string; label: string }[] = [
 	{ value: '#6B7280', label: 'Gray' },
 ]
 
+// =============================================================================
+// Project Constants
+// =============================================================================
+
+export const PROJECT_STATUS_OPTIONS: { value: string; label: string }[] = [
+	{ value: 'exploration', label: 'Exploration' },
+	{ value: 'development', label: 'Development' },
+	{ value: 'production', label: 'Production' },
+	{ value: 'care_and_maintenance', label: 'Care & Maintenance' },
+	{ value: 'closed', label: 'Closed' },
+]
+
+export const COMMODITY_OPTIONS: { value: string; label: string }[] = [
+	// Precious metals
+	{ value: 'gold', label: 'Gold' },
+	{ value: 'silver', label: 'Silver' },
+	{ value: 'platinum', label: 'Platinum' },
+	{ value: 'palladium', label: 'Palladium' },
+	// Base metals
+	{ value: 'copper', label: 'Copper' },
+	{ value: 'zinc', label: 'Zinc' },
+	{ value: 'lead', label: 'Lead' },
+	{ value: 'nickel', label: 'Nickel' },
+	{ value: 'tin', label: 'Tin' },
+	{ value: 'aluminium', label: 'Aluminium' },
+	// Battery / critical minerals
+	{ value: 'lithium', label: 'Lithium' },
+	{ value: 'cobalt', label: 'Cobalt' },
+	{ value: 'manganese', label: 'Manganese' },
+	{ value: 'graphite', label: 'Graphite' },
+	{ value: 'rare_earths', label: 'Rare Earths' },
+	{ value: 'vanadium', label: 'Vanadium' },
+	// Bulk commodities
+	{ value: 'iron_ore', label: 'Iron Ore' },
+	{ value: 'coal', label: 'Coal' },
+	{ value: 'bauxite', label: 'Bauxite' },
+	{ value: 'potash', label: 'Potash' },
+	{ value: 'phosphate', label: 'Phosphate' },
+	// Energy
+	{ value: 'uranium', label: 'Uranium' },
+	// Industrial
+	{ value: 'silica', label: 'Silica' },
+	{ value: 'limestone', label: 'Limestone' },
+	{ value: 'kaolin', label: 'Kaolin' },
+	// Other
+	{ value: 'other', label: 'Other' },
+]
+
+export const REPORTING_STANDARD_OPTIONS: { value: string; label: string }[] = [
+	{ value: 'jorc', label: 'JORC (Australasia)' },
+	{ value: 'ni_43_101', label: 'NI 43-101 (Canada)' },
+	{ value: 'samrec', label: 'SAMREC (South Africa)' },
+	{ value: 'sec_sk_1300', label: 'SEC SK-1300 (USA)' },
+	{ value: 'cim', label: 'CIM (Canada)' },
+	{ value: 'perc', label: 'PERC (Europe)' },
+	{ value: 'other', label: 'Other' },
+]
+
+export const STAGE_OF_STUDY_OPTIONS: { value: string; label: string }[] = [
+	{ value: 'conceptual', label: 'Conceptual' },
+	{ value: 'scoping', label: 'Scoping Study' },
+	{ value: 'pre_feasibility', label: 'Pre-Feasibility Study (PFS)' },
+	{ value: 'definitive_feasibility', label: 'Definitive Feasibility Study (DFS)' },
+	{ value: 'bankable_feasibility', label: 'Bankable Feasibility Study (BFS)' },
+	{ value: 'expansion_study', label: 'Expansion Study' },
+	{ value: 'other', label: 'Other' },
+]
+
+export const TENURE_TYPE_OPTIONS: { value: string; label: string }[] = [
+	{ value: 'mining_lease', label: 'Mining Lease' },
+	{ value: 'exploration_license', label: 'Exploration License' },
+	{ value: 'prospecting_license', label: 'Prospecting License' },
+	{ value: 'retention_license', label: 'Retention License' },
+	{ value: 'mineral_development_license', label: 'Mineral Development License' },
+	{ value: 'other', label: 'Other' },
+]
+
+export const PROJECT_DEAL_ROLE_OPTIONS: { value: string; label: string }[] = [
+	{ value: 'subject_asset', label: 'Subject Asset' },
+	{ value: 'comparison_asset', label: 'Comparison Asset' },
+	{ value: 'retained_interest', label: 'Retained Interest' },
+]
+
+// =============================================================================
+// Pipeline Templates
+// =============================================================================
+
 /** Default pipeline stages for a new VC Deal Flow pipeline */
 export const DEFAULT_VC_PIPELINE_STAGES = [
 	{ name: 'Sourced', position: 0, color: '#6B7280' },

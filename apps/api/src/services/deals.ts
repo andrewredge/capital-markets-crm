@@ -24,7 +24,7 @@ import type { DrizzleDB } from '../lib/types.js'
 // =============================================================================
 
 export async function listDeals(db: DrizzleDB, tenantId: string, filters: DealFilterInput) {
-	const { search, pipelineId, currentStageId, dealType, ownerId, page, limit } = filters
+	const { search, pipelineId, currentStageId, dealType, ownerId, sortBy, sortDir, page, limit } = filters
 	const offset = (page - 1) * limit
 
 	const conditions = [eq(deals.organizationId, tenantId)]
@@ -49,6 +49,9 @@ export async function listDeals(db: DrizzleDB, tenantId: string, filters: DealFi
 	}
 
 	const where = and(...conditions)
+
+	const orderColumn = getDealSortColumn(sortBy)
+	const orderDir = sortDir === 'asc' ? orderColumn : desc(orderColumn)
 
 	const [items, totalResult] = await Promise.all([
 		db
@@ -75,13 +78,26 @@ export async function listDeals(db: DrizzleDB, tenantId: string, filters: DealFi
 			.leftJoin(pipelineStages, eq(deals.currentStageId, pipelineStages.id))
 			.leftJoin(pipelines, eq(deals.pipelineId, pipelines.id))
 			.where(where)
-			.orderBy(desc(deals.createdAt))
+			.orderBy(orderDir)
 			.limit(limit)
 			.offset(offset),
 		db.select({ total: count() }).from(deals).where(where),
 	])
 
 	return { items, total: totalResult[0]?.total ?? 0, page, limit }
+}
+
+function getDealSortColumn(sortBy?: string) {
+	switch (sortBy) {
+		case 'name':
+			return deals.name
+		case 'dealType':
+			return deals.dealType
+		case 'amount':
+			return deals.amount
+		default:
+			return deals.createdAt
+	}
 }
 
 export async function getDealById(db: DrizzleDB, tenantId: string, id: string) {

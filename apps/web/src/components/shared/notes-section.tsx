@@ -38,6 +38,7 @@ interface NotesSectionProps {
 	contactId?: string
 	companyId?: string
 	dealId?: string
+	projectId?: string
 }
 
 function formatDate(date: Date | string) {
@@ -48,7 +49,7 @@ function formatDate(date: Date | string) {
 	}).format(new Date(date))
 }
 
-export function NotesSection({ contactId, companyId, dealId }: NotesSectionProps) {
+export function NotesSection({ contactId, companyId, dealId, projectId }: NotesSectionProps) {
 	const trpc = useTRPC()
 	const queryClient = useQueryClient()
 	const [isAddOpen, setIsAddOpen] = useState(false)
@@ -65,6 +66,7 @@ export function NotesSection({ contactId, companyId, dealId }: NotesSectionProps
 			contactId,
 			companyId,
 			dealId,
+			projectId,
 			limit: 50,
 		}),
 	)
@@ -187,6 +189,7 @@ export function NotesSection({ contactId, companyId, dealId }: NotesSectionProps
 				contactId={contactId}
 				companyId={companyId}
 				dealId={dealId}
+				projectId={projectId}
 			/>
 
 			{editingNote && (

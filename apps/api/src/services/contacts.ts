@@ -1,11 +1,11 @@
-import { and, count, eq, ilike, or } from 'drizzle-orm'
+import { and, count, desc, eq, ilike, or } from 'drizzle-orm'
 import { nanoid } from 'nanoid'
 import { contacts, contactCompanyRoles, companies } from '@crm/db/schema'
 import type { CreateContactInput, UpdateContactInput, ContactFilterInput } from '@crm/shared'
 import type { DrizzleDB } from '../lib/types.js'
 
 export async function list(db: DrizzleDB, tenantId: string, filters: ContactFilterInput) {
-	const { search, status, page, limit } = filters
+	const { search, status, sortBy, sortDir, page, limit } = filters
 	const offset = (page - 1) * limit
 
 	const conditions = [eq(contacts.organizationId, tenantId)]
@@ -27,12 +27,30 @@ export async function list(db: DrizzleDB, tenantId: string, filters: ContactFilt
 
 	const where = and(...conditions)
 
+	const orderColumn = getContactSortColumn(sortBy)
+	const orderDir = sortDir === 'asc' ? orderColumn : desc(orderColumn)
+
 	const [items, totalResult] = await Promise.all([
-		db.select().from(contacts).where(where).orderBy(contacts.createdAt).limit(limit).offset(offset),
+		db.select().from(contacts).where(where).orderBy(orderDir).limit(limit).offset(offset),
 		db.select({ total: count() }).from(contacts).where(where),
 	])
 
 	return { items, total: totalResult[0]?.total ?? 0, page, limit }
+}
+
+function getContactSortColumn(sortBy?: string) {
+	switch (sortBy) {
+		case 'firstName':
+			return contacts.firstName
+		case 'lastName':
+			return contacts.lastName
+		case 'email':
+			return contacts.email
+		case 'status':
+			return contacts.status
+		default:
+			return contacts.createdAt
+	}
 }
 
 export async function getById(db: DrizzleDB, tenantId: string, id: string) {

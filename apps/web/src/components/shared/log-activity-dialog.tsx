@@ -47,6 +47,7 @@ interface LogActivityDialogProps {
 	contactId?: string
 	companyId?: string
 	dealId?: string
+	projectId?: string
 }
 
 export function LogActivityDialog({
@@ -55,6 +56,7 @@ export function LogActivityDialog({
 	contactId,
 	companyId,
 	dealId,
+	projectId,
 }: LogActivityDialogProps) {
 	const trpc = useTRPC()
 	const queryClient = useQueryClient()
@@ -70,6 +72,7 @@ export function LogActivityDialog({
 			contactId,
 			companyId,
 			dealId,
+			projectId,
 		},
 	})
 
@@ -85,9 +88,10 @@ export function LogActivityDialog({
 				contactId,
 				companyId,
 				dealId,
+				projectId,
 			})
 		}
-	}, [open, form, contactId, companyId, dealId])
+	}, [open, form, contactId, companyId, dealId, projectId])
 
 	const createMutation = useMutation(
 		trpc.activities.create.mutationOptions({
@@ -109,6 +113,7 @@ export function LogActivityDialog({
 			contactId,
 			companyId,
 			dealId,
+			projectId,
 		})
 	}
 

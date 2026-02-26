@@ -5,7 +5,7 @@ import type { CreateNoteInput, UpdateNoteInput, NoteFilterInput } from '@crm/sha
 import type { DrizzleDB } from '../lib/types.js'
 
 export async function list(db: DrizzleDB, tenantId: string, filters: NoteFilterInput) {
-	const { contactId, companyId, dealId, page, limit } = filters
+	const { contactId, companyId, dealId, projectId, page, limit } = filters
 	const offset = (page - 1) * limit
 
 	const conditions = [eq(notes.organizationId, tenantId)]
@@ -18,6 +18,9 @@ export async function list(db: DrizzleDB, tenantId: string, filters: NoteFilterI
 	}
 	if (dealId) {
 		conditions.push(eq(notes.dealId, dealId))
+	}
+	if (projectId) {
+		conditions.push(eq(notes.projectId, projectId))
 	}
 
 	const where = and(...conditions)
@@ -56,6 +59,7 @@ export async function create(db: DrizzleDB, tenantId: string, input: CreateNoteI
 			contactId: input.contactId || null,
 			companyId: input.companyId || null,
 			dealId: input.dealId || null,
+			projectId: input.projectId || null,
 		})
 		.returning()
 
@@ -76,6 +80,7 @@ export async function update(
 	if (input.contactId !== undefined) values.contactId = input.contactId || null
 	if (input.companyId !== undefined) values.companyId = input.companyId || null
 	if (input.dealId !== undefined) values.dealId = input.dealId || null
+	if (input.projectId !== undefined) values.projectId = input.projectId || null
 
 	const [updated] = await db
 		.update(notes)

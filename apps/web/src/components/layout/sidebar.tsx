@@ -6,6 +6,7 @@ import {
   LayoutDashboard,
   Users,
   Building2,
+  Mountain,
   Handshake,
   Settings,
   ShieldCheck,
@@ -17,6 +18,7 @@ const navItems = [
   { label: 'Dashboard', href: '/', icon: LayoutDashboard },
   { label: 'Contacts', href: '/contacts', icon: Users },
   { label: 'Companies', href: '/companies', icon: Building2 },
+  { label: 'Projects', href: '/projects', icon: Mountain },
   { label: 'Deals', href: '/deals', icon: Handshake },
   { label: 'Settings', href: '/settings', icon: Settings },
 ]

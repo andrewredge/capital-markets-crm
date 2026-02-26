@@ -108,6 +108,8 @@ export const contactFilterSchema = z.object({
 	search: z.string().optional(),
 	status: z.enum(CONTACT_STATUSES).optional(),
 	contactType: z.enum(CONTACT_TYPES).optional(),
+	sortBy: z.string().optional(),
+	sortDir: z.enum(['asc', 'desc']).optional(),
 	page: z.number().int().min(1).default(1),
 	limit: z.number().int().min(1).max(100).default(25),
 })

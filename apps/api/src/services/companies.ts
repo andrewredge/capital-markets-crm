@@ -1,4 +1,4 @@
-import { and, count, eq, ilike } from 'drizzle-orm'
+import { and, count, desc, eq, ilike } from 'drizzle-orm'
 import { nanoid } from 'nanoid'
 import {
 	companies,
@@ -10,7 +10,7 @@ import type { CreateCompanyInput, UpdateCompanyInput, CompanyFilterInput } from 
 import type { DrizzleDB } from '../lib/types.js'
 
 export async function list(db: DrizzleDB, tenantId: string, filters: CompanyFilterInput) {
-	const { search, entityType, page, limit } = filters
+	const { search, entityType, sortBy, sortDir, page, limit } = filters
 	const offset = (page - 1) * limit
 
 	const conditions = [eq(companies.organizationId, tenantId)]
@@ -25,12 +25,28 @@ export async function list(db: DrizzleDB, tenantId: string, filters: CompanyFilt
 
 	const where = and(...conditions)
 
+	const orderColumn = getCompanySortColumn(sortBy)
+	const orderDir = sortDir === 'asc' ? orderColumn : desc(orderColumn)
+
 	const [items, totalResult] = await Promise.all([
-		db.select().from(companies).where(where).orderBy(companies.createdAt).limit(limit).offset(offset),
+		db.select().from(companies).where(where).orderBy(orderDir).limit(limit).offset(offset),
 		db.select({ total: count() }).from(companies).where(where),
 	])
 
 	return { items, total: totalResult[0]?.total ?? 0, page, limit }
+}
+
+function getCompanySortColumn(sortBy?: string) {
+	switch (sortBy) {
+		case 'name':
+			return companies.name
+		case 'entityType':
+			return companies.entityType
+		case 'headquarters':
+			return companies.headquarters
+		default:
+			return companies.createdAt
+	}
 }
 
 export async function getById(db: DrizzleDB, tenantId: string, id: string) {

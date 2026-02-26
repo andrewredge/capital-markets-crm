@@ -66,6 +66,8 @@ export const dealFilterSchema = z.object({
 	currentStageId: z.string().min(1).optional(),
 	dealType: z.enum(DEAL_TYPE_VALUES).optional(),
 	ownerId: z.string().min(1).optional(),
+	sortBy: z.string().optional(),
+	sortDir: z.enum(['asc', 'desc']).optional(),
 	page: z.number().int().min(1).default(1),
 	limit: z.number().int().min(1).max(100).default(25),
 })

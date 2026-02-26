@@ -23,3 +23,6 @@ export * from './enrichment'
 
 // Platform Admin
 export * from './platform-admin'
+
+// Projects
+export * from './projects'

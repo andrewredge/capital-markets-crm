@@ -27,9 +27,10 @@ export const createTaggingSchema = z
 		contactId: z.string().min(1).optional(),
 		companyId: z.string().min(1).optional(),
 		dealId: z.string().min(1).optional(),
+		projectId: z.string().min(1).optional(),
 	})
-	.refine((data) => data.contactId || data.companyId || data.dealId, {
-		message: 'At least one entity (contact, company, or deal) must be specified',
+	.refine((data) => data.contactId || data.companyId || data.dealId || data.projectId, {
+		message: 'At least one entity (contact, company, deal, or project) must be specified',
 	})
 
 export const tagFilterSchema = z.object({

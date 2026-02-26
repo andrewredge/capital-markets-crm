@@ -5,6 +5,7 @@ import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
 import { env } from './env.js'
 import { auth } from './lib/auth.js'
+import { rateLimiter } from './lib/rate-limit.js'
 import { appRouter } from './trpc/router.js'
 import { createContext } from './trpc/trpc.js'
 
@@ -21,6 +22,12 @@ app.use(
 		credentials: true,
 	}),
 )
+
+// Rate limiting — 200 requests per minute per IP for general API
+app.use('/api/*', rateLimiter({ limit: 200, windowMs: 60_000 }))
+
+// Stricter rate limit for auth endpoints — 20 per minute
+app.use('/api/auth/*', rateLimiter({ limit: 20, windowMs: 60_000 }))
 
 // Health check
 app.get('/health', (c) => c.json({ status: 'ok' }))

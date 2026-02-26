@@ -3,6 +3,7 @@ import { pgPolicy, pgTable, text, timestamp, unique } from 'drizzle-orm/pg-core'
 import { organizations } from './auth'
 import { contacts } from './contacts'
 import { companies } from './companies'
+import { projects } from './projects'
 
 // =============================================================================
 // Tags
@@ -46,6 +47,7 @@ export const taggings = pgTable(
 		contactId: text('contact_id').references(() => contacts.id, { onDelete: 'cascade' }),
 		companyId: text('company_id').references(() => companies.id, { onDelete: 'cascade' }),
 		dealId: text('deal_id'),
+		projectId: text('project_id').references(() => projects.id, { onDelete: 'cascade' }),
 		createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 	},
 	(table) => [

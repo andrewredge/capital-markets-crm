@@ -3,6 +3,7 @@ import { integer, pgPolicy, pgTable, text, timestamp } from 'drizzle-orm/pg-core
 import { organizations } from './auth'
 import { contacts } from './contacts'
 import { companies } from './companies'
+import { projects } from './projects'
 
 // =============================================================================
 // Activities
@@ -18,6 +19,7 @@ export const activities = pgTable(
 		contactId: text('contact_id').references(() => contacts.id, { onDelete: 'cascade' }),
 		companyId: text('company_id').references(() => companies.id, { onDelete: 'cascade' }),
 		dealId: text('deal_id'),
+		projectId: text('project_id').references(() => projects.id, { onDelete: 'cascade' }),
 		activityType: text('activity_type').notNull(),
 		subject: text('subject'),
 		description: text('description'),

@@ -39,6 +39,7 @@ interface AddNoteDialogProps {
 	contactId?: string
 	companyId?: string
 	dealId?: string
+	projectId?: string
 }
 
 export function AddNoteDialog({
@@ -47,6 +48,7 @@ export function AddNoteDialog({
 	contactId,
 	companyId,
 	dealId,
+	projectId,
 }: AddNoteDialogProps) {
 	const trpc = useTRPC()
 	const queryClient = useQueryClient()
@@ -60,6 +62,7 @@ export function AddNoteDialog({
 			contactId,
 			companyId,
 			dealId,
+			projectId,
 		},
 	})
 
@@ -72,9 +75,10 @@ export function AddNoteDialog({
 				contactId,
 				companyId,
 				dealId,
+				projectId,
 			})
 		}
-	}, [open, form, contactId, companyId, dealId])
+	}, [open, form, contactId, companyId, dealId, projectId])
 
 	const createMutation = useMutation(
 		trpc.notes.create.mutationOptions({
@@ -95,6 +99,7 @@ export function AddNoteDialog({
 			contactId,
 			companyId,
 			dealId,
+			projectId,
 		})
 	}
 

@@ -104,6 +104,7 @@ export async function addTagging(db: DrizzleDB, tenantId: string, input: CreateT
 			contactId: input.contactId || null,
 			companyId: input.companyId || null,
 			dealId: input.dealId || null,
+			projectId: input.projectId || null,
 		})
 		.returning()
 
@@ -126,7 +127,7 @@ export async function removeTagging(db: DrizzleDB, tenantId: string, id: string)
 export async function getForEntity(
 	db: DrizzleDB,
 	tenantId: string,
-	entity: { contactId?: string; companyId?: string; dealId?: string },
+	entity: { contactId?: string; companyId?: string; dealId?: string; projectId?: string },
 ) {
 	const conditions = [eq(taggings.organizationId, tenantId)]
 
@@ -138,6 +139,9 @@ export async function getForEntity(
 	}
 	if (entity.dealId) {
 		conditions.push(eq(taggings.dealId, entity.dealId))
+	}
+	if (entity.projectId) {
+		conditions.push(eq(taggings.projectId, entity.projectId))
 	}
 
 	const results = await db

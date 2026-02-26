@@ -44,6 +44,7 @@ interface ActivityTimelineProps {
 	contactId?: string
 	companyId?: string
 	dealId?: string
+	projectId?: string
 }
 
 function formatRelativeTime(date: Date | string): string {
@@ -69,7 +70,7 @@ const ACTIVITY_ICONS: Record<string, React.ReactNode> = {
 	deal_update: <TrendingUp className="h-4 w-4" />,
 }
 
-export function ActivityTimeline({ contactId, companyId, dealId }: ActivityTimelineProps) {
+export function ActivityTimeline({ contactId, companyId, dealId, projectId }: ActivityTimelineProps) {
 	const trpc = useTRPC()
 	const queryClient = useQueryClient()
 	const [isLogOpen, setIsLogOpen] = useState(false)
@@ -83,6 +84,7 @@ export function ActivityTimeline({ contactId, companyId, dealId }: ActivityTimel
 		contactId: string | null
 		companyId: string | null
 		dealId: string | null
+		projectId: string | null
 	} | null>(null)
 	const [deletingActivityId, setDeletingActivityId] = useState<string | null>(null)
 
@@ -91,6 +93,7 @@ export function ActivityTimeline({ contactId, companyId, dealId }: ActivityTimel
 			contactId,
 			companyId,
 			dealId,
+			projectId,
 			limit: 20,
 		}),
 	)
@@ -197,6 +200,7 @@ export function ActivityTimeline({ contactId, companyId, dealId }: ActivityTimel
 				contactId={contactId}
 				companyId={companyId}
 				dealId={dealId}
+				projectId={projectId}
 			/>
 
 			{editingActivity && (
