@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import {
   LayoutDashboard,
   Users,
@@ -15,16 +16,17 @@ import { cn } from '@/lib/utils'
 import { authClient } from '@/lib/auth-client'
 
 const navItems = [
-  { label: 'Dashboard', href: '/', icon: LayoutDashboard },
-  { label: 'Contacts', href: '/contacts', icon: Users },
-  { label: 'Companies', href: '/companies', icon: Building2 },
-  { label: 'Projects', href: '/projects', icon: Mountain },
-  { label: 'Deals', href: '/deals', icon: Handshake },
-  { label: 'Settings', href: '/settings', icon: Settings },
+  { labelKey: 'dashboard', href: '/', icon: LayoutDashboard },
+  { labelKey: 'contacts', href: '/contacts', icon: Users },
+  { labelKey: 'companies', href: '/companies', icon: Building2 },
+  { labelKey: 'projects', href: '/projects', icon: Mountain },
+  { labelKey: 'deals', href: '/deals', icon: Handshake },
+  { labelKey: 'settings', href: '/settings', icon: Settings },
 ]
 
 export function Sidebar() {
   const pathname = usePathname()
+  const t = useTranslations('nav')
   const { data: session } = authClient.useSession()
   const isSuperAdmin = (session?.user as Record<string, unknown> | undefined)?.platformRole === 'super_admin'
 
@@ -51,7 +53,7 @@ export function Sidebar() {
               )}
             >
               <item.icon className="h-4 w-4" />
-              {item.label}
+              {t(item.labelKey)}
             </Link>
           )
         })}
@@ -69,14 +71,14 @@ export function Sidebar() {
                 )}
               >
                 <ShieldCheck className="h-4 w-4" />
-                Admin Panel
+                {t('adminPanel')}
               </Link>
             </div>
           </>
         )}
       </nav>
       <div className="p-4 border-t text-xs text-muted-foreground">
-        &copy; 2026 Capital Markets CRM
+        {t('copyright')}
       </div>
     </div>
   )

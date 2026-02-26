@@ -1,0 +1,66 @@
+{
+	"nav": {
+		"dashboard": "Dasbor",
+		"contacts": "Kontak",
+		"companies": "Perusahaan",
+		"projects": "Proyek",
+		"deals": "Transaksi",
+		"settings": "Pengaturan",
+		"adminPanel": "Panel Admin",
+		"copyright": "© 2026 Capital Markets CRM"
+	},
+	"header": {
+		"toggleNav": "Buka/tutup menu navigasi",
+		"notifications": "Notifikasi",
+		"profile": "Profil",
+		"settings": "Pengaturan",
+		"logOut": "Keluar"
+	},
+	"dashboard": {
+		"welcomeBack": "Selamat datang kembali, {name}!",
+		"subtitle": "Ringkasan organisasi dan aktivitas terbaru Anda.",
+		"contacts": "Kontak",
+		"companies": "Perusahaan",
+		"deals": "Transaksi",
+		"recentDeals": "Transaksi Terbaru",
+		"recentActivity": "Aktivitas Terbaru",
+		"noDeals": "Belum ada transaksi. Buat transaksi pertama Anda untuk memulai.",
+		"noActivity": "Belum ada aktivitas. Mulai dengan menambahkan kontak dan perusahaan.",
+		"gettingStarted": "Memulai",
+		"addFirstContact": "Tambahkan kontak pertama",
+		"createCompany": "Buat perusahaan",
+		"setupPipeline": "Siapkan alur transaksi"
+	},
+	"actions": {
+		"save": "Simpan",
+		"cancel": "Batal",
+		"delete": "Hapus",
+		"edit": "Edit",
+		"create": "Buat",
+		"add": "Tambah",
+		"search": "Cari...",
+		"close": "Tutup",
+		"confirm": "Konfirmasi",
+		"back": "Kembali",
+		"next": "Selanjutnya",
+		"submit": "Kirim",
+		"upload": "Unggah",
+		"download": "Unduh",
+		"loading": "Memuat...",
+		"saving": "Menyimpan...",
+		"deleting": "Menghapus..."
+	},
+	"table": {
+		"noResults": "Tidak ada hasil ditemukan.",
+		"showing": "Menampilkan {from} sampai {to} dari {total}",
+		"previous": "Sebelumnya",
+		"next": "Selanjutnya",
+		"rowsPerPage": "Baris per halaman"
+	},
+	"locale": {
+		"switchLanguage": "Bahasa",
+		"en": "English",
+		"zh": "中文",
+		"id": "Bahasa Indonesia"
+	}
+}

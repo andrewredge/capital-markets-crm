@@ -1,0 +1,66 @@
+{
+	"nav": {
+		"dashboard": "仪表盘",
+		"contacts": "联系人",
+		"companies": "公司",
+		"projects": "项目",
+		"deals": "交易",
+		"settings": "设置",
+		"adminPanel": "管理面板",
+		"copyright": "© 2026 资本市场 CRM"
+	},
+	"header": {
+		"toggleNav": "切换导航菜单",
+		"notifications": "通知",
+		"profile": "个人资料",
+		"settings": "设置",
+		"logOut": "退出登录"
+	},
+	"dashboard": {
+		"welcomeBack": "欢迎回来，{name}！",
+		"subtitle": "您的组织概览和近期活动。",
+		"contacts": "联系人",
+		"companies": "公司",
+		"deals": "交易",
+		"recentDeals": "近期交易",
+		"recentActivity": "近期活动",
+		"noDeals": "暂无交易。创建您的第一笔交易以开始使用。",
+		"noActivity": "暂无活动。从添加联系人和公司开始。",
+		"gettingStarted": "快速开始",
+		"addFirstContact": "添加第一个联系人",
+		"createCompany": "创建公司",
+		"setupPipeline": "设置交易流程"
+	},
+	"actions": {
+		"save": "保存",
+		"cancel": "取消",
+		"delete": "删除",
+		"edit": "编辑",
+		"create": "创建",
+		"add": "添加",
+		"search": "搜索...",
+		"close": "关闭",
+		"confirm": "确认",
+		"back": "返回",
+		"next": "下一步",
+		"submit": "提交",
+		"upload": "上传",
+		"download": "下载",
+		"loading": "加载中...",
+		"saving": "保存中...",
+		"deleting": "删除中..."
+	},
+	"table": {
+		"noResults": "未找到结果。",
+		"showing": "显示第 {from} 至 {to} 条，共 {total} 条",
+		"previous": "上一页",
+		"next": "下一页",
+		"rowsPerPage": "每页行数"
+	},
+	"locale": {
+		"switchLanguage": "语言",
+		"en": "English",
+		"zh": "中文",
+		"id": "Bahasa Indonesia"
+	}
+}

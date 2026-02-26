@@ -1,6 +1,7 @@
 "use client"
 
 import { Menu, User, LogOut, Settings, Bell } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,6 +14,7 @@ import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet'
 import { Sidebar } from './sidebar'
+import { LocaleSwitcher } from './locale-switcher'
 import { useState } from 'react'
 import { useSession, signOut } from '@/lib/auth-client'
 import { useRouter } from 'next/navigation'
@@ -22,7 +24,8 @@ export function Header() {
   const [open, setOpen] = useState(false)
   const { data: session, isPending } = useSession()
   const router = useRouter()
-  
+  const t = useTranslations('header')
+
   const user = session?.user
   const initials = user?.name
     ? user.name
@@ -45,26 +48,27 @@ export function Header() {
           <SheetTrigger asChild>
             <Button variant="ghost" size="icon" className="md:hidden">
               <Menu className="h-5 w-5" />
-              <span className="sr-only">Toggle navigation menu</span>
+              <span className="sr-only">{t('toggleNav')}</span>
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="p-0 w-64">
-            <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+            <SheetTitle className="sr-only">{t('toggleNav')}</SheetTitle>
             <Sidebar />
           </SheetContent>
         </Sheet>
-        
+
         <div className="hidden md:flex">
           <OrgSwitcher />
         </div>
       </div>
 
       <div className="flex items-center gap-2">
+        <LocaleSwitcher />
         <Button variant="ghost" size="icon" className="text-muted-foreground">
           <Bell className="h-5 w-5" />
-          <span className="sr-only">Notifications</span>
+          <span className="sr-only">{t('notifications')}</span>
         </Button>
-        
+
         {isPending ? (
           <div className="h-8 w-8 animate-pulse rounded-full bg-muted" />
         ) : user ? (
@@ -89,16 +93,16 @@ export function Header() {
               <DropdownMenuSeparator />
               <DropdownMenuItem>
                 <User className="mr-2 h-4 w-4" />
-                <span>Profile</span>
+                <span>{t('profile')}</span>
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <Settings className="mr-2 h-4 w-4" />
-                <span>Settings</span>
+                <span>{t('settings')}</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive">
                 <LogOut className="mr-2 h-4 w-4" />
-                <span>Log out</span>
+                <span>{t('logOut')}</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

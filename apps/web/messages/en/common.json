@@ -1,0 +1,66 @@
+{
+	"nav": {
+		"dashboard": "Dashboard",
+		"contacts": "Contacts",
+		"companies": "Companies",
+		"projects": "Projects",
+		"deals": "Deals",
+		"settings": "Settings",
+		"adminPanel": "Admin Panel",
+		"copyright": "© 2026 Capital Markets CRM"
+	},
+	"header": {
+		"toggleNav": "Toggle navigation menu",
+		"notifications": "Notifications",
+		"profile": "Profile",
+		"settings": "Settings",
+		"logOut": "Log out"
+	},
+	"dashboard": {
+		"welcomeBack": "Welcome back, {name}!",
+		"subtitle": "Your organization overview and recent activity.",
+		"contacts": "Contacts",
+		"companies": "Companies",
+		"deals": "Deals",
+		"recentDeals": "Recent Deals",
+		"recentActivity": "Recent Activity",
+		"noDeals": "No deals yet. Create your first deal to get started.",
+		"noActivity": "No recent activity. Start by adding contacts and companies.",
+		"gettingStarted": "Getting Started",
+		"addFirstContact": "Add your first contact",
+		"createCompany": "Create a company",
+		"setupPipeline": "Set up a deal pipeline"
+	},
+	"actions": {
+		"save": "Save",
+		"cancel": "Cancel",
+		"delete": "Delete",
+		"edit": "Edit",
+		"create": "Create",
+		"add": "Add",
+		"search": "Search...",
+		"close": "Close",
+		"confirm": "Confirm",
+		"back": "Back",
+		"next": "Next",
+		"submit": "Submit",
+		"upload": "Upload",
+		"download": "Download",
+		"loading": "Loading...",
+		"saving": "Saving...",
+		"deleting": "Deleting..."
+	},
+	"table": {
+		"noResults": "No results found.",
+		"showing": "Showing {from} to {to} of {total}",
+		"previous": "Previous",
+		"next": "Next",
+		"rowsPerPage": "Rows per page"
+	},
+	"locale": {
+		"switchLanguage": "Language",
+		"en": "English",
+		"zh": "中文",
+		"id": "Bahasa Indonesia"
+	}
+}
